@@ -1,6 +1,9 @@
 build
 out
+asset
+
 .cache
 .idea
 .vs
 .vscode
+.json
