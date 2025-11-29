@@ -4,6 +4,7 @@
 #include <array>
 
 #include "Components.hpp"
+#include "../util/Timer.hpp"
 
 namespace mir{
     using ID = std::uint16_t;
@@ -24,6 +25,8 @@ namespace mir{
         static inline void BurstParticle(const ID id, const std::uint16_t count){
             particle::EmitAccumulators[id] += static_cast<float>(count);
             particle::IsEmittings[id] = true;
+
+            time::After(0.01f, [id](){ particle::IsEmittings[id] = false; });
         }
     }
 }
