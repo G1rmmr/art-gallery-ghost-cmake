@@ -1,68 +1,40 @@
 #include "Game.hpp"
-#include "util/Profiler.hpp"
 
-constexpr std::string_view WINDOW_TITLE = "art-gallery-ghost";
-constexpr std::uint8_t FPS = 60;
-
-Game::Game() {
+void game::Initialize(){
+    PROFILE_SCOPE("Initialization"){
+        mir::window::Init(WINDOW_TITLE.data());
+        mir::window::SetFPS(FPS);
+        mir::record::LoadAll(SAVE_PATH.data());
+    }
     mir::debug::Log("Game Initialized!");
-    initWindow();
 }
 
-void Game::initWindow(){
-    mir::Window = sf::RenderWindow(
-        sf::VideoMode::getDesktopMode(),
-        WINDOW_TITLE.data());
+void game::ProcessInput(){
+    PROFILE_SCOPE("Input"){ mir::input::Process(); }
 
-    mir::Window.setFramerateLimit(FPS);
-}
-
-void Game::Run(){
-    sf::Clock clock;
-
-    while(mir::Window.isOpen()){
-        const float deltaTime = clock.restart().asSeconds();
-        mir::input::Process();
-        update(deltaTime);
-
-        PROFILE_SCOPE("Render"){
-            mir::Window.clear(sf::Color::Black);
-            render();
-            mir::Window.display();
-        }
+    if(mir::input::IsPressed(mir::input::Key::Escape)){
+        mir::window::Close();
     }
 }
 
-void Game::update(const float deltaTime){
-    PROFILE_SCOPE("Movement"){
-        for(mir::ID id = 0; id < mir::MAX_ENTITIES; ++id)
-            mir::movement::Update(id, deltaTime);
-    }
+void game::Update(const float deltaTime){
+    PROFILE_SCOPE("Movement"){ mir::movement::Update(deltaTime); }
+    PROFILE_SCOPE("Collision"){ mir::collision::Update(); }
+    PROFILE_SCOPE("RenderUpdate"){ mir::render::Update(deltaTime); }
+}
 
-    PROFILE_SCOPE("Collision"){
-        for(mir::ID id = 0; id < mir::MAX_ENTITIES - 1; ++id){
-            for(mir::ID other = id + 1; other < mir::MAX_ENTITIES; ++other)
-                mir::collision::Update(id, other);
-        }
-    }
-
-    PROFILE_SCOPE("RenderUpdate"){
-        for(mir::ID id = 0; id < mir::MAX_ENTITIES; ++id)
-            mir::render::Update(id, deltaTime);
+void game::Render(){
+    PROFILE_SCOPE("Render"){
+        mir::window::Clear(0, 0, 0);
+        mir::window::Render();
+        mir::window::Display();
     }
 }
 
-void Game::render(){
-    for(mir::ID id = 0; id < mir::MAX_ENTITIES; ++id){
-        if(!mir::sprite::Textures[id]) continue;
-
-        const std::vector<sf::IntRect>& frames = mir::animation::FrameSets[mir::animation::States[id]];
-
-        sf::Sprite sprite = frames.empty() ?
-            sf::Sprite(*mir::sprite::Textures[id]) :
-            sf::Sprite(*mir::sprite::Textures[id], frames[mir::animation::CurrFrames[id]]);
-
-        mir::texture::BuildSprite(id, sprite);
-        mir::Window.draw(sprite);
+void game::Exit(){
+    PROFILE_SCOPE("Shutdown"){
+        mir::record::SaveAll(game::SAVE_PATH.data());
+        mir::input::ClearAll();
     }
+    mir::debug::Log("Game Over!");
 }

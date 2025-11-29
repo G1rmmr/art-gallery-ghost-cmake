@@ -12,21 +12,21 @@ namespace mir{
         static constexpr std::uint8_t MAX_EVENTS = 0xFF;
 
         namespace type{
-            struct CollisionEvent {
+            struct Coliision {
                 ID EntityA;
                 ID EntityB;
             };
 
-            struct DamageEvent {
+            struct Damage {
                 ID Attacker;
                 ID Target;
             };
 
-            struct DeathEvent {
+            struct Death {
                 ID EntityId;
             };
 
-            struct JumpEvent {
+            struct Jump {
                 ID EntityId;
             };
         }
