@@ -7,38 +7,30 @@
 #include <type_traits>
 
 #ifdef DEBUG_MODE
-inline constexpr bool DEBUG_ENABLED = true;
+    static inline constexpr bool DEBUG_ENABLED = true;
 #else
-inline constexpr bool DEBUG_ENABLED = false;
+    static inline constexpr bool DEBUG_ENABLED = false;
 #endif
 
 namespace mir{
-    class Debugger{
-    public:
+    namespace debug{
         template<typename... Args>
-        static void Log(Args&&... args){
-            if constexpr(DEBUG_ENABLED){
-                std::ostringstream oss;
-                oss << getTimeStamp() << "\t";
-                (oss << ... << args);
-                std::cout << oss.str() << "\n";
-                std::cout.flush();
-            }
-        }
+        static inline void Log(const char* format, Args&&... args){
+            if constexpr(!DEBUG_ENABLED) return;
 
-    private:
-        static std::string getTimeStamp(){
-            std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
-            time_t time = std::chrono::system_clock::to_time_t(now);
-            std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+            const std::chrono::time_point now = std::chrono::system_clock::now();
+            const time_t time = std::chrono::system_clock::to_time_t(now);
+            const std::chrono::milliseconds ms = duration_cast<std::chrono::milliseconds>(
                 now.time_since_epoch()) % 1000;
 
-            std::ostringstream oss;
+            std::tm* localTime = std::localtime(&time);
+            fprintf(stdout, "%02d:%02d:%02d.%03d\t",
+                localTime->tm_hour, localTime->tm_min, localTime->tm_sec,
+                static_cast<int>(ms.count()));
 
-            oss << std::put_time(std::localtime(&time), "%H:%M:%S")
-                << "." << std::setfill('0') << std::setw(3) << ms.count();
-
-            return oss.str();
+            printf(format, std::forward<Args>(args)...);
+            printf("\n");
+            fflush(stdout);
         }
-    };
+    }
 }

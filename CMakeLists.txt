@@ -41,7 +41,17 @@ target_link_libraries(art-gallery-ghost PRIVATE
     SFML::Window
 )
 
-# 디버그 모드 정의
+# 프로파일 옵션 추가
+option(ENABLE_PROFILE "Enable performance profiling" OFF)
+
+if(ENABLE_PROFILE)
+    target_compile_definitions(art-gallery-ghost PRIVATE ENABLE_PROFILE=1)
+    message(STATUS "Profiling enabled")
+else()
+    target_compile_definitions(art-gallery-ghost PRIVATE ENABLE_PROFILE=0)
+endif()
+
+# 빌드 모드 정의
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(art-gallery-ghost PRIVATE DEBUG_MODE)
     message(STATUS "Debug mode enabled - console logging active")

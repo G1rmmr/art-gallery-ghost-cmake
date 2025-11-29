@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Mir.hpp"
+
 class Game {
 public:
     Game();
@@ -8,4 +10,5 @@ public:
 private:
     void initWindow();
     void update(const float deltaTime);
+    void render();
 };
