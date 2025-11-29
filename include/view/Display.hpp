@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Manager.hpp"
+#include "../core/Entity.hpp"
+#include "../core/Components.hpp"
 
 namespace mir{
     static inline sf::RenderWindow Window;
@@ -96,22 +97,43 @@ namespace mir{
 
                 sprite.setScale(finalScale);
             }
+
+            static inline void DrawParticles(){
+                for(ID id = 0; id < MAX_ENTITIES; ++id){
+                    if(particle::Positions[id].empty()) continue;
+
+                    sf::CircleShape shape;
+                    const size_t count = particle::Positions[id].size();
+
+                    for(size_t i = 0; i < count; ++i){
+                        shape.setRadius(particle::CurrentSizes[id][i]);
+                        shape.setFillColor(particle::CurrentColors[id][i]);
+                        shape.setPosition(particle::Positions[id][i]);
+                        shape.setOrigin({
+                            particle::CurrentSizes[id][i],
+                            particle::CurrentSizes[id][i]}
+                        );
+                        Window.draw(shape);
+                    }
+                }
+            }
         }
 
         static inline void Render(){
-            for(mir::ID id = 0; id < mir::MAX_ENTITIES; ++id){
-                if(!mir::sprite::Textures[id]) continue;
+            for(ID id = 0; id < MAX_ENTITIES; ++id){
+                if(!sprite::Textures[id]) continue;
 
                 const std::vector<sf::IntRect>& frames
-                    = mir::animation::FrameSets[mir::animation::States[id]];
+                    = animation::FrameSets[animation::States[id]];
 
                 sf::Sprite sprite = frames.empty() ?
-                    sf::Sprite(*mir::sprite::Textures[id]) :
-                    sf::Sprite(*mir::sprite::Textures[id], frames[mir::animation::CurrFrames[id]]);
+                    sf::Sprite(*sprite::Textures[id]) :
+                    sf::Sprite(*sprite::Textures[id], frames[animation::CurrFrames[id]]);
 
                 BuildSprite(id, sprite);
                 Window.draw(sprite);
             }
+            DrawParticles();
         }
     }
 }

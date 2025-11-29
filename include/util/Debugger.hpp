@@ -32,5 +32,17 @@ namespace mir{
             printf("\n");
             fflush(stdout);
         }
+
+        inline static void ShowFPS(bool enabled){
+
+        }
+
+        inline static void ShowEntityCount(bool enabled){
+
+        }
+
+        inline static void ShowColliders(bool enabled){
+
+        }
     }
 }

@@ -13,23 +13,13 @@
 #include "util/Debugger.hpp"
 
 namespace mir {
-    using ID = std::uint8_t;
+    const std::uint8_t MAX_RESOURCES = 0xFF;
+
     using Tag = std::uint8_t;
 
-    namespace time{
-        static inline sf::Clock Clock;
-        static inline float GetDelta(){ return Clock.restart().asSeconds(); }
-    }
-
-    namespace entity{
-        static inline std::array<bool, MAX_ENTITIES> IsAvailables;
-    }
-
     namespace resource{
-        const std::uint8_t MAX_RESOURCES = 0xFF;
-
         static inline std::array<std::string, MAX_RESOURCES> Textures;
-        static inline std::array<std::unique_ptr<sf::Sound>, resource::MAX_RESOURCES> Sources;
+        static inline std::array<std::unique_ptr<sf::Sound>, MAX_RESOURCES> Sources;
     }
 
     namespace texture{
@@ -50,7 +40,7 @@ namespace mir {
     }
 
     namespace sound{
-        static inline std::array<bool, resource::MAX_RESOURCES> ShouldLoops;
+        static inline std::array<bool, MAX_RESOURCES> ShouldLoops;
 
         static inline void Alloc(const Tag tag, const std::string& filepath){
             std::unique_ptr<sf::SoundBuffer> buffer = std::make_unique<sf::SoundBuffer>();

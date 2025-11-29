@@ -4,7 +4,7 @@
 #include <vector>
 #include <fstream>
 
-#include "Components.hpp"
+#include "../core/Components.hpp"
 #include "../util/Debugger.hpp"
 
 #define REGISTER_COMPONENT(type, array) \
@@ -19,15 +19,17 @@ namespace mir{
             size_t Count;
         };
 
-        static inline const std::vector<ComponentInfo> GetAllComponents(){
-            return {
-                REGISTER_COMPONENT("Position", transform::Positions),
-                REGISTER_COMPONENT("Velocity", transform::Velocities),
-                REGISTER_COMPONENT("Scale", transform::Scales),
-                REGISTER_COMPONENT("Rotation", transform::Rotations),
-                REGISTER_COMPONENT("Mass", physics::Masses),
-                REGISTER_COMPONENT("Health", stats::Healths),
-            };
+        namespace{
+            static inline const std::vector<ComponentInfo> GetAllComponents(){
+                return {
+                    REGISTER_COMPONENT("Position", transform::Positions),
+                    REGISTER_COMPONENT("Velocity", transform::Velocities),
+                    REGISTER_COMPONENT("Scale", transform::Scales),
+                    REGISTER_COMPONENT("Rotation", transform::Rotations),
+                    REGISTER_COMPONENT("Mass", physics::Masses),
+                    REGISTER_COMPONENT("Health", stats::Healths),
+                };
+            }
         }
 
         static inline void SaveAll(const std::string& filename){

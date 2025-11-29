@@ -1,14 +1,14 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-
 #include <array>
 #include <memory>
 #include <vector>
 
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
+
 namespace mir{
-    static constexpr std::uint8_t MAX_ENTITIES = 0xFF;
+    static constexpr std::uint16_t MAX_ENTITIES = 0xFFFF;
 
     namespace transform{
         static inline std::array<sf::Vector2f, MAX_ENTITIES> Positions;
@@ -46,6 +46,24 @@ namespace mir{
         static inline std::array<std::uint8_t, MAX_FRAME> CurrFrames;
         static inline std::array<bool, MAX_ENTITIES> IsPlayings;
         static inline std::array<bool, MAX_ENTITIES> IsLoopings;
+    }
+
+    namespace particle{
+        static inline std::array<std::vector<sf::Vector2f>, MAX_ENTITIES> Positions;
+        static inline std::array<std::vector<sf::Vector2f>, MAX_ENTITIES> Velocities;
+        static inline std::array<std::vector<sf::Color>, MAX_ENTITIES> CurrentColors;
+        static inline std::array<std::vector<float>, MAX_ENTITIES> CurrentSizes;
+        static inline std::array<std::vector<float>, MAX_ENTITIES> CurrentLifeTimes;
+        static inline std::array<std::vector<float>, MAX_ENTITIES> MaxLifeTimes;
+        static inline std::array<sf::Color, MAX_ENTITIES> StartColors;
+        static inline std::array<sf::Color, MAX_ENTITIES> EndColors;
+        static inline std::array<float, MAX_ENTITIES> EmitRates;
+        static inline std::array<float, MAX_ENTITIES> EmitAccumulators;
+        static inline std::array<float, MAX_ENTITIES> StartSizes;
+        static inline std::array<float, MAX_ENTITIES> EndSizes;
+        static inline std::array<float, MAX_ENTITIES> TargetLifeTimes;
+        static inline std::array<std::uint16_t, MAX_ENTITIES> MaxParticles;
+        static inline std::array<bool, MAX_ENTITIES> IsEmittings;
     }
 
     namespace stats{

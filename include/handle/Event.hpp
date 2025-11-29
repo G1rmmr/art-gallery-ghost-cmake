@@ -5,7 +5,7 @@
 #include <functional>
 #include <optional>
 
-#include "Manager.hpp"
+#include "../core/Entity.hpp"
 
 namespace mir{
     namespace event{
