@@ -4,12 +4,12 @@ namespace mir{
     namespace scene{
         enum class Scene{ Menu, Game, Pause, GameOver };
 
-        inline static void Load(Scene scene){
-
+        static inline void Load(Scene scene){
+            return;
         }
 
-        inline static Scene GetCurrent(){
-
+        static inline Scene GetCurrent(){
+            return Scene::GameOver;
         }
     }
 }

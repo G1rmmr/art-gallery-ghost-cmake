@@ -16,6 +16,7 @@ FetchContent_Declare(SFML
     GIT_SHALLOW ON
     EXCLUDE_FROM_ALL
     SYSTEM)
+
 FetchContent_MakeAvailable(SFML)
 
 # 소스 파일
@@ -39,6 +40,7 @@ target_link_libraries(art-gallery-ghost PRIVATE
     SFML::Graphics
     SFML::System
     SFML::Window
+    SFML::Audio
 )
 
 # 프로파일 옵션 추가

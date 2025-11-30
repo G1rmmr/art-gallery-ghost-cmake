@@ -5,12 +5,25 @@
 
 #include "Components.hpp"
 #include "../util/Timer.hpp"
+#include "../util/Debugger.hpp"
 
 namespace mir{
     using ID = std::uint16_t;
 
     namespace entity{
         static inline std::array<bool, MAX_ENTITIES> IsAvailables;
+
+        static inline ID Create(){
+            for(ID id = 1; id < MAX_ENTITIES; ++id){
+                if(!IsAvailables[id]){
+                    IsAvailables[id] = true;
+                    return id;
+                }
+            }
+
+            debug::Log("Entity Overflow!");
+            return 0; // Overflow entity
+        }
 
         static inline void ClearParticles(const ID id){
             particle::Positions[id].clear();

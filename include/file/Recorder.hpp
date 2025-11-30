@@ -59,11 +59,16 @@ namespace mir{
         static inline void LoadAll(const std::string& filename){
             std::ifstream file(filename, std::ios::binary);
 
+            if(!file.is_open()){
+                debug::Log("No save file found: %s", filename.c_str());
+                return;
+            }
+
             size_t componentCount = 0;
             file.read(reinterpret_cast<char*>(&componentCount), sizeof(size_t));
 
             const std::vector<ComponentInfo>& components = GetAllComponents();
-            for(const ComponentInfo& info : components){
+            for(size_t i = 0; i < componentCount; ++i){
                 std::basic_string<char>::size_type nameLen = 0;
                 file.read(reinterpret_cast<char*>(&nameLen), sizeof(size_t));
 

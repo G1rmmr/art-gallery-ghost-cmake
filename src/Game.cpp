@@ -1,40 +1,54 @@
 #include "Game.hpp"
 
+#include "Player.hpp"
+#include "Ground.hpp"
+#include "core/Components.hpp"
+
+ID PlayerID = 0;
+ID GroundID = 0;
+
 void game::Initialize(){
     PROFILE_SCOPE("Initialization"){
-        mir::window::Init(WINDOW_TITLE.data());
-        mir::window::SetFPS(FPS);
-        mir::record::LoadAll(SAVE_PATH.data());
+        window::Init(WINDOW_TITLE.data());
+        window::SetFPS(FPS);
+
+        PlayerID = player::Create();
+        GroundID = ground::Create();
+
+        // mir::record::LoadAll(SAVE_PATH.data());
     }
-    mir::debug::Log("Game Initialized!");
+    debug::Log("Game Initialized!");
 }
 
 void game::ProcessInput(){
-    PROFILE_SCOPE("Input"){ mir::input::Process(); }
+    PROFILE_SCOPE("Input"){
+        input::Process();
 
-    if(mir::input::IsPressed(mir::input::Key::Escape)){
-        mir::window::Close();
+        if(input::IsPressed(input::Key::Escape))
+            window::Close();
     }
 }
 
 void game::Update(const float deltaTime){
-    PROFILE_SCOPE("Movement"){ mir::movement::Update(deltaTime); }
-    PROFILE_SCOPE("Collision"){ mir::collision::Update(); }
-    PROFILE_SCOPE("RenderUpdate"){ mir::render::Update(deltaTime); }
+    movement::Update(deltaTime);
+    collision::Update();
+    render::Update(deltaTime);
 }
 
 void game::Render(){
     PROFILE_SCOPE("Render"){
-        mir::window::Clear(0, 0, 0);
-        mir::window::Render();
-        mir::window::Display();
+        window::Clear(0x7F, 0x7F, 0x7F);
+        window::Render();
+        window::Display();
     }
 }
 
 void game::Exit(){
     PROFILE_SCOPE("Shutdown"){
-        mir::record::SaveAll(game::SAVE_PATH.data());
-        mir::input::ClearAll();
+        // mir::record::SaveAll(game::SAVE_PATH.data());
+        input::ClearAll();
+        window::Shutdown();
+        texture::DeleteAll();
     }
-    mir::debug::Log("Game Over!");
+    debug::Log("Game Over!");
 }

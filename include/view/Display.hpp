@@ -1,10 +1,14 @@
 #pragma once
 
+#include <SFML/Window/WindowEnums.hpp>
+#include <memory>
+
 #include "../core/Entity.hpp"
 #include "../core/Components.hpp"
+#include "../util/Debugger.hpp"
 
 namespace mir{
-    static inline sf::RenderWindow Window;
+    inline sf::RenderWindow* Window = nullptr;
 
     enum class VideoMode{
         Windowed,
@@ -14,30 +18,55 @@ namespace mir{
     };
 
     enum class Resolution{
-        HD, // 1280x720
-        FullHD, // 1920x1080
+        HD,  // 1280x720
+        FHD, // 1920x1080
         QHD, // 2560x1440
         UHD, // 3840x2160
         Custom
     };
 
     namespace window{
-        static inline bool IsOpening() { return Window.isOpen();}
-        static inline void Display(){ Window.display(); }
-        static inline void SetFPS(const std::uint8_t fps){ Window.setFramerateLimit(fps); }
-        static inline void Close(){ Window.close(); }
+        static inline bool IsOpening() { return Window && Window->isOpen();}
+
+        static inline void Display(){
+            if(Window) Window->display();
+        }
+
+        static inline void SetFPS(const std::uint8_t fps){
+            if(Window) Window->setFramerateLimit(fps);
+        }
+
+        static inline void Close(){
+            if(Window) Window->close();
+        }
+
+        static inline void Clear(std::uint8_t red, std::uint8_t green, std::uint8_t blue){
+            if(Window) Window->clear(sf::Color(red, green, blue));
+        }
+
+        static inline void Shutdown(){
+            if(Window){
+                Window->close();
+                delete Window;
+            }
+        }
 
         static inline void Init(
             const std::string& title,
             VideoMode mode = VideoMode::Desktop,
-            Resolution res = Resolution::FullHD,
+            Resolution res = Resolution::FHD,
             uint32_t width = 0,
             uint32_t height = 0){
+            if(Window) return;
             sf::VideoMode video;
 
             switch(res){
             case Resolution::HD:
                 video = sf::VideoMode({1280, 720});
+                break;
+
+            case Resolution::FHD:
+                video = sf::VideoMode({1920, 1080});
                 break;
 
             case Resolution::QHD:
@@ -53,36 +82,30 @@ namespace mir{
                 break;
 
             default:
-                video = sf::VideoMode({1920, 1080});
+                video = sf::VideoMode::getDesktopMode();
                 break;
             }
 
-            sf::State state = sf::State::Windowed;
-            switch(mode){
-            case VideoMode::Fullscreen:
-                state = sf::State::Fullscreen;
+            switch(mode) {
+            case VideoMode::Borderless:
+                video = sf::VideoMode::getDesktopMode();
+                Window = new sf::RenderWindow(video, title, sf::Style::None);
+                Window->setPosition({0, 0});
                 break;
 
-            case VideoMode::Borderless:
-                state = sf::State::Windowed;
-                // Borderless는 별도 처리 필요
+            case VideoMode::Fullscreen:
+                Window = new sf::RenderWindow(video, title, sf::State::Fullscreen);
                 break;
 
             case VideoMode::Desktop:
                 video = sf::VideoMode::getDesktopMode();
+                Window = new sf::RenderWindow(video, title, sf::State::Windowed);
                 break;
 
-            case VideoMode::Windowed:
             default:
-                state = sf::State::Windowed;
+                Window = new sf::RenderWindow(video, title, sf::State::Windowed);
                 break;
             }
-
-            Window = sf::RenderWindow(video, title, state);
-        }
-
-        static inline void Clear(std::uint8_t red, std::uint8_t green, std::uint8_t blue){
-            Window.clear(sf::Color(red, green, blue));
         }
 
         namespace{
@@ -99,7 +122,9 @@ namespace mir{
             }
 
             static inline void DrawParticles(){
-                for(ID id = 0; id < MAX_ENTITIES; ++id){
+                if(!Window) return;
+
+                for(ID id = 1; id < MAX_ENTITIES; ++id){
                     if(particle::Positions[id].empty()) continue;
 
                     sf::CircleShape shape;
@@ -113,15 +138,17 @@ namespace mir{
                             particle::CurrentSizes[id][i],
                             particle::CurrentSizes[id][i]}
                         );
-                        Window.draw(shape);
+                        Window->draw(shape);
                     }
                 }
             }
         }
 
         static inline void Render(){
-            for(ID id = 0; id < MAX_ENTITIES; ++id){
-                if(!sprite::Textures[id]) continue;
+            if(!Window) return;
+
+            for(ID id = 1; id < MAX_ENTITIES; ++id){
+                if(!entity::IsAvailables[id] || !sprite::Textures[id]) continue;
 
                 const std::vector<sf::IntRect>& frames
                     = animation::FrameSets[animation::States[id]];
@@ -131,9 +158,9 @@ namespace mir{
                     sf::Sprite(*sprite::Textures[id], frames[animation::CurrFrames[id]]);
 
                 BuildSprite(id, sprite);
-                Window.draw(sprite);
+                Window->draw(sprite);
             }
-            DrawParticles();
+            // DrawParticles();
         }
     }
 }

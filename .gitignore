@@ -7,3 +7,5 @@ asset
 .vs
 .vscode
 .json
+
+cmake-guide.md

@@ -27,6 +27,11 @@ namespace mir{
         using VoidCallback = std::function<void()>;
 
         namespace{
+            static inline std::vector<KeyCallback> OnKeyPressedCallbacks;
+            static inline std::vector<KeyCallback> OnKeyReleasedCallbacks;
+            static inline std::vector<MouseCallback> OnMousePressedCallbacks;
+            static inline std::vector<VoidCallback> OnWindowClosedCallbacks;
+
             static inline const std::unordered_map<Key, sf::Keyboard::Key> KeyMap = {
                 {Key::Escape, sf::Keyboard::Key::Escape},
                 {Key::W, sf::Keyboard::Key::W},
@@ -47,10 +52,35 @@ namespace mir{
                 {sf::Keyboard::Key::Enter, Key::Enter}
             };
 
-            static inline std::vector<KeyCallback> OnKeyPressedCallbacks;
-            static inline std::vector<KeyCallback> OnKeyReleasedCallbacks;
-            static inline std::vector<MouseCallback> OnMousePressedCallbacks;
-            static inline std::vector<VoidCallback> OnWindowClosedCallbacks;
+            static inline void WindowClose(){
+                Window->close();
+
+                for(const VoidCallback& callback : OnWindowClosedCallbacks)
+                    callback();
+            }
+
+            static inline void KeyPressed(const sf::Event::KeyPressed* keyPressed){
+                if(ReverseKeyMap.contains(keyPressed->code)){
+                    Key key = ReverseKeyMap.at(keyPressed->code);
+
+                    for(const KeyCallback& callback : OnKeyPressedCallbacks)
+                        callback(key);
+                }
+            }
+
+            static inline void KeyRelease(const sf::Event::KeyReleased* keyReleased){
+                if(ReverseKeyMap.contains(keyReleased->code)){
+                    Key key = ReverseKeyMap.at(keyReleased->code);
+
+                    for(const KeyCallback& callback : OnKeyReleasedCallbacks)
+                        callback(key);
+                }
+            }
+
+            static inline void MouseButtonPress(const sf::Event::MouseButtonPressed* mousePressed){
+                for(const MouseCallback& callback : OnMousePressedCallbacks)
+                    callback(mousePressed->position.x, mousePressed->position.y);
+            }
         }
 
         static inline bool IsPressed(Key key){
@@ -74,37 +104,20 @@ namespace mir{
         }
 
         static inline void Process(){
-            while(const std::optional event = Window.pollEvent()){
-                if(event->is<sf::Event::Closed>()){
-                    Window.close();
+            while(const std::optional event = Window->pollEvent()){
+                if(event->is<sf::Event::Closed>()) WindowClose();
 
-                    for(const VoidCallback& callback : OnWindowClosedCallbacks)
-                        callback();
-                }
+                if(const sf::Event::KeyPressed* keyPressed
+                    = event->getIf<sf::Event::KeyPressed>())
+                    KeyPressed(keyPressed);
 
-                if(const sf::Event::KeyPressed* keyPressed = event->getIf<sf::Event::KeyPressed>()){
-                    if(ReverseKeyMap.contains(keyPressed->code)){
-                        Key key = ReverseKeyMap.at(keyPressed->code);
-
-                        for(const KeyCallback& callback : OnKeyPressedCallbacks)
-                            callback(key);
-                    }
-                }
-
-                if(const sf::Event::KeyReleased* keyReleased = event->getIf<sf::Event::KeyReleased>()){
-                    if(ReverseKeyMap.contains(keyReleased->code)){
-                        Key key = ReverseKeyMap.at(keyReleased->code);
-
-                        for(const KeyCallback& callback : OnKeyReleasedCallbacks)
-                            callback(key);
-                    }
-                }
+                if(const sf::Event::KeyReleased* keyReleased
+                    = event->getIf<sf::Event::KeyReleased>())
+                    KeyRelease(keyReleased);
 
                 if(const sf::Event::MouseButtonPressed* mousePressed
-                    = event->getIf<sf::Event::MouseButtonPressed>()){
-                    for(const MouseCallback& callback : OnMousePressedCallbacks)
-                        callback(mousePressed->position.x, mousePressed->position.y);
-                }
+                    = event->getIf<sf::Event::MouseButtonPressed>())
+                    MouseButtonPress(mousePressed);
             }
         }
 

@@ -28,21 +28,23 @@ namespace mir{
                 localTime->tm_hour, localTime->tm_min, localTime->tm_sec,
                 static_cast<int>(ms.count()));
 
-            printf(format, std::forward<Args>(args)...);
+            if constexpr(sizeof...(Args) == 0) printf("%s", format);
+            else printf(format, std::forward<Args>(args)...);
+
             printf("\n");
             fflush(stdout);
         }
 
-        inline static void ShowFPS(bool enabled){
-
+        static inline void ShowFPS(bool enabled){
+            return;
         }
 
-        inline static void ShowEntityCount(bool enabled){
-
+        static inline void ShowEntityCount(bool enabled){
+            return;
         }
 
-        inline static void ShowColliders(bool enabled){
-
+        static inline void ShowColliders(bool enabled){
+            return;
         }
     }
 }

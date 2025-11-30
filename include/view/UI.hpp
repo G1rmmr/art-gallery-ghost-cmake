@@ -4,42 +4,42 @@
 
 namespace mir{
     namespace ui{
-        inline static ID CreateText(const std::string& content, float x, float y){
-
+        static inline ID CreateText(const std::string& content, float x, float y){
+            return 0;
         }
 
-        inline static void SetText(ID id, const std::string& content){
-
+        static inline void SetText(ID id, const std::string& content){
+            return;
         }
 
-        inline static void SetTextColor(ID id, std::uint8_t r, std::uint8_t g, std::uint8_t b){
-
+        static inline void SetTextColor(ID id, std::uint8_t r, std::uint8_t g, std::uint8_t b){
+            return;
         }
 
-        inline static void SetTextSize(ID id, std::uint32_t size){
-
+        static inline void SetTextSize(ID id, std::uint32_t size){
+            return;
         }
 
-        inline static ID CreateButton(const std::string& label,
+        static inline ID CreateButton(const std::string& label,
             float x, float y, float width, float height){
-
+            return 0;
         }
 
-        inline static void OnButtonClick(ID id, std::function<void()> callback){
-
+        static inline void OnButtonClick(ID id, std::function<void()> callback){
+            return;
         }
 
-        inline static ID CreateProgressBar(
+        static inline ID CreateProgressBar(
             float x, float y, float width, float height){
-
+            return 0;
         }
 
-        inline static void SetProgress(ID id, float value){
-
+        static inline void SetProgress(ID id, float value){
+            return;
         }
 
-        inline static ID CreateImage(const char* texturePath, float x, float y){
-
+        static inline ID CreateImage(const char* texturePath, float x, float y){
+            return 0;
         }
     }
 }

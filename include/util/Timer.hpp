@@ -8,11 +8,11 @@ namespace mir {
         static inline float GetDelta(){ return Clock.restart().asSeconds(); }
 
         inline static void After(float seconds, std::function<void()> callback){
-
+            return;
         }
 
         inline static void Every(float interval, std::function<void()> callback){
-
+            return;
         }
     }
 }

@@ -1,5 +1,12 @@
 #pragma once
 
+#include <string_view>
+#include <cstdint>
+#include <exception>
+
+#include <SFML/Graphics.hpp>
+#include <SFML/Window/Event.hpp>
+
 #include "core/Entity.hpp"
 #include "core/Components.hpp"
 #include "core/Manager.hpp"
@@ -19,9 +26,4 @@
 #include "view/Scene.hpp"
 #include "view/UI.hpp"
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/Window/WindowEnums.hpp>
-
-#include <string_view>
-#include <cstdint>
+using namespace mir;

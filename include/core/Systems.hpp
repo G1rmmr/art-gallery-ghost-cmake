@@ -1,43 +1,46 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-
 #include <cassert>
 #include <cstdint>
 #include <optional>
 #include <vector>
 
+#include <SFML/Graphics.hpp>
+
 #include "Entity.hpp"
 #include "Components.hpp"
 
 #include "../handle/Event.hpp"
-#include "../util/Debugger.hpp"
 
 namespace mir {
     namespace movement {
         static inline void Update(const float deltaTime) {
-            for(ID id = 0; id < MAX_ENTITIES; ++id){
-                if(!entity::IsAvailables[id]) return;
+            for(ID id = 1; id < MAX_ENTITIES; ++id){
+                if(!entity::IsAvailables[id]) continue;
 
                 sf::Vector2f& velocity = transform::Velocities[id];
-                if(physics::InAirFlags[id]) velocity.y += physics::GRAV_ACCEL * deltaTime;
+
+                velocity.y = physics::InAirFlags[id] ?
+                    velocity.y + physics::GRAV_ACCEL * deltaTime :
+                    velocity.y = 0.f;
+
                 transform::Positions[id] += velocity * deltaTime;
             }
         }
     }
 
     namespace render {
-        inline void Update(const float deltaTime) {
-            for(ID id = 0; id < MAX_ENTITIES; ++id){
-                if(!entity::IsAvailables[id]) return;
+        static inline void Update(const float deltaTime) {
+            for(ID id = 1; id < MAX_ENTITIES; ++id){
+                if(!entity::IsAvailables[id]) continue;
 
                 const std::vector<sf::IntRect>& frames = animation::FrameSets[animation::States[id]];
-                if(!animation::IsPlayings[id] || frames.empty()) return;
+                if(!animation::IsPlayings[id] || frames.empty()) continue;
 
                 const std::uint8_t maxFrame = static_cast<std::uint8_t>(frames.size());
                 if(animation::DelayTimes[id] <= 0.f) {
                     animation::CurrFrames[id] = (animation::CurrFrames[id] + 1) % maxFrame;
-                    return;
+                    continue;
                 }
 
                 animation::ElapsedTimes[id] += deltaTime;
@@ -60,35 +63,37 @@ namespace mir {
 
     namespace collision{
         namespace{
-            static inline bool IsCollide(const sf::FloatRect& lhs, const sf::FloatRect& rhs){
-                if(std::optional<sf::Rect<float>> bound = lhs.findIntersection(rhs)){
-                    debug::Log("Collision area in {%d} <-> {%d} is,", lhs, rhs);
-                    debug::Log("{%f, %f, %f, %f}",
-                        bound->position.x, bound->position.y,
-                        bound->position.x + bound->size.x,
-                        bound->position.y + bound->size.y);
-                    return true;
-                }
+            static inline bool IsCollide(const ID lhs, const ID rhs){
+                sf::IntRect leftBox(
+                    static_cast<sf::Vector2i>(transform::Positions[lhs]),
+                    static_cast<sf::Vector2i>(physics::Bounds[lhs])
+                );
 
-                debug::Log("No intersection in {%d} <-> {%d}", lhs, rhs);
-                return false;
+                sf::IntRect rightBox(
+                    static_cast<sf::Vector2i>(transform::Positions[rhs]),
+                    static_cast<sf::Vector2i>(physics::Bounds[rhs])
+                );
+
+                std::optional<sf::IntRect> bound = leftBox.findIntersection(rightBox);
+                return bound.has_value();
             }
         }
 
         static inline void Update(){
             std::vector<ID> activated;
 
-            for(ID id = 0; id < MAX_ENTITIES; ++id){
-                if(mir::entity::IsAvailables[id])
+            for(ID id = 1; id < MAX_ENTITIES; ++id){
+                if(entity::IsAvailables[id] && !physics::IsGhosts[id]){
                     activated.push_back(id);
+                }
             }
 
-            const ID lastID = static_cast<ID>(activated.size());
+            const std::size_t lastID = static_cast<ID>(activated.size());
 
-            for(ID id = 0; id < lastID - 1; ++id){
-                for(ID other = id + 1; other < MAX_ENTITIES; ++other){
-                    if(IsCollide(physics::RectColliders[id], physics::RectColliders[other])){
-                        event::type::Coliision event{id, other};
+            for(std::size_t i = 0; i < lastID - 1; i++){
+                for(std::size_t j = i + 1; j < lastID; j++){
+                    if(IsCollide(activated[i], activated[j])){
+                        event::type::Collision event{activated[j]};
                         event::Publish(event);
                     }
                 }
@@ -138,7 +143,7 @@ namespace mir {
             static inline void UpdateParticles(const ID id, const float deltaTime){
                 const std::size_t particleCount = particle::Positions[id].size();
 
-                for(std::size_t i = particleCount - 1; i >= 0; --i){
+                for(std::size_t i = particleCount - 1; i == 0; --i){
                     particle::CurrentLifeTimes[id][i] -= deltaTime;
 
                     if(particle::CurrentLifeTimes[id][i] <= 0.0f){

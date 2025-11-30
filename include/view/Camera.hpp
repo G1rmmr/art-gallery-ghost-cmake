@@ -4,20 +4,20 @@
 
 namespace mir{
     namespace camera{
-        inline static void Follow(ID target){
-
+        static inline void Follow(ID target){
+            return;
         }
 
-        inline static void SetPosition(float x, float y){
-
+        static inline void SetPosition(float x, float y){
+            return;
         }
 
-        inline static void SetZoom(float zoom){
-
+        static inline void SetZoom(float zoom){
+            return;
         }
 
-        inline static void Shake(float intensity, float duration){
-
+        static inline void Shake(float intensity, float duration){
+            return;
         }
     }
 }
