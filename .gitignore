@@ -1,9 +1,11 @@
 build
 out
-asset
+assets
 
 .cache
 .idea
 .vs
 .vscode
 .json
+
+cmake-guide.md

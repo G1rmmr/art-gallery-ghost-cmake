@@ -4,8 +4,8 @@
 #include <vector>
 #include <fstream>
 
-#include "Components.hpp"
-#include "../util/Debugger.hpp"
+#include "core/Components.hpp"
+#include "util/Debugger.hpp"
 
 #define REGISTER_COMPONENT(type, array) \
     { #type, reinterpret_cast<void*>(array.data()), sizeof(array[0]), array.size() }
@@ -19,15 +19,17 @@ namespace mir{
             size_t Count;
         };
 
-        static inline const std::vector<ComponentInfo> GetAllComponents(){
-            return {
-                REGISTER_COMPONENT("Position", transform::Positions),
-                REGISTER_COMPONENT("Velocity", transform::Velocities),
-                REGISTER_COMPONENT("Scale", transform::Scales),
-                REGISTER_COMPONENT("Rotation", transform::Rotations),
-                REGISTER_COMPONENT("Mass", physics::Masses),
-                REGISTER_COMPONENT("Health", stats::Healths),
-            };
+        namespace{
+            static inline const std::vector<ComponentInfo> GetAllComponents(){
+                return {
+                    REGISTER_COMPONENT("Position", transform::Positions),
+                    REGISTER_COMPONENT("Velocity", transform::Velocities),
+                    REGISTER_COMPONENT("Scale", transform::Scales),
+                    REGISTER_COMPONENT("Rotation", transform::Rotations),
+                    REGISTER_COMPONENT("Mass", physics::Masses),
+                    REGISTER_COMPONENT("Health", stats::Healths),
+                };
+            }
         }
 
         static inline void SaveAll(const std::string& filename){
@@ -57,11 +59,16 @@ namespace mir{
         static inline void LoadAll(const std::string& filename){
             std::ifstream file(filename, std::ios::binary);
 
+            if(!file.is_open()){
+                debug::Log("No save file found: %s", filename.c_str());
+                return;
+            }
+
             size_t componentCount = 0;
             file.read(reinterpret_cast<char*>(&componentCount), sizeof(size_t));
 
             const std::vector<ComponentInfo>& components = GetAllComponents();
-            for(const ComponentInfo& info : components){
+            for(size_t i = 0; i < componentCount; ++i){
                 std::basic_string<char>::size_type nameLen = 0;
                 file.read(reinterpret_cast<char*>(&nameLen), sizeof(size_t));
 
@@ -74,7 +81,7 @@ namespace mir{
                 file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
                 file.read(reinterpret_cast<char*>(&count), sizeof(size_t));
 
-                std::__wrap_iter<const ComponentInfo*> iter = std::find_if(
+                std::vector<ComponentInfo>::const_iterator iter = std::find_if(
                     components.begin(), components.end(),[&name](const ComponentInfo& c){
                         return name == c.Name;
                     });

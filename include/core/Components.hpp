@@ -1,14 +1,14 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-
 #include <array>
 #include <memory>
 #include <vector>
 
+#include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
+
 namespace mir{
-    static constexpr std::uint8_t MAX_ENTITIES = 0xFF;
+    static constexpr std::uint16_t MAX_ENTITIES = 0xFFFF;
 
     namespace transform{
         static inline std::array<sf::Vector2f, MAX_ENTITIES> Positions;
@@ -18,17 +18,30 @@ namespace mir{
     }
 
     namespace physics{
-        static constexpr float GRAV_ACCEL = 9.8f;
+        static constexpr float GRAV_ACCEL = 980.f;
 
-        static inline std::array<sf::FloatRect, MAX_ENTITIES> RectColliders;
+        static inline std::array<sf::Vector2f, MAX_ENTITIES> Bounds;
         static inline std::array<float, MAX_ENTITIES> Masses;
+
+        static inline std::array<bool, MAX_ENTITIES> IsGhosts;
         static inline std::array<bool, MAX_ENTITIES> InAirFlags;
     }
 
     namespace sprite{
+        enum class Type{
+            None,
+            Rectangle,
+            Circle,
+        };
+
         static inline std::array<sf::Color, MAX_ENTITIES> Colors;
-        static inline std::array<std::unique_ptr<sf::Texture>, MAX_ENTITIES> Textures;
+        static inline std::array<sf::Vector2f, MAX_ENTITIES> Sizes;
+
+        static inline std::array<sf::Texture*, MAX_ENTITIES> Textures;
+
+        static inline std::array<Type, MAX_ENTITIES> Types;
         static inline std::array<std::uint8_t, MAX_ENTITIES> Layers;
+
         static inline std::array<bool, MAX_ENTITIES> ShouldFlipXs;
         static inline std::array<bool, MAX_ENTITIES> ShouldFlipYs;
     }
@@ -46,6 +59,24 @@ namespace mir{
         static inline std::array<std::uint8_t, MAX_FRAME> CurrFrames;
         static inline std::array<bool, MAX_ENTITIES> IsPlayings;
         static inline std::array<bool, MAX_ENTITIES> IsLoopings;
+    }
+
+    namespace particle{
+        static inline std::array<std::vector<sf::Vector2f>, MAX_ENTITIES> Positions;
+        static inline std::array<std::vector<sf::Vector2f>, MAX_ENTITIES> Velocities;
+        static inline std::array<std::vector<sf::Color>, MAX_ENTITIES> CurrentColors;
+        static inline std::array<std::vector<float>, MAX_ENTITIES> CurrentSizes;
+        static inline std::array<std::vector<float>, MAX_ENTITIES> CurrentLifeTimes;
+        static inline std::array<std::vector<float>, MAX_ENTITIES> MaxLifeTimes;
+        static inline std::array<sf::Color, MAX_ENTITIES> StartColors;
+        static inline std::array<sf::Color, MAX_ENTITIES> EndColors;
+        static inline std::array<float, MAX_ENTITIES> EmitRates;
+        static inline std::array<float, MAX_ENTITIES> EmitAccumulators;
+        static inline std::array<float, MAX_ENTITIES> StartSizes;
+        static inline std::array<float, MAX_ENTITIES> EndSizes;
+        static inline std::array<float, MAX_ENTITIES> TargetLifeTimes;
+        static inline std::array<std::uint16_t, MAX_ENTITIES> MaxParticles;
+        static inline std::array<bool, MAX_ENTITIES> IsEmittings;
     }
 
     namespace stats{
