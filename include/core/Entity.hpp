@@ -4,8 +4,8 @@
 #include <array>
 
 #include "Components.hpp"
-#include "../util/Timer.hpp"
-#include "../util/Debugger.hpp"
+#include "util/Timer.hpp"
+#include "util/Debugger.hpp"
 
 namespace mir{
     using ID = std::uint16_t;

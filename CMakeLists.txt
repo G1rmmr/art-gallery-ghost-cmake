@@ -25,6 +25,8 @@ set(SOURCES
     src/Game.cpp
 )
 
+set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
+
 # 개발 모드: 일반 실행파일, 릴리즈: 번들
 if(BUILD_BUNDLE AND APPLE)
     add_executable(art-gallery-ghost MACOSX_BUNDLE ${SOURCES})
@@ -47,22 +49,39 @@ target_link_libraries(art-gallery-ghost PRIVATE
 option(ENABLE_PROFILE "Enable performance profiling" OFF)
 
 if(ENABLE_PROFILE)
-    target_compile_definitions(art-gallery-ghost PRIVATE ENABLE_PROFILE=1)
+    target_compile_definitions(
+        art-gallery-ghost
+        PRIVATE
+        ENABLE_PROFILE=1
+        "ASSET_DIR=\"${ASSETS_DIR}\""
+    )
     message(STATUS "Profiling enabled")
 else()
-    target_compile_definitions(art-gallery-ghost PRIVATE ENABLE_PROFILE=0)
+    target_compile_definitions(
+        art-gallery-ghost
+        PRIVATE
+        ENABLE_PROFILE=0
+        "ASSET_DIR=\"${ASSETS_DIR}\"")
 endif()
 
 # 빌드 모드 정의
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_definitions(art-gallery-ghost PRIVATE DEBUG_MODE)
+    target_compile_definitions(
+        art-gallery-ghost
+        PRIVATE
+        DEBUG_MODE
+        "ASSET_DIR=\"${ASSETS_DIR}\""
+    )
     message(STATUS "Debug mode enabled - console logging active")
 endif()
 
 # macOS 설정
 if(APPLE)
-    target_compile_definitions(art-gallery-ghost PRIVATE
+    target_compile_definitions(
+        art-gallery-ghost
+        PRIVATE
         GL_SILENCE_DEPRECATION
+        "ASSET_DIR=\"${ASSETS_DIR}\""
     )
 endif()
 

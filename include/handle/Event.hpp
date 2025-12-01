@@ -6,16 +6,17 @@
 #include <optional>
 #include <vector>
 
-#include "../core/Entity.hpp"
+#include "core/Entity.hpp"
 
 namespace mir{
     namespace event{
         namespace type{
             struct Collision{ ID Other; };
             struct Attack{ ID Other; };
-            struct Damaged { ID Other; };
-            struct Death {};
-            struct Jump {};
+            struct Damaged{ ID Other; };
+            struct Death{};
+            struct Jump{};
+            struct ButtonClick{};
         }
 
         template<typename T>
@@ -35,7 +36,13 @@ namespace mir{
                 listener(event);
         }
 
-        template<typename T>
-        static inline void Clear(){ Listeners<T>.clear(); }
+        static inline void ClearAll(){
+            Listeners<type::Collision>.clear();
+            Listeners<type::Attack>.clear();
+            Listeners<type::Damaged>.clear();
+            Listeners<type::Death>.clear();
+            Listeners<type::Jump>.clear();
+            Listeners<type::ButtonClick>.clear();
+        }
     }
 }

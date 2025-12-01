@@ -1,11 +1,11 @@
 #pragma once
 
-#include <SFML/Window/WindowEnums.hpp>
 #include <memory>
 
-#include "../core/Entity.hpp"
-#include "../core/Components.hpp"
-#include "../util/Debugger.hpp"
+#include "core/Entity.hpp"
+#include "core/Components.hpp"
+#include "core/Manager.hpp"
+#include "util/Debugger.hpp"
 
 namespace mir{
     inline sf::RenderWindow* Window = nullptr;
@@ -121,9 +121,23 @@ namespace mir{
                 sprite.setScale(finalScale);
             }
 
-            static inline void DrawParticles(){
-                if(!Window) return;
+            static inline void DrawSprites(){
+                for(ID id = 1; id < MAX_ENTITIES; ++id){
+                    if(!entity::IsAvailables[id] || !sprite::Textures[id]) continue;
 
+                    const std::vector<sf::IntRect>& frames
+                        = animation::FrameSets[animation::States[id]];
+
+                    sf::Sprite sprite = frames.empty() ?
+                        sf::Sprite(*sprite::Textures[id]) :
+                        sf::Sprite(*sprite::Textures[id], frames[animation::CurrFrames[id]]);
+
+                    BuildSprite(id, sprite);
+                    Window->draw(sprite);
+                }
+            }
+
+            static inline void DrawParticles(){
                 for(ID id = 1; id < MAX_ENTITIES; ++id){
                     if(particle::Positions[id].empty()) continue;
 
@@ -142,25 +156,21 @@ namespace mir{
                     }
                 }
             }
+
+            static inline void DrawTexts(){
+                for(Tag tag = 1; tag < MAX_RESOURCES; ++tag){
+                    if(font::Sources[tag])
+                        Window->draw(*font::Texts[tag]);
+                }
+            }
         }
 
         static inline void Render(){
             if(!Window) return;
 
-            for(ID id = 1; id < MAX_ENTITIES; ++id){
-                if(!entity::IsAvailables[id] || !sprite::Textures[id]) continue;
-
-                const std::vector<sf::IntRect>& frames
-                    = animation::FrameSets[animation::States[id]];
-
-                sf::Sprite sprite = frames.empty() ?
-                    sf::Sprite(*sprite::Textures[id]) :
-                    sf::Sprite(*sprite::Textures[id], frames[animation::CurrFrames[id]]);
-
-                BuildSprite(id, sprite);
-                Window->draw(sprite);
-            }
+            DrawSprites();
             // DrawParticles();
+            DrawTexts();
         }
     }
 }

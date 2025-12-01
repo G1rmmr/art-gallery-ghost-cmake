@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../core/Entity.hpp"
+#include "core/Entity.hpp"
 
 namespace mir{
     namespace camera{

@@ -10,7 +10,7 @@
 #include "Entity.hpp"
 #include "Components.hpp"
 
-#include "../handle/Event.hpp"
+#include "handle/Event.hpp"
 
 namespace mir {
     namespace movement {

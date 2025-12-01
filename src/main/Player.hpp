@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Mir.hpp"
-#include "util/Debugger.hpp"
 
 namespace player{
     const float POS_X = 200.f;

@@ -1,19 +1,24 @@
 #include "Game.hpp"
 
-#include "Player.hpp"
-#include "Ground.hpp"
-#include "core/Components.hpp"
+#include "main/Player.hpp"
+#include "main/Ground.hpp"
+
+#include "title/Title.hpp"
 
 ID PlayerID = 0;
 ID GroundID = 0;
+
+ID TitleID = 0;
 
 void game::Initialize(){
     PROFILE_SCOPE("Initialization"){
         window::Init(WINDOW_TITLE.data());
         window::SetFPS(FPS);
 
-        PlayerID = player::Create();
-        GroundID = ground::Create();
+        TitleID = title::Create();
+
+        // PlayerID = player::Create();
+        // GroundID = ground::Create();
 
         // mir::record::LoadAll(SAVE_PATH.data());
     }
@@ -47,8 +52,13 @@ void game::Exit(){
     PROFILE_SCOPE("Shutdown"){
         // mir::record::SaveAll(game::SAVE_PATH.data());
         input::ClearAll();
-        window::Shutdown();
+        event::ClearAll();
+
         texture::DeleteAll();
+        sound::DeleteAll();
+        font::DeleteAll();
+
+        window::Shutdown();
     }
     debug::Log("Game Over!");
 }

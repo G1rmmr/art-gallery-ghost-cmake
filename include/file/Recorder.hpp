@@ -4,8 +4,8 @@
 #include <vector>
 #include <fstream>
 
-#include "../core/Components.hpp"
-#include "../util/Debugger.hpp"
+#include "core/Components.hpp"
+#include "util/Debugger.hpp"
 
 #define REGISTER_COMPONENT(type, array) \
     { #type, reinterpret_cast<void*>(array.data()), sizeof(array[0]), array.size() }

@@ -5,7 +5,7 @@
 
 #include <SFML/Window/Event.hpp>
 
-#include "../view/Display.hpp"
+#include "view/Display.hpp"
 
 namespace mir{
     namespace input{
