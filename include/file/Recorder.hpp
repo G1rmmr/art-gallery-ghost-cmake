@@ -81,7 +81,7 @@ namespace mir{
                 file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
                 file.read(reinterpret_cast<char*>(&count), sizeof(size_t));
 
-                std::__wrap_iter<const ComponentInfo*> iter = std::find_if(
+                std::vector<ComponentInfo>::const_iterator iter = std::find_if(
                     components.begin(), components.end(),[&name](const ComponentInfo& c){
                         return name == c.Name;
                     });

@@ -17,7 +17,8 @@ namespace mir{
             font::Texts[tag]->setCharacterSize(size);
         }
 
-        static inline ID BuildButton(const std::string& label,
+        static inline ID BuildButton(
+            const std::string& label,
             float x, float y, float width, float height){
             return 0;
         }

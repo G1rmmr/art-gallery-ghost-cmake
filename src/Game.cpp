@@ -4,11 +4,13 @@
 #include "main/Ground.hpp"
 
 #include "title/Title.hpp"
+#include "title/Button.hpp"
 
 ID PlayerID = 0;
 ID GroundID = 0;
 
 ID TitleID = 0;
+ID ButtonID = 0;
 
 void game::Initialize(){
     PROFILE_SCOPE("Initialization"){
@@ -16,7 +18,7 @@ void game::Initialize(){
         window::SetFPS(FPS);
 
         TitleID = title::Create();
-
+        ButtonID = button::Create();
         // PlayerID = player::Create();
         // GroundID = ground::Create();
 

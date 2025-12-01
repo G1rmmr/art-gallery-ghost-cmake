@@ -30,12 +30,6 @@ namespace title{
             const Tag tag = sound::Create("sounds/thunder-bgm.mp3");
             sound::AllocMusic(tag);
         }
-
-        inline void InitText(){
-            const Tag tag = font::Create("fonts/dieproud.ttf");
-            font::Alloc(tag);
-            ui::BuildText(tag, {660.f, 440.f}, CONTENT.data(), 100);
-        }
     }
 
     inline ID Create(){
@@ -45,7 +39,6 @@ namespace title{
         InitTransform(id);
         InitSprite(id);
         InitSound();
-        InitText();
 
         return id;
     }

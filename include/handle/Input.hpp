@@ -30,6 +30,7 @@ namespace mir{
             static inline std::vector<KeyCallback> OnKeyPressedCallbacks;
             static inline std::vector<KeyCallback> OnKeyReleasedCallbacks;
             static inline std::vector<MouseCallback> OnMousePressedCallbacks;
+            static inline std::vector<MouseCallback> OnTouchCallbacks;
             static inline std::vector<VoidCallback> OnWindowClosedCallbacks;
 
             static inline const std::unordered_map<Key, sf::Keyboard::Key> KeyMap = {
@@ -81,6 +82,11 @@ namespace mir{
                 for(const MouseCallback& callback : OnMousePressedCallbacks)
                     callback(mousePressed->position.x, mousePressed->position.y);
             }
+
+            static inline void TouchBegin(const sf::Event::TouchBegan* touched){
+                for(const MouseCallback& callback : OnTouchCallbacks)
+                    callback(touched->position.x, touched->position.y);
+            }
         }
 
         static inline bool IsPressed(Key key){
@@ -97,6 +103,10 @@ namespace mir{
 
         static inline void OnMousePressed(MouseCallback callback){
             OnMousePressedCallbacks.push_back(callback);
+        }
+
+        static inline void OnTouchBegan(MouseCallback callback){
+            OnTouchCallbacks.push_back(callback);
         }
 
         static inline void OnWindowClosed(VoidCallback callback){
@@ -118,6 +128,10 @@ namespace mir{
                 if(const sf::Event::MouseButtonPressed* mousePressed
                     = event->getIf<sf::Event::MouseButtonPressed>())
                     MouseButtonPress(mousePressed);
+
+                if (const sf::Event::TouchBegan* touchBegan
+                    = event->getIf<sf::Event::TouchBegan>())
+                    TouchBegin(touchBegan);
             }
         }
 
@@ -125,6 +139,7 @@ namespace mir{
             OnKeyPressedCallbacks.clear();
             OnKeyReleasedCallbacks.clear();
             OnMousePressedCallbacks.clear();
+            OnTouchCallbacks.clear();
             OnWindowClosedCallbacks.clear();
         }
     }
