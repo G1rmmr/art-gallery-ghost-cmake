@@ -9,15 +9,18 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # 개발/릴리즈 모드 구분
 option(BUILD_BUNDLE "Build as macOS app bundle" OFF)
 
-include(FetchContent)
-FetchContent_Declare(SFML
-    GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG 3.0.2
-    GIT_SHALLOW ON
-    EXCLUDE_FROM_ALL
-    SYSTEM)
-
-FetchContent_MakeAvailable(SFML)
+find_package(SFML 3.0 COMPONENTS system window graphics audio)
+if(NOT SFML_FOUND)
+    message(STATUS "SFML not found via find_package. Using FetchContent.")
+    include(FetchContent)
+    FetchContent_Declare(SFML
+        GIT_REPOSITORY https://github.com/SFML/SFML.git
+        GIT_TAG 3.0.2
+        GIT_SHALLOW ON
+        EXCLUDE_FROM_ALL
+        SYSTEM)
+    FetchContent_MakeAvailable(SFML)
+endif()
 
 # 소스 파일
 set(SOURCES main.cpp)

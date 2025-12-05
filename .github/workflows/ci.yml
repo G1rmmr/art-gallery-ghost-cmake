@@ -26,9 +26,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Install SFML Build Dependencies (Windows)
+    - name: Install vcpkg and SFML (Windows)
       if: runner.os == 'Windows'
-      run: choco install freetype flac vorbis libogg
+      uses: lukka/run-vcpkg@v11
+      with:
+        vcpkgGitCommitId: 'eacab63e1a3410972b98e8c2278c1e549a184e96'
+        vcpkgJsonGlob: '**/vcpkg.json' # Placeholder, but needed
 
     - name: Install SFML Build Dependencies (macOS)
       if: runner.os == 'macOS'
@@ -37,6 +40,29 @@ jobs:
     - name: Install SFML Build Dependencies (Linux)
       if: runner.os == 'Linux'
       run: sudo apt-get update && sudo apt-get install -y libxrandr-dev libxcursor-dev libxi-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libfreetype-dev
+      
+    - name: Create vcpkg.json for Windows
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        @{
+          "name": "art-gallery-ghost",
+          "version-string": "1.0.0",
+          "dependencies": [
+            {
+              "name": "sfml",
+              "version>=": "3.0.0"
+            }
+          ]
+        } | ConvertTo-Json | Set-Content "vcpkg.json"
 
-    - name: Build
+    - name: Build (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
+        cmake --build build
+
+    - name: Build (Linux/macOS)
+      if: runner.os != 'Windows'
       run: ./build.sh ${{ matrix.build_type }}
