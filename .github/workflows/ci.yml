@@ -16,18 +16,27 @@ jobs:
       matrix:
         platform:
           - { name: Windows, os: windows-latest }
-          - { name: Linux, os: ubuntu-latest }
-          - { name: macOS, os: macos-latest }
+          - { name: Linux,   os: ubuntu-latest }
+          - { name: macOS,   os: macos-latest  }
         build_type:
           - debug
           - release
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Install SFML
-        uses: oprypin/install-sfml@v3.0
+    - name: Install SFML Build Dependencies (Windows)
+      if: runner.os == 'Windows'
+      run: choco install freetype flac vorbis libogg
 
-      - name: Build
-        run: ./build.sh ${{ matrix.build_type }}
+    - name: Install SFML Build Dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: brew install freetype flac libogg libvorbis
+
+    - name: Install SFML Build Dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y libxrandr-dev libxcursor-dev libxi-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libfreetype-dev
+
+    - name: Build
+      run: ./build.sh ${{ matrix.build_type }}
