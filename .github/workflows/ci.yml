@@ -30,8 +30,8 @@ jobs:
       if: runner.os == 'Windows'
       uses: lukka/run-vcpkg@v11
       with:
-        vcpkgGitCommitId: 'eacab63e1a3410972b98e8c2278c1e549a184e96'
-        vcpkgJsonGlob: '**/vcpkg.json' # Placeholder, but needed
+        # vcpkgGitCommitId 라인을 삭제해서 액션의 기본값을 사용하도록 함
+        vcpkgJsonGlob: '**/vcpkg.json'
 
     - name: Install SFML Build Dependencies (macOS)
       if: runner.os == 'macOS'
@@ -40,7 +40,7 @@ jobs:
     - name: Install SFML Build Dependencies (Linux)
       if: runner.os == 'Linux'
       run: sudo apt-get update && sudo apt-get install -y libxrandr-dev libxcursor-dev libxi-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libfreetype-dev
-      
+
     - name: Create vcpkg.json for Windows
       if: runner.os == 'Windows'
       shell: pwsh
