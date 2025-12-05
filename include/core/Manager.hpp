@@ -1,18 +1,13 @@
 #pragma once
 
-#include <cstddef>
-#include <cstdint>
 #include <string>
-#include <unordered_map>
 #include <memory>
-#include <format>
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 
 #include "Entity.hpp"
 #include "Components.hpp"
-#include "util/Debugger.hpp"
 
 #ifndef ASSET_DIR
     #define ASSET_DIR ""
@@ -72,7 +67,7 @@ namespace mir {
 
             shape.display();
 
-            sprite::Textures[id] = new sf::Texture(shape.getTexture());
+            sprite::Textures[id] = std::make_unique<sf::Texture>(shape.getTexture());
         }
 
         static inline void AllocFromFile(const ID id, const Tag tag){
@@ -82,17 +77,16 @@ namespace mir {
                 return;
             }
 
-            sf::Texture* texture = new sf::Texture();
+            std::unique_ptr<sf::Texture> texture = std::make_unique<sf::Texture>();
             if (!texture->loadFromFile(path)) {
                 debug::Log("Texture doesn't exist : %s", path.c_str());
                 return;
             }
-            sprite::Textures[id] = texture;
+            sprite::Textures[id] = std::move(texture);
         }
 
         static inline void Delete(const ID id){
-            if(sprite::Textures[id])
-                delete sprite::Textures[id];
+            sprite::Textures[id].reset();
         }
 
         static inline void DeleteAll(){
@@ -102,8 +96,8 @@ namespace mir {
     }
 
     namespace sound{
-        static inline std::array<sf::SoundBuffer*, MAX_RESOURCES> Buffers;
-        static inline std::array<sf::Sound*, MAX_RESOURCES> Sounds;
+        static inline std::array<std::unique_ptr<sf::SoundBuffer>, MAX_RESOURCES> Buffers;
+        static inline std::array<std::unique_ptr<sf::Sound>, MAX_RESOURCES> Sounds;
         static inline std::array<sf::Music, MAX_RESOURCES> Musics;
 
         static inline Tag Create(const std::string& filepath){
@@ -119,13 +113,13 @@ namespace mir {
         }
 
         static inline void AllocSound(const Tag tag){
-            Buffers[tag] = new sf::SoundBuffer();
+            Buffers[tag] = std::make_unique<sf::SoundBuffer>();
             if(!Buffers[tag]->loadFromFile(resource::Sounds[tag])){
                 debug::Log("Sound Source doesn't exist : %s", resource::Sounds[tag].c_str());
                 return;
             }
 
-            Sounds[tag] = new sf::Sound(*Buffers[tag]);
+            Sounds[tag] = std::make_unique<sf::Sound>(*Buffers[tag]);
         }
 
         static inline void AllocMusic(const Tag tag, bool shouldLoop = true){
@@ -153,8 +147,9 @@ namespace mir {
         }
 
         static inline void Delete(const Tag tag){
-            if(Buffers[tag]) delete Buffers[tag];
-            if(Sounds[tag]) delete Sounds[tag];
+            Buffers[tag].reset();
+            Sounds[tag].reset();
+            Musics[tag] = sf::Music();
         }
 
         static inline void DeleteAll(){
@@ -164,8 +159,8 @@ namespace mir {
     }
 
     namespace font{
-        static inline std::array<sf::Font*, MAX_RESOURCES> Sources;
-        static inline std::array<sf::Text*, MAX_RESOURCES> Texts;
+        static inline std::array<std::unique_ptr<sf::Font>, MAX_RESOURCES> Sources;
+        static inline std::array<std::unique_ptr<sf::Text>, MAX_RESOURCES> Texts;
 
         static inline Tag Create(const std::string& filepath){
             for(Tag tag = 1; tag < MAX_RESOURCES; ++tag){
@@ -180,22 +175,34 @@ namespace mir {
         }
 
         static inline void Alloc(const Tag tag){
-            Sources[tag] = new sf::Font(resource::Fonts[tag]);
+            Sources[tag] = std::make_unique<sf::Font>(resource::Fonts[tag]);
             if(!Sources[tag]){
                 debug::Log("Font doesn't exist : %s", resource::Fonts[tag].c_str());
                 return;
             }
-            Texts[tag] = new sf::Text(*Sources[tag]);
+            Texts[tag] = std::make_unique<sf::Text>(*Sources[tag]);
         }
 
         static inline void Delete(const Tag tag){
-            if(Sources[tag]) delete Sources[tag];
-            if(Texts[tag]) delete Texts[tag];
+            Sources[tag].reset();
+            Texts[tag].reset();
         }
 
         static inline void DeleteAll(){
             for(Tag tag = 1; tag < MAX_RESOURCES; ++tag)
                 Delete(tag);
         }
+    }
+
+    static inline void DeleteAll(){
+        transform::ClearAll();
+        sprite::ClearAll();
+        animation::ClearAll();
+        stats::ClearAll();
+        entity::ClearAll();
+
+        texture::DeleteAll();
+        sound::DeleteAll();
+        font::DeleteAll();
     }
 }

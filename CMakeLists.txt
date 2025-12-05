@@ -20,10 +20,7 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 # 소스 파일
-set(SOURCES
-    main.cpp
-    src/Game.cpp
-)
+set(SOURCES main.cpp)
 
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 
@@ -35,8 +32,11 @@ else()
 endif()
 
 target_compile_features(art-gallery-ghost PRIVATE cxx_std_20)
-target_include_directories(art-gallery-ghost PRIVATE
+target_include_directories(
+    art-gallery-ghost
+    PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 target_link_libraries(art-gallery-ghost PRIVATE
     SFML::Graphics

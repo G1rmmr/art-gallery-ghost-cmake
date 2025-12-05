@@ -1,11 +1,12 @@
 #pragma once
 
-#include <memory>
+#include <cstdint>
+#include <string>
 
-#include "core/Entity.hpp"
-#include "core/Components.hpp"
-#include "core/Manager.hpp"
-#include "util/Debugger.hpp"
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+
+#include "../core/Components.hpp"
 
 namespace mir{
     inline sf::RenderWindow* Window = nullptr;

@@ -1,11 +1,12 @@
 #pragma once
 
-#include <optional>
+#include <functional>
 #include <unordered_map>
+#include <optional>
 
-#include <SFML/Window/Event.hpp>
+#include <SFML/Window.hpp>
 
-#include "view/Display.hpp"
+#include "../view/Display.hpp"
 
 namespace mir{
     namespace input{

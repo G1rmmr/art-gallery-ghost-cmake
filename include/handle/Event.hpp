@@ -1,12 +1,9 @@
 #pragma once
 
-#include <array>
-#include <cstdint>
 #include <functional>
-#include <optional>
 #include <vector>
 
-#include "core/Entity.hpp"
+#include "../core/Entity.hpp"
 
 namespace mir{
     namespace event{

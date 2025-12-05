@@ -1,10 +1,7 @@
 #pragma once
 
-#include <iostream>
-#include <sstream>
 #include <chrono>
-#include <iomanip>
-#include <type_traits>
+#include <ios>
 
 #ifdef DEBUG_MODE
     static inline constexpr bool DEBUG_ENABLED = true;

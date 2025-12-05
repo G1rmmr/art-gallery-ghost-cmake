@@ -1,16 +1,9 @@
 #pragma once
 
-#include <cassert>
-#include <cstdint>
-#include <optional>
-#include <vector>
-
 #include <SFML/Graphics.hpp>
 
-#include "Entity.hpp"
 #include "Components.hpp"
-
-#include "handle/Event.hpp"
+#include "../handle/Event.hpp"
 
 namespace mir {
     namespace movement {
@@ -29,7 +22,7 @@ namespace mir {
         }
     }
 
-    namespace render {
+    namespace animation {
         static inline void Update(const float deltaTime) {
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;

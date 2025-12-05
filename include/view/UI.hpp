@@ -1,7 +1,11 @@
 #pragma once
 
-#include "core/Entity.hpp"
-#include "core/Manager.hpp"
+#include <string>
+#include <cstdint>
+
+#include <SFML/Graphics.hpp>
+
+#include "../core/Manager.hpp"
 
 namespace mir{
     namespace ui{
