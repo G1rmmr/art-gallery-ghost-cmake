@@ -16,20 +16,20 @@ jobs:
       matrix:
         platform:
           - { name: Windows, os: windows-latest }
-          - { name: Linux,   os: ubuntu-latest }
-          - { name: macOS,   os: macos-latest  }
+          - { name: Linux, os: ubuntu-latest }
+          - { name: macOS, os: macos-latest }
         build_type:
           - debug
           - release
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Install SFML 3.0.2
-      uses: oprypin/install-sfml@v1.2
-      with:
-        sfml-version: '3.0.2'
+      - name: Install SFML 3.0.2
+        uses: oprypin/install-sfml@v1
+        with:
+          sfml-version: "3.0.2"
 
-    - name: Build
-      run: ./build.sh ${{ matrix.build_type }}
+      - name: Build
+        run: ./build.sh ${{ matrix.build_type }}
