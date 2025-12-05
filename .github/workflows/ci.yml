@@ -26,10 +26,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Install FreeType (Linux workaround)
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y libfreetype6-dev
+
     - name: Install SFML 2.6.1
       uses: oprypin/install-sfml@v1
       with:
-        sfml: '2.6.1' # <-- 'sfml-version'이 아니라 'sfml' 이었다.
+        sfml: '2.6.1'
 
     - name: Build
       run: ./build.sh ${{ matrix.build_type }}
