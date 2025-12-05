@@ -26,43 +26,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Install vcpkg and SFML (Windows)
-      if: runner.os == 'Windows'
-      uses: lukka/run-vcpkg@v11
+    - name: Install SFML 3.0.2
+      uses: oprypin/install-sfml@v1.2
       with:
-        # vcpkgGitCommitId 라인을 삭제해서 액션의 기본값을 사용하도록 함
-        vcpkgJsonGlob: '**/vcpkg.json'
+        sfml-version: '3.0.2'
 
-    - name: Install SFML Build Dependencies (macOS)
-      if: runner.os == 'macOS'
-      run: brew install freetype flac libogg libvorbis
-
-    - name: Install SFML Build Dependencies (Linux)
-      if: runner.os == 'Linux'
-      run: sudo apt-get update && sudo apt-get install -y libxrandr-dev libxcursor-dev libxi-dev libudev-dev libopenal-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev libfreetype-dev
-
-    - name: Create vcpkg.json for Windows
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        @{
-          "name": "art-gallery-ghost",
-          "version-string": "1.0.0",
-          "dependencies": [
-            {
-              "name": "sfml",
-              "version>=": "3.0.0"
-            }
-          ]
-        } | ConvertTo-Json | Set-Content "vcpkg.json"
-
-    - name: Build (Windows)
-      if: runner.os == 'Windows'
-      shell: pwsh
-      run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_TOOLCHAIN_FILE="${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake"
-        cmake --build build
-
-    - name: Build (Linux/macOS)
-      if: runner.os != 'Windows'
+    - name: Build
       run: ./build.sh ${{ matrix.build_type }}
