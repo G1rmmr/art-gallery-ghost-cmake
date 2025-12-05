@@ -15,16 +15,16 @@ namespace button{
 
     namespace{
         inline void InitTransform(const mir::ID id){
-            mir::transform::Positions[id] = {POS_X, POS_Y};
-            mir::transform::Scales[id] = {1.f, 1.f};
+            mir::transform::Positions[id] = sf::Vector2f(POS_X, POS_Y);
+            mir::transform::Scales[id] = sf::Vector2f(1.f, 1.f);
         }
 
         inline void InitPhysics(const mir::ID id){
-            mir::physics::Bounds[id] = {SIZE_X, SIZE_Y};
+            mir::physics::Bounds[id] = sf::Vector2f(SIZE_X, SIZE_Y);
         }
 
         inline void InitSprite(const mir::ID id){
-            mir::sprite::Colors[id] = {0, 0, 0};
+            mir::sprite::Colors[id] = sf::Color(0, 0, 0);
             mir::sprite::Types[id] = mir::sprite::Type::Rectangle;
             mir::texture::AllocFromType(id);
         }
@@ -32,7 +32,7 @@ namespace button{
         inline void InitText(){
             const mir::Tag tag = mir::font::Create("fonts/dieproud.ttf");
             mir::font::Alloc(tag);
-            mir::ui::BuildText(tag, {POS_X, POS_Y}, CONTENT.data(), 100);
+            mir::ui::BuildText(tag, sf::Vector2f(POS_X, POS_Y), CONTENT.data(), 100);
         }
 
         inline void SubscribeOnClick(){

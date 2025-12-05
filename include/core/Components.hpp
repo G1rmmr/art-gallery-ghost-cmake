@@ -14,16 +14,16 @@ namespace mir{
         static inline std::array<sf::Vector2f, MAX_ENTITIES> Positions;
         static inline std::array<sf::Vector2f, MAX_ENTITIES> Velocities;
         static inline std::array<sf::Vector2f, MAX_ENTITIES> Scales;
-        static inline std::array<sf::Angle, MAX_ENTITIES> Rotations;
+        static inline std::array<float, MAX_ENTITIES> Rotations;
 
         static inline void ClearAll(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
-                Positions[id] = {0.f, 0.f};
-                Velocities[id] = {0.f, 0.f};
-                Scales[id] = {0.f, 0.f};
-                Rotations[id] = sf::Angle();
+                Positions[id] = sf::Vector2f(0.f, 0.f);
+                Velocities[id] = sf::Vector2f(0.f, 0.f);
+                Scales[id] = sf::Vector2f(0.f, 0.f);
+                Rotations[id] = 0.f;
             }
         }
     }
@@ -41,7 +41,7 @@ namespace mir{
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
-                Bounds[id] = {0.f, 0.f};
+                Bounds[id] = sf::Vector2f(0.f, 0.f);
                 Masses[id] = 0.f;
                 IsGhosts[id] = false;
                 InAirFlags[id] = false;
@@ -71,8 +71,8 @@ namespace mir{
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
-                Colors[id] = {0, 0, 0};
-                Sizes[id] = {0.f, 0.f};
+                Colors[id] = sf::Color(0, 0, 0);
+                Sizes[id] = sf::Vector2f(0.f, 0.f);
                 Textures[id].reset();
                 Types[id] = Type::None;
                 Layers[id] = 0;

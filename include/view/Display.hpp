@@ -63,23 +63,23 @@ namespace mir{
 
             switch(res){
             case Resolution::HD:
-                video = sf::VideoMode({1280, 720});
+                video = sf::VideoMode(1280, 720);
                 break;
 
             case Resolution::FHD:
-                video = sf::VideoMode({1920, 1080});
+                video = sf::VideoMode(1920, 1080);
                 break;
 
             case Resolution::QHD:
-                video = sf::VideoMode({2560, 1440});
+                video = sf::VideoMode(2560, 1440);
                 break;
 
             case Resolution::UHD:
-                video = sf::VideoMode({3840, 2160});
+                video = sf::VideoMode(3840, 2160);
                 break;
 
             case Resolution::Custom:
-                video = sf::VideoMode({width, height});
+                video = sf::VideoMode(width, height);
                 break;
 
             default:
@@ -91,20 +91,20 @@ namespace mir{
             case VideoMode::Borderless:
                 video = sf::VideoMode::getDesktopMode();
                 Window = new sf::RenderWindow(video, title, sf::Style::None);
-                Window->setPosition({0, 0});
+                Window->setPosition(sf::Vector2i(0, 0));
                 break;
 
             case VideoMode::Fullscreen:
-                Window = new sf::RenderWindow(video, title, sf::State::Fullscreen);
+                Window = new sf::RenderWindow(video, title, sf::Style::Fullscreen);
                 break;
 
             case VideoMode::Desktop:
                 video = sf::VideoMode::getDesktopMode();
-                Window = new sf::RenderWindow(video, title, sf::State::Windowed);
+                Window = new sf::RenderWindow(video, title, sf::Style::Default);
                 break;
 
             default:
-                Window = new sf::RenderWindow(video, title, sf::State::Windowed);
+                Window = new sf::RenderWindow(video, title, sf::Style::Default);
                 break;
             }
         }

@@ -44,7 +44,11 @@ namespace mir {
                 return;
             }
 
-            sf::RenderTexture shape(static_cast<sf::Vector2u>(physics::Bounds[id]));
+            sf::RenderTexture shape;
+            if (!shape.create(static_cast<unsigned int>(size.x), static_cast<unsigned int>(size.y))) {
+                debug::Log("Failed to create render texture for entity (ID: %d)", id);
+                return;
+            }
             shape.clear(sf::Color::Transparent);
 
             switch(sprite::Types[id]){
@@ -128,28 +132,30 @@ namespace mir {
                 return;
             }
 
-            Musics[tag].setLooping(shouldLoop);
+            Musics[tag].setLoop(shouldLoop);
             Musics[tag].play();
         }
 
         static inline void Play(const Tag tag, bool shouldLoop = false) {
             if(!Sounds[tag]) return;
-            Sounds[tag]->setLooping(shouldLoop);
+            Sounds[tag]->setLoop(shouldLoop);
             Sounds[tag]->play();
         }
 
         static inline void Pause(const Tag tag) {
             if(Sounds[tag]) Sounds[tag]->pause();
+            // Note: sf::Music also has pause(), could be ambiguous. Assuming only one type is paused via tag.
         }
 
         static inline void Stop(const Tag tag) {
             if(Sounds[tag]) Sounds[tag]->stop();
+            if(Musics[tag].getStatus() != sf::SoundSource::Stopped) Musics[tag].stop();
         }
 
         static inline void Delete(const Tag tag){
+            Stop(tag);
             Buffers[tag].reset();
             Sounds[tag].reset();
-            Musics[tag] = sf::Music();
         }
 
         static inline void DeleteAll(){
@@ -175,12 +181,14 @@ namespace mir {
         }
 
         static inline void Alloc(const Tag tag){
-            Sources[tag] = std::make_unique<sf::Font>(resource::Fonts[tag]);
-            if(!Sources[tag]){
+            Sources[tag] = std::make_unique<sf::Font>();
+            if(!Sources[tag]->loadFromFile(resource::Fonts[tag])){
                 debug::Log("Font doesn't exist : %s", resource::Fonts[tag].c_str());
+                Sources[tag].reset(); // Failed to load, so reset unique_ptr
                 return;
             }
-            Texts[tag] = std::make_unique<sf::Text>(*Sources[tag]);
+            Texts[tag] = std::make_unique<sf::Text>();
+            Texts[tag]->setFont(*Sources[tag]);
         }
 
         static inline void Delete(const Tag tag){

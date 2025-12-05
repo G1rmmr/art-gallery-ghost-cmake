@@ -67,8 +67,8 @@ namespace mir {
                     static_cast<sf::Vector2i>(physics::Bounds[rhs])
                 );
 
-                std::optional<sf::IntRect> bound = leftBox.findIntersection(rightBox);
-                return bound.has_value();
+                sf::IntRect intersection; // SFML 2.x style
+                return leftBox.intersects(rightBox, intersection);
             }
         }
 

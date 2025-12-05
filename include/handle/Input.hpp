@@ -2,7 +2,6 @@
 
 #include <functional>
 #include <unordered_map>
-#include <optional>
 
 #include <SFML/Window.hpp>
 
@@ -35,58 +34,60 @@ namespace mir{
             static inline std::vector<VoidCallback> OnWindowClosedCallbacks;
 
             static inline const std::unordered_map<Key, sf::Keyboard::Key> KeyMap = {
-                {Key::Escape, sf::Keyboard::Key::Escape},
-                {Key::W, sf::Keyboard::Key::W},
-                {Key::A, sf::Keyboard::Key::A},
-                {Key::S, sf::Keyboard::Key::S},
-                {Key::D, sf::Keyboard::Key::D},
-                {Key::Space, sf::Keyboard::Key::Space},
-                {Key::Enter, sf::Keyboard::Key::Enter}
+                {Key::Escape, sf::Keyboard::Escape},
+                {Key::W, sf::Keyboard::W},
+                {Key::A, sf::Keyboard::A},
+                {Key::S, sf::Keyboard::S},
+                {Key::D, sf::Keyboard::D},
+                {Key::Space, sf::Keyboard::Space},
+                {Key::Enter, sf::Keyboard::Enter}
             };
 
             static inline const std::unordered_map<sf::Keyboard::Key, Key> ReverseKeyMap = {
-                {sf::Keyboard::Key::Escape, Key::Escape},
-                {sf::Keyboard::Key::W, Key::W},
-                {sf::Keyboard::Key::A, Key::A},
-                {sf::Keyboard::Key::S, Key::S},
-                {sf::Keyboard::Key::D, Key::D},
-                {sf::Keyboard::Key::Space, Key::Space},
-                {sf::Keyboard::Key::Enter, Key::Enter}
+                {sf::Keyboard::Escape, Key::Escape},
+                {sf::Keyboard::W, Key::W},
+                {sf::Keyboard::A, Key::A},
+                {sf::Keyboard::S, Key::S},
+                {sf::Keyboard::D, Key::D},
+                {sf::Keyboard::Space, Key::Space},
+                {sf::Keyboard::Enter, Key::Enter}
             };
 
-            static inline void WindowClose(){
-                Window->close();
-
-                for(const VoidCallback& callback : OnWindowClosedCallbacks)
-                    callback();
-            }
-
-            static inline void KeyPressed(const sf::Event::KeyPressed* keyPressed){
-                if(ReverseKeyMap.contains(keyPressed->code)){
-                    Key key = ReverseKeyMap.at(keyPressed->code);
-
-                    for(const KeyCallback& callback : OnKeyPressedCallbacks)
-                        callback(key);
+            static inline void Process(){
+                sf::Event event;
+                while(Window->pollEvent(event)){
+                    switch(event.type) {
+                        case sf::Event::Closed:
+                            Window->close();
+                            for(const VoidCallback& callback : OnWindowClosedCallbacks)
+                                callback();
+                            break;
+                        case sf::Event::KeyPressed:
+                            if(ReverseKeyMap.contains(event.key.code)){
+                                Key key = ReverseKeyMap.at(event.key.code);
+                                for(const KeyCallback& callback : OnKeyPressedCallbacks)
+                                    callback(key);
+                            }
+                            break;
+                        case sf::Event::KeyReleased:
+                            if(ReverseKeyMap.contains(event.key.code)){
+                                Key key = ReverseKeyMap.at(event.key.code);
+                                for(const KeyCallback& callback : OnKeyReleasedCallbacks)
+                                    callback(key);
+                            }
+                            break;
+                        case sf::Event::MouseButtonPressed:
+                            for(const MouseCallback& callback : OnMousePressedCallbacks)
+                                callback(event.mouseButton.x, event.mouseButton.y);
+                            break;
+                        case sf::Event::TouchBegan:
+                            for(const MouseCallback& callback : OnTouchCallbacks)
+                                callback(event.touch.x, event.touch.y);
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
-
-            static inline void KeyRelease(const sf::Event::KeyReleased* keyReleased){
-                if(ReverseKeyMap.contains(keyReleased->code)){
-                    Key key = ReverseKeyMap.at(keyReleased->code);
-
-                    for(const KeyCallback& callback : OnKeyReleasedCallbacks)
-                        callback(key);
-                }
-            }
-
-            static inline void MouseButtonPress(const sf::Event::MouseButtonPressed* mousePressed){
-                for(const MouseCallback& callback : OnMousePressedCallbacks)
-                    callback(mousePressed->position.x, mousePressed->position.y);
-            }
-
-            static inline void TouchBegin(const sf::Event::TouchBegan* touched){
-                for(const MouseCallback& callback : OnTouchCallbacks)
-                    callback(touched->position.x, touched->position.y);
             }
         }
 
@@ -114,27 +115,6 @@ namespace mir{
             OnWindowClosedCallbacks.push_back(callback);
         }
 
-        static inline void Process(){
-            while(const std::optional event = Window->pollEvent()){
-                if(event->is<sf::Event::Closed>()) WindowClose();
-
-                if(const sf::Event::KeyPressed* keyPressed
-                    = event->getIf<sf::Event::KeyPressed>())
-                    KeyPressed(keyPressed);
-
-                if(const sf::Event::KeyReleased* keyReleased
-                    = event->getIf<sf::Event::KeyReleased>())
-                    KeyRelease(keyReleased);
-
-                if(const sf::Event::MouseButtonPressed* mousePressed
-                    = event->getIf<sf::Event::MouseButtonPressed>())
-                    MouseButtonPress(mousePressed);
-
-                if (const sf::Event::TouchBegan* touchBegan
-                    = event->getIf<sf::Event::TouchBegan>())
-                    TouchBegin(touchBegan);
-            }
-        }
 
         static inline void ClearAll(){
             OnKeyPressedCallbacks.clear();

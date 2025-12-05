@@ -9,13 +9,13 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # 개발/릴리즈 모드 구분
 option(BUILD_BUNDLE "Build as macOS app bundle" OFF)
 
-find_package(SFML 3.0 COMPONENTS system window graphics audio)
+find_package(SFML 2.6 COMPONENTS system window graphics audio)
 if(NOT SFML_FOUND)
     message(STATUS "SFML not found via find_package. Using FetchContent.")
     include(FetchContent)
     FetchContent_Declare(SFML
         GIT_REPOSITORY https://github.com/SFML/SFML.git
-        GIT_TAG 3.0.2
+        GIT_TAG 2.6.1
         GIT_SHALLOW ON
         EXCLUDE_FROM_ALL
         SYSTEM)
@@ -42,10 +42,10 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 target_link_libraries(art-gallery-ghost PRIVATE
-    SFML::Graphics
-    SFML::System
-    SFML::Window
-    SFML::Audio
+    sfml-graphics
+    sfml-system
+    sfml-window
+    sfml-audio
 )
 
 # 프로파일 옵션 추가

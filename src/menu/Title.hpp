@@ -13,14 +13,14 @@ namespace title{
 
     namespace{
         inline void InitTransform(const mir::ID id){
-            mir::transform::Positions[id] = {POS_X, POS_Y};
-            mir::transform::Scales[id] = {1.f, 1.f};
+            mir::transform::Positions[id] = sf::Vector2f(POS_X, POS_Y);
+            mir::transform::Scales[id] = sf::Vector2f(1.f, 1.f);
         }
 
         inline void InitSprite(const mir::ID id){
-            mir::sprite::Colors[id] = {0xFF, 0xFF, 0xFF};
+            mir::sprite::Colors[id] = sf::Color(0xFF, 0xFF, 0xFF);
             mir::sprite::Types[id] = mir::sprite::Type::None;
-            mir::sprite::Sizes[id] = {SIZE_X, SIZE_Y};
+            mir::sprite::Sizes[id] = sf::Vector2f(SIZE_X, SIZE_Y);
 
             const mir::Tag tag = mir::texture::Create("textures/title-image.jpg");
             mir::texture::AllocFromFile(id, tag);
