@@ -1,14 +1,10 @@
-# Base Style
 BasedOnStyle: LLVM
-# Indentation
 IndentWidth: 4
 UseTab: Never
 TabWidth: 4
 NamespaceIndentation: All
 AccessModifierOffset: 0
-# Line Length
 ColumnLimit: 120
-# Braces
 BreakBeforeBraces: Custom
 BraceWrapping:
   AfterClass: false
@@ -25,7 +21,6 @@ BraceWrapping:
   SplitEmptyFunction: false
   SplitEmptyRecord: false
   SplitEmptyNamespace: false
-# Spacing
 SpaceBeforeParens: Never
 SpaceAfterCStyleCast: false
 SpaceBeforeAssignmentOperators: true
@@ -40,7 +35,6 @@ SpacesInContainerLiterals: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 SpaceAfterTemplateKeyword: true
-# Short Statements
 AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: WithoutElse
 AllowShortLoopsOnASingleLine: true
@@ -48,23 +42,17 @@ AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortEnumsOnASingleLine: true
 AllowShortLambdasOnASingleLine: Inline
-# Pointer and Reference Alignment
 PointerAlignment: Left
 ReferenceAlignment: Left
 DerivePointerAlignment: false
-# Includes
 SortIncludes: CaseSensitive
 IncludeBlocks: Preserve
-# Namespace
 FixNamespaceComments: false
 ShortNamespaceLines: 0
-# Comments
 ReflowComments: true
 SpacesBeforeTrailingComments: 1
-# Switch/Case
 IndentCaseLabels: false
 IndentCaseBlocks: false
-# Other
 AlignConsecutiveAssignments: None
 AlignConsecutiveDeclarations: None
 AlignOperands: Align
@@ -85,6 +73,5 @@ KeepEmptyLinesAtTheStartOfBlocks: false
 MaxEmptyLinesToKeep: 1
 PackConstructorInitializers: NextLine
 SortUsingDeclarations: true
-# Language specific
 Language: Cpp
 Standard: c++20

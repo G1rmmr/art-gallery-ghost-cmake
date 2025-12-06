@@ -1,3 +1,4 @@
+assets
 build
 out
 assets
@@ -7,6 +8,9 @@ assets
 .vs
 .vscode
 .json
+.DS_Store
+.clangd
+.zed
 
 cmake-guide.md
 GEMINI.md

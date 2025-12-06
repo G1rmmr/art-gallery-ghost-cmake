@@ -13,7 +13,7 @@ namespace mir{
         inline std::string Current = "";
 
         inline void Register(const std::string& name, std::function<void()> func){
-            Scenes[name] = func;
+            Scenes[name] = std::move(func);
         }
 
         inline void Load(const std::string& name) {

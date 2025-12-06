@@ -9,7 +9,6 @@ Checks: >
   cppcoreguidelines-special-member-functions
 HeaderFilterRegex: '.*'
 CheckOptions:
-  # 네이밍 규칙
   - key: readability-identifier-naming.ClassCase
     value: CamelCase
   - key: readability-identifier-naming.StructCase
@@ -36,7 +35,6 @@ CheckOptions:
     value: camelBack
   - key: readability-identifier-naming.GlobalVariableCase
     value: CamelCase
-  # 상수 규칙: 지역 상수는 camelBack, 전역 상수는 UPPER_CASE
   - key: readability-identifier-naming.ConstantCase
     value: camelBack
   - key: readability-identifier-naming.GlobalConstantCase
@@ -49,20 +47,16 @@ CheckOptions:
     value: camelBack
   - key: readability-identifier-naming.ProtectedMemberCase
     value: camelBack
-  # 접두사/접미사 사용 안함
   - key: readability-identifier-naming.PrivateMemberPrefix
     value: ''
   - key: readability-identifier-naming.PrivateMemberSuffix
     value: ''
-  # 줄 길이 제한
   - key: readability-function-size.LineThreshold
     value: '120'
-  # NULL 체크 관련
   - key: cppcoreguidelines-pro-type-member-init.IgnoreArrays
     value: 'true'
-  # auto 사용 최소화
   - key: modernize-use-auto.MinTypeNameLength
     value: '80'
 
   - key: bugprone-easily-swappable-parameters.MinimumLength
-    value: '4'  # 4개 이상일 때만 경고
+    value: '4'
