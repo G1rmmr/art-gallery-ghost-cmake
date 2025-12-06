@@ -3,6 +3,9 @@
 #include <chrono>
 #include <ios>
 
+#include "../view/UI.hpp"
+#include "../core/Manager.hpp"
+
 #ifdef DEBUG_MODE
     static inline constexpr bool DEBUG_ENABLED = true;
 #else
@@ -32,15 +35,15 @@ namespace mir{
             fflush(stdout);
         }
 
-        static inline void ShowFPS(bool enabled){
+        static inline void ShowFPS(bool isEnabled){
+            
+        }
+
+        static inline void ShowEntityCount(bool isEnabled){
             return;
         }
 
-        static inline void ShowEntityCount(bool enabled){
-            return;
-        }
-
-        static inline void ShowColliders(bool enabled){
+        static inline void ShowColliders(bool isEnabled){
             return;
         }
     }

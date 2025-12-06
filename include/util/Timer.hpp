@@ -1,20 +1,52 @@
 #pragma once
 
+#include <vector>
 #include <functional>
 
 #include <SFML/System.hpp>
 
 namespace mir{
     namespace time{
-        static inline sf::Clock Clock;
-        static inline float GetDelta(){ return Clock.restart().asSeconds(); }
+        namespace{
+            struct TimerTask{
+                std::function<void()> CallBack;
+                float IntervalSec;
+                float RemainSec;
+                bool IsLooping;
+            };
 
-        inline static void After(float seconds, std::function<void()> callback){
-            return;
+            inline std::vector<TimerTask> TimerTasks;
         }
 
-        inline static void Every(float interval, std::function<void()> callback){
-            return;
+        static inline float GetDelta(){
+            static sf::Clock deltaClock;
+            return deltaClock.restart().asSeconds();
+        }
+
+        static inline void Register(
+            std::function<void()> callback,
+            const float seconds,
+            bool isLooping = false){
+            TimerTasks.push_back({std::move(callback), seconds, seconds, isLooping});
+        }
+
+        static inline void Update(const float deltaTime){
+            if(TimerTasks.empty()) return;
+
+            for(TimerTask& task : TimerTasks){
+                task.RemainSec -= deltaTime;
+
+                if(task.RemainSec > 0.f) continue;
+                if(task.CallBack) task.CallBack();
+                if(task.IsLooping){
+                    task.RemainSec += task.IntervalSec;
+                    continue;
+                }
+            }
+
+            std::erase_if(TimerTasks, [](const TimerTask& task) {
+                return !task.IsLooping && task.RemainSec <= 0.f;
+            });
         }
     }
 }
