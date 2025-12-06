@@ -5,28 +5,31 @@
 #include "menu/Menu.hpp"
 #include "game/Game.hpp"
 
-const std::string_view WINDOW_TITLE = "art-gallery-ghost";
-const std::string_view SAVE_PATH = "record.dat";
-const std::uint8_t FPS = 60;
+const mir::String WINDOW_TITLE = "art-gallery-ghost";
+const mir::String SAVE_PATH = "record.dat";
+const mir::Uint FPS = 60;
 
 namespace app {
     namespace{
         inline void Initialize(){
-            mir::window::Init(WINDOW_TITLE.data());
+            mir::window::Init(WINDOW_TITLE);
             mir::window::SetFPS(FPS);
 
-            scene::Load(scene::Type::Menu);
+            mir::scene::Register("Menu", menu::Initialize);
+            mir::scene::Register("Game", game::Initialize);
+
+            mir::scene::Load("Menu");
         }
 
         inline void ProcessInput(){
             PROFILE_SCOPE("Input"){
                 mir::input::Process();
-                if(mir::input::IsPressed(mir::input::Key::Escape))
+                if(mir::input::IsPressed(mir::event::type::Key::Escape))
                     mir::window::Close();
             }
         }
 
-        inline void Update(const float deltaTime){
+        inline void Update(const mir::Real deltaTime){
             mir::movement::Update(deltaTime);
             mir::collision::Update();
             mir::animation::Update(deltaTime);
@@ -41,7 +44,7 @@ namespace app {
         }
 
         inline void Shutdown(){
-            mir::DeleteAll();
+            mir::Clear();
             mir::window::Shutdown();
         }
     }
@@ -50,7 +53,7 @@ namespace app {
         try{
             Initialize();
             while(mir::window::IsOpening()){
-                const float deltaTime = mir::time::GetDelta();
+                const mir::Real deltaTime = mir::time::GetDelta();
                 ProcessInput();
                 Update(deltaTime);
                 Render();

@@ -16,7 +16,7 @@ namespace mir{
         static inline std::array<sf::Vector2f, MAX_ENTITIES> Scales;
         static inline std::array<float, MAX_ENTITIES> Rotations;
 
-        static inline void ClearAll(){
+        static inline void Clear(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
@@ -37,7 +37,7 @@ namespace mir{
         static inline std::array<bool, MAX_ENTITIES> IsGhosts;
         static inline std::array<bool, MAX_ENTITIES> InAirFlags;
 
-        static inline void ClearAll(){
+        static inline void Clear(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
@@ -67,7 +67,7 @@ namespace mir{
         static inline std::array<bool, MAX_ENTITIES> ShouldFlipXs;
         static inline std::array<bool, MAX_ENTITIES> ShouldFlipYs;
 
-        static inline void ClearAll(){
+        static inline void Clear(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
@@ -96,7 +96,7 @@ namespace mir{
         static inline std::array<bool, MAX_ENTITIES> IsPlayings;
         static inline std::array<bool, MAX_ENTITIES> IsLoopings;
 
-        static inline void ClearAll(){
+        static inline void Clear(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
@@ -128,7 +128,7 @@ namespace mir{
         static inline std::array<std::uint16_t, MAX_ENTITIES> MaxParticles;
         static inline std::array<bool, MAX_ENTITIES> IsEmittings;
 
-        static inline void Clear(const ID id){
+        static inline void Delete(const ID id){
             Positions[id].clear();
             Velocities[id].clear();
             CurrentColors[id].clear();
@@ -153,7 +153,7 @@ namespace mir{
         static inline std::array<float, MAX_ENTITIES> Healths;
         static inline std::array<float, MAX_ENTITIES> Damages;
 
-        static inline void ClearAll(){
+        static inline void Clear(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
                 Healths[id] = 0.f;

@@ -22,7 +22,7 @@ namespace mir{
             return 0; // Overflow entity
         }
 
-        static inline void ClearAll(){
+        static inline void Clear(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 IsAvailables[id] = false;
             }

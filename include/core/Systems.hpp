@@ -5,9 +5,9 @@
 #include "Components.hpp"
 #include "../handle/Event.hpp"
 
-namespace mir {
-    namespace movement {
-        static inline void Update(const float deltaTime) {
+namespace mir{
+    namespace movement{
+        static inline void Update(const float deltaTime){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
@@ -22,8 +22,8 @@ namespace mir {
         }
     }
 
-    namespace animation {
-        static inline void Update(const float deltaTime) {
+    namespace animation{
+        static inline void Update(const float deltaTime){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
@@ -38,11 +38,11 @@ namespace mir {
 
                 animation::ElapsedTimes[id] += deltaTime;
 
-                while(animation::ElapsedTimes[id] >= animation::DelayTimes[id]) {
+                while(animation::ElapsedTimes[id] >= animation::DelayTimes[id]){
                     animation::ElapsedTimes[id] -= animation::DelayTimes[id];
 
-                    if(++animation::CurrFrames[id] >= maxFrame) {
-                        if(!animation::IsLoopings[id]) {
+                    if(++animation::CurrFrames[id] >= maxFrame){
+                        if(!animation::IsLoopings[id]){
                             animation::CurrFrames[id] = maxFrame - 1;
                             animation::IsPlayings[id] = false;
                             break;
@@ -67,7 +67,7 @@ namespace mir {
                     static_cast<sf::Vector2i>(physics::Bounds[rhs])
                 );
 
-                sf::IntRect intersection; // SFML 2.x style
+                sf::IntRect intersection;
                 return leftBox.intersects(rightBox, intersection);
             }
         }
@@ -134,12 +134,13 @@ namespace mir {
             }
 
             static inline void UpdateParticles(const ID id, const float deltaTime){
-                const std::size_t particleCount = particle::Positions[id].size();
+                const std::uint16_t particleCount
+                    = static_cast<std::uint16_t>(particle::Positions[id].size());
 
-                for(std::size_t i = particleCount - 1; i == 0; --i){
+                for(std::uint16_t i = particleCount - 1; i == 0; --i){
                     particle::CurrentLifeTimes[id][i] -= deltaTime;
 
-                    if(particle::CurrentLifeTimes[id][i] <= 0.0f){
+                    if(particle::CurrentLifeTimes[id][i] <= 0.f){
                         KillParticles(id, i);
                         continue;
                     }

@@ -3,24 +3,24 @@
 #include "Mir.hpp"
 
 namespace title{
-    const std::string_view CONTENT = "Art Gallery Ghost";
+    const mir::String CONTENT = "Art Gallery Ghost";
 
-    const float POS_X = 0.f;
-    const float POS_Y = 0.f;
+    const mir::Real POS_X = 0.0;
+    const mir::Real POS_Y = 0.0;
 
-    const float SIZE_X = 1920.f;
-    const float SIZE_Y = 1080.f;
+    const mir::Real SIZE_X = 1920.0;
+    const mir::Real SIZE_Y = 1080.0;
 
     namespace{
         inline void InitTransform(const mir::ID id){
-            mir::transform::Positions[id] = sf::Vector2f(POS_X, POS_Y);
-            mir::transform::Scales[id] = sf::Vector2f(1.f, 1.f);
+            mir::transform::Positions[id] = mir::Point2<mir::Real>(POS_X, POS_Y);
+            mir::transform::Scales[id] = mir::Point2<mir::Real>(1.0, 1.0);
         }
 
         inline void InitSprite(const mir::ID id){
-            mir::sprite::Colors[id] = sf::Color(0xFF, 0xFF, 0xFF);
+            mir::sprite::Colors[id] = mir::Color(0xFF, 0xFF, 0xFF);
             mir::sprite::Types[id] = mir::sprite::Type::None;
-            mir::sprite::Sizes[id] = sf::Vector2f(SIZE_X, SIZE_Y);
+            mir::sprite::Sizes[id] = mir::Point2<mir::Real>(SIZE_X, SIZE_Y);
 
             const mir::Tag tag = mir::texture::Create("textures/title-image.jpg");
             mir::texture::AllocFromFile(id, tag);

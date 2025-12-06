@@ -7,6 +7,7 @@
 #include <SFML/Window.hpp>
 
 #include "../core/Components.hpp"
+#include "../core/Entity.hpp"
 
 namespace mir{
     inline sf::RenderWindow* Window = nullptr;
@@ -27,7 +28,7 @@ namespace mir{
     };
 
     namespace window{
-        static inline bool IsOpening() { return Window && Window->isOpen();}
+        static inline bool IsOpening() { return Window && Window->isOpen(); }
 
         static inline void Display(){
             if(Window) Window->display();
@@ -87,7 +88,7 @@ namespace mir{
                 break;
             }
 
-            switch(mode) {
+            switch(mode){
             case VideoMode::Borderless:
                 video = sf::VideoMode::getDesktopMode();
                 Window = new sf::RenderWindow(video, title, sf::Style::None);
@@ -110,7 +111,7 @@ namespace mir{
         }
 
         namespace{
-            static inline void BuildSprite(const ID id, sf::Sprite& sprite) {
+            static inline void BuildSprite(const ID id, sf::Sprite& sprite){
                 sprite.setPosition(transform::Positions[id]);
                 sprite.setRotation(transform::Rotations[id]);
                 sprite.setColor(sprite::Colors[id]);

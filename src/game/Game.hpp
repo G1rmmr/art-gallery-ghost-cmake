@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Mir.hpp"
+
 #include "Player.hpp"
 #include "Ground.hpp"
 

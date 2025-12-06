@@ -3,35 +3,35 @@
 #include "Mir.hpp"
 
 namespace player{
-    const float POS_X = 200.f;
-    const float POS_Y = 200.f;
-    const float SPEED = 200.f;
-    const float JUMP_POWER = 3000.f;
-    const float MASS = 10.f;
-    const float MAX_HEALTH = 100.f;
-    const float INIT_DAMAGE = 10.f;
+    const mir::Real POS_X = 200.0;
+    const mir::Real POS_Y = 200.0;
+    const mir::Real SPEED = 200.0;
+    const mir::Real JUMP_POWER = 3000.0;
+    const mir::Real MASS = 10.0;
+    const mir::Real MAX_HEALTH = 100.0;
+    const mir::Real INIT_DAMAGE = 10.0;
 
-    const int SIZE_X = 100;
-    const int SIZE_Y = 100;
+    const mir::Int SIZE_X = 100;
+    const mir::Int SIZE_Y = 100;
 
-    const bool IN_AIR = true;
-    const bool IS_GHOST = false;
+    const mir::Bool IN_AIR = true;
+    const mir::Bool IS_GHOST = false;
 
     namespace{
         inline void InitTransform(const mir::ID id){
-            mir::transform::Positions[id] = sf::Vector2f(POS_X, POS_Y);
-            mir::transform::Scales[id] = sf::Vector2f(1.f, 1.f);
+            mir::transform::Positions[id] = mir::Point2<mir::Real>(POS_X, POS_Y);
+            mir::transform::Scales[id] = mir::Point2<mir::Real>(1.0, 1.0);
         }
 
         inline void InitPhysics(const mir::ID id){
-            mir::physics::Bounds[id] = sf::Vector2f(SIZE_X, SIZE_Y);
+            mir::physics::Bounds[id] = mir::Point2<mir::Real>(SIZE_X, SIZE_Y);
             mir::physics::Masses[id] = MASS;
             mir::physics::InAirFlags[id] = IN_AIR;
             mir::physics::IsGhosts[id] = IS_GHOST;
         }
 
         inline void InitSprite(const mir::ID id){
-            mir::sprite::Colors[id] = sf::Color(0xFF, 0xFF, 0xFF);
+            mir::sprite::Colors[id] = mir::Color(0xFF, 0xFF, 0xFF);
             mir::sprite::Types[id] = mir::sprite::Type::Rectangle;
             mir::texture::AllocFromType(id);
         }
@@ -42,92 +42,94 @@ namespace player{
         }
 
         inline void SubscribeCollision(const mir::ID id){
-            mir::event::Subscribe<mir::event::type::Collision>(
-                [id](const mir::event::type::Collision& args){
-                    float left = mir::transform::Positions[id].x;
-                    float top = mir::transform::Positions[id].y;
+            mir::Action<const mir::event::type::Collision&> action
+                = [id](const mir::event::type::Collision& args){
+                mir::Real left = mir::transform::Positions[id].x;
+                mir::Real top = mir::transform::Positions[id].y;
 
-                    float otherLeft = mir::transform::Positions[args.Other].x;
-                    float otherTop = mir::transform::Positions[args.Other].y;
-                    float otherRight = otherLeft + mir::physics::Bounds[args.Other].x;
-                    float otherBottom = otherTop + mir::physics::Bounds[args.Other].y;
+                mir::Real otherLeft = mir::transform::Positions[args.Other].x;
+                mir::Real otherTop = mir::transform::Positions[args.Other].y;
+                mir::Real otherRight = otherLeft + mir::physics::Bounds[args.Other].x;
+                mir::Real otherBottom = otherTop + mir::physics::Bounds[args.Other].y;
 
-                    float dx = (otherLeft + mir::physics::Bounds[args.Other].x / 2.f)
-                        - (left + mir::physics::Bounds[id].x / 2.f);
+                mir::Real dx = (otherLeft + mir::physics::Bounds[args.Other].x / 2.0)
+                    - (left + mir::physics::Bounds[id].x / 2.0);
 
-                    float dy = (otherTop + mir::physics::Bounds[args.Other].y / 2.f)
-                        - (top + mir::physics::Bounds[id].y / 2.f);
+                mir::Real dy = (otherTop + mir::physics::Bounds[args.Other].y / 2.0)
+                    - (top + mir::physics::Bounds[id].y / 2.0);
 
-                    float overlapX = (mir::physics::Bounds[id].x / 2.f
-                        + mir::physics::Bounds[args.Other].x / 2.f)
-                        - std::abs(dx);
+                mir::Real overlapX = (mir::physics::Bounds[id].x / 2.0
+                    + mir::physics::Bounds[args.Other].x / 2.0)
+                    - std::abs(dx);
 
-                    float overlapY = (mir::physics::Bounds[id].y / 2.f
-                        + mir::physics::Bounds[args.Other].y / 2.f)
-                        - std::abs(dy);
+                mir::Real overlapY = (mir::physics::Bounds[id].y / 2.0
+                    + mir::physics::Bounds[args.Other].y / 2.0)
+                    - std::abs(dy);
 
-                    if(overlapX < overlapY){
-                        mir::transform::Positions[id].x = dx > 0 ?
-                            otherLeft - mir::physics::Bounds[id].x :
-                            otherRight;
-                    }
-                    else{
-                        mir::transform::Positions[id].y = dy > 0 ?
-                            otherTop - mir::physics::Bounds[id].y :
-                            otherBottom;
-
-                        if(dy > 0) mir::physics::InAirFlags[id] = false;
-                    }
+                if(overlapX < overlapY){
+                    mir::transform::Positions[id].x = dx > 0 ?
+                        otherLeft - mir::physics::Bounds[id].x :
+                        otherRight;
                 }
-            );
+                else{
+                    mir::transform::Positions[id].y = dy > 0 ?
+                    otherTop - mir::physics::Bounds[id].y :
+                    otherBottom;
+
+                    if(dy > 0) mir::physics::InAirFlags[id] = false;
+                }
+            };
+            mir::event::Subscribe(action);
         }
 
         inline void SubscribeJump(const mir::ID id){
-            mir::event::Subscribe<mir::event::type::Jump>(
-                [id](const mir::event::type::Jump&){
-                    if(mir::physics::InAirFlags[id]) return;
+            mir::Action<const mir::event::type::Jump&> action
+                = [id](const mir::event::type::Jump&){
+                if(mir::physics::InAirFlags[id]) return;
 
-                    const float force = JUMP_POWER / std::sqrt(mir::physics::Masses[id]);
+                const mir::Real force = JUMP_POWER / std::sqrt(mir::physics::Masses[id]);
 
-                    mir::transform::Velocities[id].y = -force;
-                    mir::physics::InAirFlags[id] = true;
-                }
-            );
+                mir::transform::Velocities[id].y = -force;
+                mir::physics::InAirFlags[id] = true;
+            };
+            mir::event::Subscribe(action);
         }
 
         inline void SubscribeKeyPressed(const mir::ID id){
-            mir::input::OnKeyPressed([id](const mir::input::Key key){
-                switch(key){
-                case mir::input::Key::W:
+            mir::Action<const mir::event::type::KeyPressed&> action
+                = [id](const mir::event::type::KeyPressed& event){
+                switch(event.Input){
+                case mir::event::type::Key::W:
                     mir::event::Publish(mir::event::type::Jump{});
                     break;
 
-                case mir::input::Key::A:
+                case mir::event::type::Key::A:
                     mir::transform::Velocities[id].x = -SPEED;
                     break;
 
-                case mir::input::Key::D:
+                case mir::event::type::Key::D:
                     mir::transform::Velocities[id].x = SPEED;
                     break;
 
-                default:
-                    break;
+                default: break;
                 }
-            });
+            };
+            mir::event::Subscribe(action);
         }
 
         inline void SubscribeKeyReleased(const mir::ID id){
-            mir::input::OnKeyReleased([id](const mir::input::Key key){
-                switch(key){
-                case mir::input::Key::A:
-                case mir::input::Key::D:
-                    mir::transform::Velocities[id].x = 0.f;
+            mir::Action<const mir::event::type::KeyReleased&> action
+                = [id](const mir::event::type::KeyReleased& event){
+                switch(event.Input){
+                case mir::event::type::Key::A:
+                case mir::event::type::Key::D:
+                    mir::transform::Velocities[id].x = 0.0;
                     break;
 
-                default:
-                    break;
+                default: break;
                 }
-            });
+            };
+            mir::event::Subscribe(action);
         }
     }
 

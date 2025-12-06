@@ -8,6 +8,7 @@
 
 #include "Entity.hpp"
 #include "Components.hpp"
+#include "../handle/Event.hpp"
 
 #ifndef ASSET_DIR
     #define ASSET_DIR ""
@@ -34,7 +35,7 @@ namespace mir {
             }
 
             debug::Log("resource Overflow!");
-            return 0; // Overflow resouce
+            return 0; // Overflow resource
         }
 
         static inline void AllocFromType(const ID id){
@@ -93,7 +94,7 @@ namespace mir {
             sprite::Textures[id].reset();
         }
 
-        static inline void DeleteAll(){
+        static inline void Clear(){
             for(ID id = 1; id < MAX_ENTITIES; ++id)
                 Delete(id);
         }
@@ -113,7 +114,7 @@ namespace mir {
             }
 
             debug::Log("resource Overflow!");
-            return 0; // Overflow resouce
+            return 0; // Overflow resource
         }
 
         static inline void AllocSound(const Tag tag){
@@ -144,7 +145,6 @@ namespace mir {
 
         static inline void Pause(const Tag tag) {
             if(Sounds[tag]) Sounds[tag]->pause();
-            // Note: sf::Music also has pause(), could be ambiguous. Assuming only one type is paused via tag.
         }
 
         static inline void Stop(const Tag tag) {
@@ -158,7 +158,7 @@ namespace mir {
             Sounds[tag].reset();
         }
 
-        static inline void DeleteAll(){
+        static inline void Clear(){
             for(Tag tag = 1; tag < MAX_RESOURCES; ++tag)
                 Delete(tag);
         }
@@ -196,21 +196,22 @@ namespace mir {
             Texts[tag].reset();
         }
 
-        static inline void DeleteAll(){
+        static inline void Clear(){
             for(Tag tag = 1; tag < MAX_RESOURCES; ++tag)
                 Delete(tag);
         }
     }
 
-    static inline void DeleteAll(){
-        transform::ClearAll();
-        sprite::ClearAll();
-        animation::ClearAll();
-        stats::ClearAll();
-        entity::ClearAll();
+    static inline void Clear(){
+        transform::Clear();
+        sprite::Clear();
+        animation::Clear();
+        stats::Clear();
+        entity::Clear();
+        event::Clear();
 
-        texture::DeleteAll();
-        sound::DeleteAll();
-        font::DeleteAll();
+        texture::Clear();
+        sound::Clear();
+        font::Clear();
     }
 }

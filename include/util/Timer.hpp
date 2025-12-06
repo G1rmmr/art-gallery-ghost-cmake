@@ -4,7 +4,7 @@
 
 #include <SFML/System.hpp>
 
-namespace mir {
+namespace mir{
     namespace time{
         static inline sf::Clock Clock;
         static inline float GetDelta(){ return Clock.restart().asSeconds(); }
