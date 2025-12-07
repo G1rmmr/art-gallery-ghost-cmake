@@ -53,6 +53,7 @@ target_include_directories(
 )
 
 if(EMSCRIPTEN)
+    target_compile_options(art-gallery-ghost PRIVATE "-sUSE_SFML=2")
     target_link_options(art-gallery-ghost PRIVATE
         "-sUSE_SFML=2"
         "-sALLOW_MEMORY_GROWTH=1"
