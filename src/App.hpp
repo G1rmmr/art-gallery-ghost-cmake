@@ -15,6 +15,8 @@ namespace app {
             mir::window::Init(WINDOW_TITLE);
             mir::window::SetFPS(FPS);
 
+            mir::camera::Init();
+
             mir::scene::Register("Menu", menu::Initialize);
             mir::scene::Register("Game", game::Initialize);
 
@@ -39,6 +41,7 @@ namespace app {
             mir::movement::Update(deltaTime);
             mir::collision::Update();
             mir::animation::Update(deltaTime);
+            mir::camera::Update(deltaTime);
         }
 
         inline void Render(){

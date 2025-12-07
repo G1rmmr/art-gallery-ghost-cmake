@@ -190,9 +190,14 @@ namespace mir{
                     }
 
                     if(fontLoaded){
+                        sf::View oldView = Window->getView();
+                        Window->setView(Window->getDefaultView());
+
                         const float fps = mir::debug::State.CurrentFPS;
                         text.setString("FPS: " + std::to_string(fps));
+
                         Window->draw(text);
+                        Window->setView(oldView);
                     }
                 }
 

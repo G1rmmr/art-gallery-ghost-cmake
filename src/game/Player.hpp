@@ -101,6 +101,7 @@ namespace player{
                 switch(event.Input){
                 case mir::event::type::Key::W:
                     mir::event::Publish(mir::event::type::Jump{});
+                    mir::camera::Shake(0.1, 1);
                     break;
 
                 case mir::event::type::Key::A:
@@ -109,6 +110,10 @@ namespace player{
 
                 case mir::event::type::Key::D:
                     mir::transform::Velocities[id].x = SPEED;
+                    break;
+
+                case mir::event::type::Key::Space:
+                    mir::camera::Follow(id);
                     break;
 
                 default: break;
@@ -124,6 +129,10 @@ namespace player{
                 case mir::event::type::Key::A:
                 case mir::event::type::Key::D:
                     mir::transform::Velocities[id].x = 0;
+                    break;
+
+                case mir::event::type::Key::Space:
+                    mir::camera::SetPosition(mir::camera::GetCenter());
                     break;
 
                 default: break;
