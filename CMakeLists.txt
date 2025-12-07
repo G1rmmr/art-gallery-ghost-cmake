@@ -27,6 +27,11 @@ if(EMSCRIPTEN OR NOT SFML_FOUND)
     set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS ON CACHE BOOL "Suppress dev warnings" FORCE)
     set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "Suppress deprecation warnings" FORCE)
 
+    if(EMSCRIPTEN)
+        set(SFML_OS_EMSCRIPTEN 1 CACHE INTERNAL "Force Emscripten OS detection")
+        add_compile_definitions(SFML_OS_EMSCRIPTEN)
+    endif()
+
     if(POLICY CMP0153)
         cmake_policy(SET CMP0153 OLD)
     endif()
