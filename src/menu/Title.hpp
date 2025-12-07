@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Mir.hpp"
+#include <Mir>
 
 namespace title{
     const mir::String CONTENT = "Art Gallery Ghost";

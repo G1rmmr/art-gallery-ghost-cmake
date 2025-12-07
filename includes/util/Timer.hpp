@@ -18,14 +18,37 @@ namespace mir{
             inline std::vector<TimerTask> TimerTasks;
         }
 
+        struct Set{
+            int Hour;
+            int Minute;
+            int Second;
+            int MiliSec;
+        };
+
+        static inline Set GetLocalTime(){
+            const std::chrono::time_point now = std::chrono::system_clock::now();
+            const time_t time = std::chrono::system_clock::to_time_t(now);
+            const std::chrono::milliseconds ms = duration_cast<std::chrono::milliseconds>(
+                now.time_since_epoch()) % 1000;
+
+            std::tm* localTime = std::localtime(&time);
+
+            return {
+                localTime->tm_hour,
+                localTime->tm_min,
+                localTime->tm_sec,
+                static_cast<int>(ms.count())
+            };
+        }
+
         static inline float GetDelta(){
             static sf::Clock deltaClock;
             return deltaClock.restart().asSeconds();
         }
 
         static inline void Register(
-            std::function<void()> callback,
             const float seconds,
+            std::function<void()> callback,
             bool isLooping = false){
             TimerTasks.push_back({std::move(callback), seconds, seconds, isLooping});
         }

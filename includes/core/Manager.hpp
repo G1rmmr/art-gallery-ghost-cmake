@@ -184,7 +184,7 @@ namespace mir {
             Sources[tag] = std::make_unique<sf::Font>();
             if(!Sources[tag]->loadFromFile(resource::Fonts[tag])){
                 debug::Log("Font doesn't exist : %s", resource::Fonts[tag].c_str());
-                Sources[tag].reset(); // Failed to load, so reset unique_ptr
+                Sources[tag].reset();
                 return;
             }
             Texts[tag] = std::make_unique<sf::Text>();

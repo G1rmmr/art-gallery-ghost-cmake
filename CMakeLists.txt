@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-# 개발/릴리즈 모드 구분
 option(BUILD_BUNDLE "Build as macOS app bundle" OFF)
 
 find_package(SFML 2.6 COMPONENTS system window graphics audio)
@@ -22,12 +21,9 @@ if(NOT SFML_FOUND)
     FetchContent_MakeAvailable(SFML)
 endif()
 
-# 소스 파일
 set(SOURCES main.cpp)
-
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 
-# 개발 모드: 일반 실행파일, 릴리즈: 번들
 if(BUILD_BUNDLE AND APPLE)
     add_executable(art-gallery-ghost MACOSX_BUNDLE ${SOURCES})
 else()
@@ -38,8 +34,7 @@ target_compile_features(art-gallery-ghost PRIVATE cxx_std_20)
 target_include_directories(
     art-gallery-ghost
     PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/includes/engine
 )
 target_link_libraries(art-gallery-ghost PRIVATE
     sfml-graphics
@@ -48,7 +43,6 @@ target_link_libraries(art-gallery-ghost PRIVATE
     sfml-audio
 )
 
-# 프로파일 옵션 추가
 option(ENABLE_PROFILE "Enable performance profiling" OFF)
 
 if(ENABLE_PROFILE)
@@ -67,7 +61,6 @@ else()
         "ASSET_DIR=\"${ASSETS_DIR}\"")
 endif()
 
-# 빌드 모드 정의
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(
         art-gallery-ghost
@@ -78,7 +71,6 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Debug mode enabled - console logging active")
 endif()
 
-# macOS 설정
 if(APPLE)
     target_compile_definitions(
         art-gallery-ghost
@@ -88,7 +80,6 @@ if(APPLE)
     )
 endif()
 
-# macOS App Bundle 설정 (BUILD_BUNDLE이 ON일 때만)
 if(BUILD_BUNDLE AND APPLE)
     set_target_properties(art-gallery-ghost PROPERTIES
         MACOSX_BUNDLE TRUE
@@ -100,7 +91,6 @@ if(BUILD_BUNDLE AND APPLE)
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
     )
 
-    # 코드 사이닝 설정 (개발용)
     add_custom_command(TARGET art-gallery-ghost POST_BUILD
         COMMAND codesign
             --force

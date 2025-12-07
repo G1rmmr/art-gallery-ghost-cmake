@@ -142,7 +142,7 @@ namespace mir{
             EmitAccumulators[id] += static_cast<float>(count);
             IsEmittings[id] = true;
 
-            time::After(0.01f, [id](){ particle::IsEmittings[id] = false; });
+            time::Register(0.01f, [id](){ particle::IsEmittings[id] = false; });
         }
     }
 

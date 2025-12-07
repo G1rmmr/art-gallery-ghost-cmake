@@ -1,15 +1,15 @@
 #pragma once
 
-#include "Mir.hpp"
+#include <Mir>
 
 namespace player{
-    const mir::Real POS_X = 200.0;
-    const mir::Real POS_Y = 200.0;
-    const mir::Real SPEED = 200.0;
-    const mir::Real JUMP_POWER = 3000.0;
-    const mir::Real MASS = 10.0;
-    const mir::Real MAX_HEALTH = 100.0;
-    const mir::Real INIT_DAMAGE = 10.0;
+    const mir::Real POS_X = 200;
+    const mir::Real POS_Y = 200;
+    const mir::Real SPEED = 200;
+    const mir::Real JUMP_POWER = 3000;
+    const mir::Real MASS = 10;
+    const mir::Real MAX_HEALTH = 100;
+    const mir::Real INIT_DAMAGE = 10;
 
     const mir::Int SIZE_X = 100;
     const mir::Int SIZE_Y = 100;
@@ -20,7 +20,7 @@ namespace player{
     namespace{
         inline void InitTransform(const mir::ID id){
             mir::transform::Positions[id] = mir::Point2<mir::Real>(POS_X, POS_Y);
-            mir::transform::Scales[id] = mir::Point2<mir::Real>(1.0, 1.0);
+            mir::transform::Scales[id] = mir::Point2<mir::Real>(1, 1);
         }
 
         inline void InitPhysics(const mir::ID id){
@@ -31,7 +31,7 @@ namespace player{
         }
 
         inline void InitSprite(const mir::ID id){
-            mir::sprite::Colors[id] = mir::Color(0xFF, 0xFF, 0xFF);
+            mir::sprite::Colors[id] = mir::Color(255, 255, 255);
             mir::sprite::Types[id] = mir::sprite::Type::Rectangle;
             mir::texture::AllocFromType(id);
         }
@@ -52,18 +52,18 @@ namespace player{
                 mir::Real otherRight = otherLeft + mir::physics::Bounds[args.Other].x;
                 mir::Real otherBottom = otherTop + mir::physics::Bounds[args.Other].y;
 
-                mir::Real dx = (otherLeft + mir::physics::Bounds[args.Other].x / 2.0)
-                    - (left + mir::physics::Bounds[id].x / 2.0);
+                mir::Real dx = (otherLeft + mir::physics::Bounds[args.Other].x / 2)
+                    - (left + mir::physics::Bounds[id].x / 2);
 
-                mir::Real dy = (otherTop + mir::physics::Bounds[args.Other].y / 2.0)
-                    - (top + mir::physics::Bounds[id].y / 2.0);
+                mir::Real dy = (otherTop + mir::physics::Bounds[args.Other].y / 2)
+                    - (top + mir::physics::Bounds[id].y / 2);
 
-                mir::Real overlapX = (mir::physics::Bounds[id].x / 2.0
-                    + mir::physics::Bounds[args.Other].x / 2.0)
+                mir::Real overlapX = (mir::physics::Bounds[id].x / 2
+                    + mir::physics::Bounds[args.Other].x / 2)
                     - std::abs(dx);
 
-                mir::Real overlapY = (mir::physics::Bounds[id].y / 2.0
-                    + mir::physics::Bounds[args.Other].y / 2.0)
+                mir::Real overlapY = (mir::physics::Bounds[id].y / 2
+                    + mir::physics::Bounds[args.Other].y / 2)
                     - std::abs(dy);
 
                 if(overlapX < overlapY){
@@ -123,7 +123,7 @@ namespace player{
                 switch(event.Input){
                 case mir::event::type::Key::A:
                 case mir::event::type::Key::D:
-                    mir::transform::Velocities[id].x = 0.0;
+                    mir::transform::Velocities[id].x = 0;
                     break;
 
                 default: break;

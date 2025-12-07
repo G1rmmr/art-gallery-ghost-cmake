@@ -1,20 +1,20 @@
 #pragma once
 
-#include "Mir.hpp"
+#include <Mir>
 
 namespace button{
     const mir::String CONTENT = "Art Gallery Ghost";
 
-    const mir::Real SIZE_X = 500.0;
-    const mir::Real SIZE_Y = 50.0;
+    const mir::Real SIZE_X = 500;
+    const mir::Real SIZE_Y = 50;
 
-    const mir::Real POS_X = SIZE_X / 2.0;
-    const mir::Real POS_Y = SIZE_Y / 2.0;
+    const mir::Real POS_X = SIZE_X / 2;
+    const mir::Real POS_Y = SIZE_Y / 2;
 
     namespace{
         inline void InitTransform(const mir::ID id){
             mir::transform::Positions[id] = mir::Point2<mir::Real>(POS_X, POS_Y);
-            mir::transform::Scales[id] = mir::Point2<mir::Real>(1.0, 1.0);
+            mir::transform::Scales[id] = mir::Point2<mir::Real>(1, 1);
         }
 
         inline void InitPhysics(const mir::ID id){
@@ -30,7 +30,12 @@ namespace button{
         inline void InitText(){
             const mir::Tag tag = mir::font::Create("fonts/dieproud.ttf");
             mir::font::Alloc(tag);
-            mir::ui::BuildText(tag, mir::Point2<mir::Real>(POS_X, POS_Y), CONTENT.data(), 100);
+            mir::ui::BuildText(
+                tag,
+                mir::Color(255, 255, 255),
+                mir::Point2<mir::Real>(POS_X, POS_Y),
+                CONTENT.data(),
+                100);
         }
 
         inline void SubscribeOnClick(){
@@ -53,14 +58,6 @@ namespace button{
                 }
             ));
         }
-
-        inline void SubscribeKeyPressed(){
-            mir::event::Subscribe(mir::Action<const mir::event::type::KeyPressed&>(
-                []([[maybe_unused]] const mir::event::type::KeyPressed& event){
-                    mir::event::Publish(mir::event::type::ButtonClick{});
-                }
-            ));
-        }
     }
 
     inline mir::ID Create(){
@@ -74,7 +71,6 @@ namespace button{
 
         SubscribeOnClick();
         SubscribeMousePressed();
-        SubscribeKeyPressed();
 
         return id;
     }
