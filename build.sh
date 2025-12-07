@@ -11,7 +11,8 @@ Help(){
     echo "Options:"
     echo "  debug      - Build Debug mode (Default)"
     echo "  release    - Build Release mode"
-    echo "  clean      - Delete build directory"
+    echo "  publish    - Build for Web (Emscripten)"
+    echo "  clean      - Delete build directories"
     echo "  run        - Build Debug and Run"
     echo "  lldb       - Debug with LLDB"
     echo "  help       - Show Guide"
@@ -32,9 +33,30 @@ Release(){
     echo -e "${GREEN}Release build complete: ./build/bin/art-gallery-ghost${NC}"
 }
 
+Publish(){
+    if ! command -v emcmake &> /dev/null; then
+        echo -e "${RED}Error: emcmake could not be found.${NC}"
+        echo -e "${YELLOW}Please install Emscripten SDK and source the environment variables.${NC}"
+        echo -e "${YELLOW}Example: source ./emsdk/emsdk_env.sh${NC}"
+        exit 1
+    fi
+
+    echo -e "${GREEN}Building Web (Publish)...${NC}"
+    emcmake cmake -B build-web -DCMAKE_BUILD_TYPE=Release -DEMSCRIPTEN=ON
+    cmake --build build-web
+
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Web build complete: ./build-web/bin/art-gallery-ghost.html${NC}"
+        echo -e "${YELLOW}To test locally, run: python3 -m http.server -d build-web/bin${NC}"
+    else
+        echo -e "${RED}Web build failed.${NC}"
+        exit 1
+    fi
+}
+
 Clean(){
     echo -e "${YELLOW}Cleaning...${NC}"
-    rm -rf build
+    rm -rf build build-web
     echo -e "${GREEN}Clean complete${NC}"
 }
 
@@ -50,7 +72,8 @@ Run(){
 
 LLDB(){
     echo -e "${GREEN}Running LLDB...${NC}"
-    lldb bin/art-gallery-ghost
+    # Fixed path to point to build directory
+    lldb build/bin/art-gallery-ghost
 }
 
 case "$1" in
@@ -59,6 +82,9 @@ case "$1" in
         ;;
     release)
         Release
+        ;;
+    publish)
+        Publish
         ;;
     clean)
         Clean
