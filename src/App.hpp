@@ -31,13 +31,16 @@ namespace app {
                     mir::window::Close();
 
                 if(mir::input::IsPressed(mir::event::type::Key::F1))
-                    mir::debug::ToggleOverlay();
+                    mir::debug::ToggleDebug();
+
+                if(mir::input::IsPressed(mir::event::type::Key::F2))
+                    mir::profile::ToggleProfile();
             }
         }
 
         inline void Update(const mir::Real deltaTime){
             mir::time::Update(deltaTime);
-            mir::profile::ShowFPS(deltaTime);
+            mir::profile::Update(deltaTime);
             mir::movement::Update(deltaTime);
             mir::collision::Update();
             mir::animation::Update(deltaTime);

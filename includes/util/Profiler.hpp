@@ -5,16 +5,15 @@
 
 #include "Debugger.hpp"
 
-#ifndef ENABLE_PROFILE
-    #define ENABLE_PROFILE 0
-#endif
-
 namespace mir{
     namespace profile{
+        static inline bool IsEnable = true;
+        inline float CurrentFPS = 0.f;
+
         class ScopeTimer{
         public:
             ScopeTimer(std::string_view name) : boundName(name){
-                start = std::chrono::high_resolution_clock::now();
+                if(IsEnable) start = std::chrono::high_resolution_clock::now();
             }
 
             ScopeTimer(const ScopeTimer& other) = default;
@@ -24,6 +23,8 @@ namespace mir{
             ScopeTimer& operator=(ScopeTimer&& other) noexcept = default;
 
             ~ScopeTimer(){
+                if(!IsEnable) return;
+
                 std::chrono::high_resolution_clock::time_point end
                     = std::chrono::high_resolution_clock::now();
 
@@ -37,17 +38,11 @@ namespace mir{
             std::string_view boundName;
         };
 
-        static inline void ShowFPS(const float deltaTime) {
-            debug::State.IsFpsVisible = true;
-            if(deltaTime > 0.000001f){
-                debug::State.CurrentFPS = 1.0f / deltaTime;
-            }
+        static inline void ToggleProfile(){ IsEnable = !IsEnable; }
+        static inline void Update(const float deltaTime){
+            if(IsEnable) CurrentFPS = 1.f / deltaTime;
         }
     }
 }
 
-#ifdef ENABLE_PROFILE
-    #define PROFILE_SCOPE(name) if(mir::profile::ScopeTimer _timer##__LINE__(name); true)
-#else
-    #define PPROFILE_SCOPE(name) if(true)
-#endif
+#define PROFILE_SCOPE(name) if(mir::profile::ScopeTimer _timer##__LINE__(name); true)

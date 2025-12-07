@@ -10,6 +10,7 @@
 #include "../core/Entity.hpp"
 #include "../core/Manager.hpp"
 #include "../util/Debugger.hpp"
+#include "../util/Profiler.hpp"
 
 namespace mir{
     inline sf::RenderWindow* Window = nullptr;
@@ -171,51 +172,83 @@ namespace mir{
                 }
             }
 
-            static inline void DrawDebugOverlay(){
+            static inline void DrawDebug(){
                 if(!Window) return;
 
-                if(mir::debug::State.IsFpsVisible){
-                    static sf::Font font;
-                    static bool fontLoaded = false;
-                    static sf::Text text;
+                static sf::Font font;
+                static bool fontLoaded = false;
+                static sf::Text text;
 
-                    if(!fontLoaded){
-                        if(font.loadFromFile("assets/fonts/dieproud.ttf")){
-                            fontLoaded = true;
-                            text.setFont(font);
-                            text.setCharacterSize(24);
-                            text.setFillColor(sf::Color::Green);
-                            text.setPosition(10.f, 10.f);
-                        }
+                if(!fontLoaded){
+                    if(font.loadFromFile("assets/fonts/dieproud.ttf")){
+                        fontLoaded = true;
+                        text.setFont(font);
+                        text.setCharacterSize(24);
+                        text.setFillColor(sf::Color::Green);
                     }
+                }
 
-                    if(fontLoaded){
+                if constexpr(DEBUG_ENABLED) {
+                    if(mir::debug::IsEntityCountVisible && fontLoaded){
                         sf::View oldView = Window->getView();
                         Window->setView(Window->getDefaultView());
 
-                        const float fps = mir::debug::State.CurrentFPS;
-                        text.setString("FPS: " + std::to_string(fps));
+                        mir::ID count = 0;
+                        for(bool available : entity::IsAvailables)
+                            if(available) count++;
+
+                        text.setString("Entities: " + std::to_string(count));
+                        text.setPosition(10.f, 10.f);
 
                         Window->draw(text);
                         Window->setView(oldView);
                     }
+
+                    if(mir::debug::IsColliderVisible){
+                        for(ID id = 1; id < MAX_ENTITIES; ++id){
+                            if(!entity::IsAvailables[id]) continue;
+
+                            const sf::Vector2f& size = physics::Bounds[id];
+                            if(size.x == 0.f && size.y == 0.f) continue;
+
+                            sf::RectangleShape rect(size);
+                            rect.setPosition(transform::Positions[id]);
+                            rect.setFillColor(sf::Color::Transparent);
+                            rect.setOutlineColor(sf::Color::Red);
+                            rect.setOutlineThickness(1.f);
+
+                            Window->draw(rect);
+                        }
+                    }
+                }
+            }
+
+            static inline void DrawProfile(){
+                if(!Window) return;
+
+                static sf::Font font;
+                static bool fontLoaded = false;
+                static sf::Text text;
+
+                if(!fontLoaded){
+                    if(font.loadFromFile("assets/fonts/dieproud.ttf")){
+                        fontLoaded = true;
+                        text.setFont(font);
+                        text.setCharacterSize(24);
+                        text.setFillColor(sf::Color::Green);
+                    }
                 }
 
-                if(mir::debug::State.IsColliderVisible){
-                    for(ID id = 1; id < MAX_ENTITIES; ++id){
-                        if(!entity::IsAvailables[id]) continue;
+                if(mir::profile::IsEnable && fontLoaded){
+                    sf::View oldView = Window->getView();
+                    Window->setView(Window->getDefaultView());
 
-                        const sf::Vector2f& size = physics::Bounds[id];
-                        if(size.x == 0.f && size.y == 0.f) continue;
+                    const float fps = mir::profile::CurrentFPS;
+                    text.setString("FPS: " + std::to_string(static_cast<int>(fps)));
+                    text.setPosition(10.f, 40.f);
 
-                        sf::RectangleShape rect(size);
-                        rect.setPosition(transform::Positions[id]);
-                        rect.setFillColor(sf::Color::Transparent);
-                        rect.setOutlineColor(sf::Color::Red);
-                        rect.setOutlineThickness(1.f);
-
-                        Window->draw(rect);
-                    }
+                    Window->draw(text);
+                    Window->setView(oldView);
                 }
             }
         }
@@ -226,7 +259,8 @@ namespace mir{
             DrawSprites();
             // DrawParticles();
             DrawTexts();
-            DrawDebugOverlay();
+            DrawDebug();
+            DrawProfile();
         }
     }
 }

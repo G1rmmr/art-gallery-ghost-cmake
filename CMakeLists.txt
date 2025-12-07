@@ -8,9 +8,17 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 option(BUILD_BUNDLE "Build as macOS app bundle" OFF)
 
-find_package(SFML 2.6 COMPONENTS system window graphics audio)
+find_package(SFML 2.6 COMPONENTS system window graphics audio QUIET)
 if(NOT SFML_FOUND)
     message(STATUS "SFML not found via find_package. Using FetchContent.")
+
+    set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS ON CACHE BOOL "Suppress dev warnings" FORCE)
+    set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "Suppress deprecation warnings" FORCE)
+
+    if(POLICY CMP0153)
+        cmake_policy(SET CMP0153 OLD)
+    endif()
+
     include(FetchContent)
     FetchContent_Declare(SFML
         GIT_REPOSITORY https://github.com/SFML/SFML.git
@@ -43,32 +51,19 @@ target_link_libraries(art-gallery-ghost PRIVATE
     sfml-audio
 )
 
-option(ENABLE_PROFILE "Enable performance profiling" OFF)
-
-if(ENABLE_PROFILE)
-    target_compile_definitions(
-        art-gallery-ghost
-        PRIVATE
-        ENABLE_PROFILE=1
-        "ASSET_DIR=\"${ASSETS_DIR}\""
-    )
-    message(STATUS "Profiling enabled")
-else()
-    target_compile_definitions(
-        art-gallery-ghost
-        PRIVATE
-        ENABLE_PROFILE=0
-        "ASSET_DIR=\"${ASSETS_DIR}\"")
-endif()
+target_compile_definitions(
+    art-gallery-ghost
+    PRIVATE
+    "ASSET_DIR=\"${ASSETS_DIR}\""
+)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     target_compile_definitions(
         art-gallery-ghost
         PRIVATE
         DEBUG_MODE
-        "ASSET_DIR=\"${ASSETS_DIR}\""
     )
-    message(STATUS "Debug mode enabled - console logging active")
+    message(STATUS "Debug mode enabled")
 endif()
 
 if(APPLE)
@@ -76,7 +71,6 @@ if(APPLE)
         art-gallery-ghost
         PRIVATE
         GL_SILENCE_DEPRECATION
-        "ASSET_DIR=\"${ASSETS_DIR}\""
     )
 endif()
 
