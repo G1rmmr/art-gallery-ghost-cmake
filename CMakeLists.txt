@@ -25,15 +25,11 @@ if(EMSCRIPTEN)
         ${CMAKE_CURRENT_SOURCE_DIR}/includes/engine
     )
 
+    # Emscripten flags
+    target_compile_options(art-gallery-ghost PRIVATE "-sUSE_SFML=2")
     target_link_options(art-gallery-ghost PRIVATE
         "-sUSE_SFML=2"
         "-sALLOW_MEMORY_GROWTH=1"
-        "-sMAX_WEBGL_VERSION=2"
-        "-sWASM=1"
-        "-sASYNCIFY"
-        "--preload-file" "${ASSETS_DIR}@/assets"
-        "--shell-file" "${CMAKE_SOURCE_DIR}/assets/shell.html"
-    )
 else()
     find_package(SFML 2.6 COMPONENTS system window graphics audio QUIET)
     if(NOT SFML_FOUND)
