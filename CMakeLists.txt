@@ -25,8 +25,8 @@ if(EMSCRIPTEN)
 
     include(FetchContent)
     FetchContent_Declare(SFML
-        GIT_REPOSITORY https://github.com/vittorioromeo/SFML.git
-        GIT_TAG emscripten
+        GIT_REPOSITORY https://github.com/vittorioromeo/VRSFML.git
+        GIT_TAG master
         GIT_SHALLOW ON
         SYSTEM)
     FetchContent_MakeAvailable(SFML)
