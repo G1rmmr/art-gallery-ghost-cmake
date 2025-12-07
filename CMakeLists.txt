@@ -25,11 +25,10 @@ if(EMSCRIPTEN)
 
     include(FetchContent)
     FetchContent_Declare(SFML
-        GIT_REPOSITORY https://github.com/SFML/SFML.git
-        GIT_TAG ${SFML_VERSION}
+        GIT_REPOSITORY https://github.com/vittorioromeo/SFML.git
+        GIT_TAG emscripten
         GIT_SHALLOW ON
         SYSTEM)
-
     FetchContent_MakeAvailable(SFML)
 else()
     find_package(SFML 2.6 COMPONENTS system window graphics audio QUIET)
