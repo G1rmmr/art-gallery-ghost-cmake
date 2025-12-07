@@ -7,7 +7,7 @@
 
 namespace mir{
     namespace profile{
-        static inline bool IsEnable = true;
+        static inline bool IsEnable = false;
         inline float CurrentFPS = 0.f;
 
         class ScopeTimer{

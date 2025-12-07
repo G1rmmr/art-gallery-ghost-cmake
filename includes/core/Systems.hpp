@@ -4,6 +4,7 @@
 
 #include "Components.hpp"
 #include "../handle/Event.hpp"
+#include "../util/Math.hpp"
 
 namespace mir{
     namespace movement{
@@ -97,9 +98,8 @@ namespace mir{
     namespace effect{
         namespace{
             static inline void GenerateParticles(const ID id, const float deltaTime){
-                if(!particle::IsEmittings[id]) return;
-
-                particle::EmitAccumulators[id] += particle::EmitRates[id] * deltaTime;
+                if(particle::IsEmittings[id])
+                    particle::EmitAccumulators[id] += particle::EmitRates[id] * deltaTime;
 
                 const sf::Vector2f& emitterPos = transform::Positions[id];
                 const std::size_t particleCount = particle::Positions[id].size();
@@ -108,8 +108,8 @@ namespace mir{
                     particle::EmitAccumulators[id] -= 1.0f;
 
                     if(particleCount < particle::MaxParticles[id]){
-                        float angle = (rand() % 360) * 3.14159f / 180.0f;
-                        float speed = 50.0f + (rand() % 100);
+                        float angle = math::GetRandomReal(0.f, 360.f) * math::PI / 180.0f;
+                        float speed = 50.0f + math::GetRandomReal(0.f, 100.f);
 
                         particle::Positions[id].push_back(emitterPos);
                         particle::Velocities[id].push_back({
@@ -134,33 +134,32 @@ namespace mir{
             }
 
             static inline void UpdateParticles(const ID id, const float deltaTime){
-                const std::uint16_t particleCount
-                    = static_cast<std::uint16_t>(particle::Positions[id].size());
+                const int particleCount
+                    = static_cast<int>(particle::Positions[id].size());
 
-                for(std::uint16_t i = particleCount - 1; i == 0; --i){
-                    particle::CurrentLifeTimes[id][i] -= deltaTime;
+                for(int i = particleCount - 1; i >= 0; --i){
+                    std::vector<float>::size_type index = static_cast<std::vector<float>::size_type>(i);
 
-                    if(particle::CurrentLifeTimes[id][i] <= 0.f){
-                        KillParticles(id, i);
+                    particle::CurrentLifeTimes[id][index] -= deltaTime;
+
+                    if(particle::CurrentLifeTimes[id][index] <= 0.f){
+                        KillParticles(id, static_cast<std::uint16_t>(index));
                         continue;
                     }
 
-                    particle::Positions[id][i] += particle::Velocities[id][i] * deltaTime;
-                    particle::Velocities[id][i].y += physics::GRAV_ACCEL * deltaTime;
+                    particle::Positions[id][index] += particle::Velocities[id][index] * deltaTime;
 
-                    float t = 1.0f - (particle::CurrentLifeTimes[id][i] / particle::MaxLifeTimes[id][i]);
+                    if(!physics::IsGhosts[id])
+                        particle::Velocities[id][index].y += physics::GRAV_ACCEL * deltaTime;
+
+                    float t = 1.0f - (particle::CurrentLifeTimes[id][index]
+                        / particle::MaxLifeTimes[id][index]);
 
                     const sf::Color& start = particle::StartColors[id];
                     const sf::Color& end = particle::EndColors[id];
 
-                    particle::CurrentColors[id][i] = sf::Color(
-                        start.r + (end.r - start.r) * static_cast<std::uint8_t>(t),
-                        start.g + (end.g - start.g) * static_cast<std::uint8_t>(t),
-                        start.b + (end.b - start.b) * static_cast<std::uint8_t>(t),
-                        start.a + (end.a - start.a) * static_cast<std::uint8_t>(t)
-                    );
-
-                    particle::CurrentSizes[id][i] = particle::StartSizes[id]
+                    particle::CurrentColors[id][index] = math::Lerp(start, end, t);
+                    particle::CurrentSizes[id][index] = particle::StartSizes[id]
                         + (particle::EndSizes[id] - particle::StartSizes[id]) * t;
                 }
             }
@@ -168,7 +167,9 @@ namespace mir{
 
         static inline void Update(const float deltaTime){
             for(ID id = 0; id < MAX_ENTITIES; ++id){
-                if(!particle::IsEmittings[id] && particle::Positions[id].empty()) continue;
+                if(!particle::IsEmittings[id] && 
+                   particle::Positions[id].empty() && 
+                   particle::EmitAccumulators[id] < 1.0f) continue;
 
                 GenerateParticles(id, deltaTime);
                 UpdateParticles(id, deltaTime);

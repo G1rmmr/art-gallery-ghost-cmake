@@ -197,7 +197,7 @@ namespace mir{
                         for(bool available : entity::IsAvailables)
                             if(available) count++;
 
-                        text.setString("Entities: " + std::to_string(count));
+                        text.setString("[Toggle - F1] Entities: " + std::to_string(count));
                         text.setPosition(10.f, 10.f);
 
                         Window->draw(text);
@@ -244,7 +244,7 @@ namespace mir{
                     Window->setView(Window->getDefaultView());
 
                     const float fps = mir::profile::CurrentFPS;
-                    text.setString("FPS: " + std::to_string(static_cast<int>(fps)));
+                    text.setString("[Toggle - F2] FPS: " + std::to_string(static_cast<int>(fps)));
                     text.setPosition(10.f, 40.f);
 
                     Window->draw(text);
@@ -257,7 +257,7 @@ namespace mir{
             if(!Window) return;
 
             DrawSprites();
-            // DrawParticles();
+            DrawParticles();
             DrawTexts();
             DrawDebug();
             DrawProfile();

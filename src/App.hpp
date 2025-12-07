@@ -41,6 +41,7 @@ namespace app {
         inline void Update(const mir::Real deltaTime){
             mir::time::Update(deltaTime);
             mir::profile::Update(deltaTime);
+            mir::effect::Update(deltaTime);
             mir::movement::Update(deltaTime);
             mir::collision::Update();
             mir::animation::Update(deltaTime);

@@ -6,6 +6,8 @@
 
 namespace mir{
     namespace math{
+        static constexpr float PI = 3.14159f;
+
         static inline float Lerp(
             const float start, const float end, const float interval){
             return (1.f - interval) * start + interval * end;
