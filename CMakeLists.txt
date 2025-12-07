@@ -13,24 +13,24 @@ set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 
 if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
-
     add_compile_definitions(__EMSCRIPTEN__)
+endif()
 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_SFML=2")
+set(SFML_VERSION "2.6.1")
 
-    add_executable(art-gallery-ghost ${SOURCES})
+if(EMSCRIPTEN)
+    set(SFML_BUILD_DOC OFF CACHE BOOL "" FORCE)
+    set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+    set(SFML_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
 
-    target_compile_features(art-gallery-ghost PRIVATE cxx_std_20)
-    target_include_directories(
-        art-gallery-ghost
-        PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/includes/engine
-    )
+    include(FetchContent)
+    FetchContent_Declare(SFML
+        GIT_REPOSITORY https://github.com/SFML/SFML.git
+        GIT_TAG ${SFML_VERSION}
+        GIT_SHALLOW ON
+        SYSTEM)
 
-    target_link_options(art-gallery-ghost PRIVATE
-        "-sUSE_SFML=2"
-        "-sALLOW_MEMORY_GROWTH=1"
-    )
+    FetchContent_MakeAvailable(SFML)
 else()
     find_package(SFML 2.6 COMPONENTS system window graphics audio QUIET)
     if(NOT SFML_FOUND)
@@ -46,32 +46,49 @@ else()
         include(FetchContent)
         FetchContent_Declare(SFML
             GIT_REPOSITORY https://github.com/SFML/SFML.git
-            GIT_TAG 2.6.1
+            GIT_TAG ${SFML_VERSION}
             GIT_SHALLOW ON
             EXCLUDE_FROM_ALL
             SYSTEM)
         FetchContent_MakeAvailable(SFML)
     endif()
+endif()
 
-    if(BUILD_BUNDLE AND APPLE)
-        add_executable(art-gallery-ghost MACOSX_BUNDLE ${SOURCES})
-    else()
-        add_executable(art-gallery-ghost ${SOURCES})
-    endif()
+if(BUILD_BUNDLE AND APPLE)
+    add_executable(art-gallery-ghost MACOSX_BUNDLE ${SOURCES})
+else()
+    add_executable(art-gallery-ghost ${SOURCES})
+endif()
 
-    target_compile_features(art-gallery-ghost PRIVATE cxx_std_20)
-    target_include_directories(
+target_compile_features(art-gallery-ghost PRIVATE cxx_std_20)
+target_include_directories(
+    art-gallery-ghost
+    PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/includes/engine
+)
+
+target_link_libraries(art-gallery-ghost PRIVATE
+    sfml-graphics
+    sfml-system
+    sfml-window
+    sfml-audio
+)
+
+if(EMSCRIPTEN)
+    target_link_options(art-gallery-ghost PRIVATE
+        "-sALLOW_MEMORY_GROWTH=1"
+        "-sMAX_WEBGL_VERSION=2"
+        "-sWASM=1"
+        "-sASYNCIFY"
+        "--preload-file" "${ASSETS_DIR}@/assets"
+    )
+
+    target_compile_definitions(
         art-gallery-ghost
         PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/includes/engine
+        "ASSET_DIR=\"/assets\""
     )
-    target_link_libraries(art-gallery-ghost PRIVATE
-        sfml-graphics
-        sfml-system
-        sfml-window
-        sfml-audio
-    )
-
+else()
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         target_compile_definitions(
             art-gallery-ghost
@@ -88,6 +105,12 @@ else()
             GL_SILENCE_DEPRECATION
         )
     endif()
+
+    target_compile_definitions(
+        art-gallery-ghost
+        PRIVATE
+        "ASSET_DIR=\"${ASSETS_DIR}\""
+    )
 
     if(BUILD_BUNDLE AND APPLE)
         set_target_properties(art-gallery-ghost PROPERTIES
@@ -109,18 +132,4 @@ else()
             COMMENT "Code signing the app bundle"
         )
     endif()
-endif()
-
-if(EMSCRIPTEN)
-    target_compile_definitions(
-        art-gallery-ghost
-        PRIVATE
-        "ASSET_DIR=\"/assets\""
-    )
-else()
-    target_compile_definitions(
-        art-gallery-ghost
-        PRIVATE
-        "ASSET_DIR=\"${ASSETS_DIR}\""
-    )
 endif()
