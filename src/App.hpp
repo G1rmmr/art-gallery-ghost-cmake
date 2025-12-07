@@ -1,9 +1,5 @@
 #pragma once
 
-#ifdef __EMSCRIPTEN__
-    #include <emscripten.h>
-#endif
-
 #include <Mir>
 
 #include "menu/Menu.hpp"
@@ -31,7 +27,7 @@ namespace app {
             mir::input::Process();
 
             if(mir::input::IsPressed(mir::event::type::Key::Escape)){
-                
+
 #ifdef __EMSCRIPTEN__
                 emscripten_cancel_main_loop();
 #endif

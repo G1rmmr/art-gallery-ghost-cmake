@@ -77,3 +77,8 @@ namespace mir {
     static constexpr Real R_MAX = std::numeric_limits<Real>::max();
     static constexpr Real R_MIN = std::numeric_limits<Real>::min();
 }
+
+#ifdef __EMSCRIPTEN__
+    #include <emscripten.h>
+    #include <emscripten/html5.h>
+#endif
