@@ -15,14 +15,8 @@
 
 namespace mir {
     namespace debug {
-        struct DebugState {
-            bool IsFpsVisible = true;
-            bool IsEntityCountVisible = true;
-            bool IsColliderVisible = true;
-            float CurrentFPS = 0.f;
-        };
-
-        inline DebugState State;
+        inline bool IsEntityCountVisible = false;
+        inline bool IsColliderVisible = false;
 
         template<typename... Args>
         static inline void Log(const char* format, Args&&... args){
@@ -42,15 +36,10 @@ namespace mir {
             std::fflush(stdout);
         }
 
-        static inline void ShowEntityCount(bool isEnabled){ State.IsEntityCountVisible = isEnabled; }
-        static inline void ShowColliders(bool isEnabled){ State.IsColliderVisible = isEnabled; }
-
-        static inline void ToggleFPS() { State.IsFpsVisible = !State.IsFpsVisible; }
-        static inline void ToggleOverlay() {
-            bool newState = !State.IsColliderVisible;
-            State.IsColliderVisible = newState;
-            State.IsEntityCountVisible = newState;
-            State.IsFpsVisible = newState;
+        static inline void ToggleDebug(){
+            if constexpr(!DEBUG_ENABLED) return;
+            IsColliderVisible = !IsColliderVisible;
+            IsEntityCountVisible = !IsEntityCountVisible;
         }
     }
 }
