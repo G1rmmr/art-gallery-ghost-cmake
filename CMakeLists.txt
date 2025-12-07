@@ -14,27 +14,27 @@ set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
     add_compile_definitions(__EMSCRIPTEN__)
+    
+    # Emscripten specific: Use built-in SFML port but fetch headers manually
+    # because emcc doesn't add include paths during compilation properly sometimes.
+    include(FetchContent)
+    FetchContent_Declare(SFML_HEADERS
+        GIT_REPOSITORY https://github.com/SFML/SFML.git
+        GIT_TAG 2.6.1
+        GIT_SHALLOW ON
+    )
+    FetchContent_Populate(SFML_HEADERS)
+    
+    # We don't build SFML here, just use the headers
+    # The linking happens via -sUSE_SFML=2
 endif()
 
-set(SFML_VERSION "2.6.1")
-
-if(EMSCRIPTEN)
-    set(SFML_BUILD_DOC OFF CACHE BOOL "" FORCE)
-    set(SFML_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(SFML_BUILD_TEST_SUITE OFF CACHE BOOL "" FORCE)
-
-    include(FetchContent)
-    FetchContent_Declare(SFML
-        GIT_REPOSITORY https://github.com/vittorioromeo/VRSFML.git
-        GIT_TAG master
-        GIT_SHALLOW ON
-        SYSTEM)
-    FetchContent_MakeAvailable(SFML)
-else()
+if(NOT EMSCRIPTEN)
+    # Desktop: Try find_package first, then FetchContent
+    set(SFML_VERSION "2.6.1")
     find_package(SFML 2.6 COMPONENTS system window graphics audio QUIET)
     if(NOT SFML_FOUND)
         message(STATUS "SFML not found via find_package. Using FetchContent.")
-
         set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS ON CACHE BOOL "Suppress dev warnings" FORCE)
         set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "Suppress deprecation warnings" FORCE)
 
@@ -66,43 +66,40 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/includes/engine
 )
 
-target_link_libraries(art-gallery-ghost PRIVATE
-    sfml-graphics
-    sfml-system
-    sfml-window
-    sfml-audio
-)
-
 if(EMSCRIPTEN)
+    # Add SFML headers manually
+    target_include_directories(art-gallery-ghost PRIVATE ${sfml_headers_SOURCE_DIR}/include)
+
     target_link_options(art-gallery-ghost PRIVATE
+        "-sUSE_SFML=2"
         "-sALLOW_MEMORY_GROWTH=1"
         "-sMAX_WEBGL_VERSION=2"
         "-sWASM=1"
         "-sASYNCIFY"
         "--preload-file" "${ASSETS_DIR}@/assets"
+        "--shell-file" "${CMAKE_SOURCE_DIR}/emscripten/shell.html"
     )
-
+    
     target_compile_definitions(
         art-gallery-ghost
         PRIVATE
         "ASSET_DIR=\"/assets\""
     )
 else()
+    target_link_libraries(art-gallery-ghost PRIVATE
+        sfml-graphics
+        sfml-system
+        sfml-window
+        sfml-audio
+    )
+
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        target_compile_definitions(
-            art-gallery-ghost
-            PRIVATE
-            DEBUG_MODE
-        )
+        target_compile_definitions(art-gallery-ghost PRIVATE DEBUG_MODE)
         message(STATUS "Debug mode enabled")
     endif()
 
     if(APPLE)
-        target_compile_definitions(
-            art-gallery-ghost
-            PRIVATE
-            GL_SILENCE_DEPRECATION
-        )
+        target_compile_definitions(art-gallery-ghost PRIVATE GL_SILENCE_DEPRECATION)
     endif()
 
     target_compile_definitions(
@@ -121,13 +118,8 @@ else()
             MACOSX_BUNDLE_COPYRIGHT "© 2025 John Nam"
             MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
         )
-
         add_custom_command(TARGET art-gallery-ghost POST_BUILD
-            COMMAND codesign
-                --force
-                --deep
-                --sign -
-                $<TARGET_BUNDLE_DIR:art-gallery-ghost>
+            COMMAND codesign --force --deep --sign - $<TARGET_BUNDLE_DIR:art-gallery-ghost>
             COMMENT "Code signing the app bundle"
         )
     endif()
