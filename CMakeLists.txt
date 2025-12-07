@@ -14,23 +14,9 @@ set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
     add_compile_definitions(__EMSCRIPTEN__)
-    
-    # Emscripten specific: Use built-in SFML port but fetch headers manually
-    # because emcc doesn't add include paths during compilation properly sometimes.
-    include(FetchContent)
-    FetchContent_Declare(SFML_HEADERS
-        GIT_REPOSITORY https://github.com/SFML/SFML.git
-        GIT_TAG 2.6.1
-        GIT_SHALLOW ON
-    )
-    FetchContent_Populate(SFML_HEADERS)
-    
-    # We don't build SFML here, just use the headers
-    # The linking happens via -sUSE_SFML=2
 endif()
 
 if(NOT EMSCRIPTEN)
-    # Desktop: Try find_package first, then FetchContent
     set(SFML_VERSION "2.6.1")
     find_package(SFML 2.6 COMPONENTS system window graphics audio QUIET)
     if(NOT SFML_FOUND)
@@ -67,9 +53,6 @@ target_include_directories(
 )
 
 if(EMSCRIPTEN)
-    # Add SFML headers manually
-    target_include_directories(art-gallery-ghost PRIVATE ${sfml_headers_SOURCE_DIR}/include)
-
     target_link_options(art-gallery-ghost PRIVATE
         "-sUSE_SFML=2"
         "-sALLOW_MEMORY_GROWTH=1"
@@ -79,7 +62,7 @@ if(EMSCRIPTEN)
         "--preload-file" "${ASSETS_DIR}@/assets"
         "--shell-file" "${CMAKE_SOURCE_DIR}/emscripten/shell.html"
     )
-    
+
     target_compile_definitions(
         art-gallery-ghost
         PRIVATE
