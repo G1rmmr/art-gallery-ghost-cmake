@@ -16,27 +16,29 @@ if(EMSCRIPTEN)
     add_compile_definitions(__EMSCRIPTEN__)
 endif()
 
+set(SFML_VERSION "2.6.1")
+
 if(NOT EMSCRIPTEN)
-    set(SFML_VERSION "2.6.1")
     find_package(SFML 2.6 COMPONENTS system window graphics audio QUIET)
-    if(NOT SFML_FOUND)
-        message(STATUS "SFML not found via find_package. Using FetchContent.")
-        set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS ON CACHE BOOL "Suppress dev warnings" FORCE)
-        set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "Suppress deprecation warnings" FORCE)
+endif()
 
-        if(POLICY CMP0153)
-            cmake_policy(SET CMP0153 OLD)
-        endif()
+if(EMSCRIPTEN OR NOT SFML_FOUND)
+    message(STATUS "SFML not found or Emscripten build. Using FetchContent.")
+    set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS ON CACHE BOOL "Suppress dev warnings" FORCE)
+    set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "Suppress deprecation warnings" FORCE)
 
-        include(FetchContent)
-        FetchContent_Declare(SFML
-            GIT_REPOSITORY https://github.com/SFML/SFML.git
-            GIT_TAG ${SFML_VERSION}
-            GIT_SHALLOW ON
-            EXCLUDE_FROM_ALL
-            SYSTEM)
-        FetchContent_MakeAvailable(SFML)
+    if(POLICY CMP0153)
+        cmake_policy(SET CMP0153 OLD)
     endif()
+
+    include(FetchContent)
+    FetchContent_Declare(SFML
+        GIT_REPOSITORY https://github.com/SFML/SFML.git
+        GIT_TAG ${SFML_VERSION}
+        GIT_SHALLOW ON
+        EXCLUDE_FROM_ALL
+        SYSTEM)
+    FetchContent_MakeAvailable(SFML)
 endif()
 
 if(BUILD_BUNDLE AND APPLE)
@@ -52,10 +54,15 @@ target_include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/includes/engine
 )
 
+target_link_libraries(art-gallery-ghost PRIVATE
+    sfml-graphics
+    sfml-system
+    sfml-window
+    sfml-audio
+)
+
 if(EMSCRIPTEN)
-    target_compile_options(art-gallery-ghost PRIVATE "-sUSE_SFML=2")
     target_link_options(art-gallery-ghost PRIVATE
-        "-sUSE_SFML=2"
         "-sALLOW_MEMORY_GROWTH=1"
         "-sMAX_WEBGL_VERSION=2"
         "-sWASM=1"
@@ -70,13 +77,6 @@ if(EMSCRIPTEN)
         "ASSET_DIR=\"/assets\""
     )
 else()
-    target_link_libraries(art-gallery-ghost PRIVATE
-        sfml-graphics
-        sfml-system
-        sfml-window
-        sfml-audio
-    )
-
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         target_compile_definitions(art-gallery-ghost PRIVATE DEBUG_MODE)
         message(STATUS "Debug mode enabled")
