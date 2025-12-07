@@ -13,7 +13,7 @@ set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 
 if(EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    
+
     add_compile_definitions(__EMSCRIPTEN__)
 
     add_executable(art-gallery-ghost ${SOURCES})
@@ -25,11 +25,11 @@ if(EMSCRIPTEN)
         ${CMAKE_CURRENT_SOURCE_DIR}/includes/engine
     )
 
-    # Emscripten flags
     target_compile_options(art-gallery-ghost PRIVATE "-sUSE_SFML=2")
     target_link_options(art-gallery-ghost PRIVATE
         "-sUSE_SFML=2"
         "-sALLOW_MEMORY_GROWTH=1"
+    )
 else()
     find_package(SFML 2.6 COMPONENTS system window graphics audio QUIET)
     if(NOT SFML_FOUND)
@@ -70,7 +70,7 @@ else()
         sfml-window
         sfml-audio
     )
-    
+
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         target_compile_definitions(
             art-gallery-ghost
