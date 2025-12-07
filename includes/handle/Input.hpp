@@ -17,6 +17,8 @@ namespace mir{
                 {sf::Keyboard::A, event::type::Key::A},
                 {sf::Keyboard::S, event::type::Key::S},
                 {sf::Keyboard::D, event::type::Key::D},
+                {sf::Keyboard::F1, event::type::Key::F1},
+                {sf::Keyboard::F2, event::type::Key::F2},
                 {sf::Keyboard::Space, event::type::Key::Space},
                 {sf::Keyboard::Enter, event::type::Key::Enter}
             };

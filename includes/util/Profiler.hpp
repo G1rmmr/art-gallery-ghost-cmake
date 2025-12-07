@@ -1,7 +1,7 @@
 #pragma once
 
 #include <chrono>
-#include <string_view>
+#include <string>
 
 #include "Debugger.hpp"
 
@@ -17,6 +17,12 @@ namespace mir{
                 start = std::chrono::high_resolution_clock::now();
             }
 
+            ScopeTimer(const ScopeTimer& other) = default;
+            ScopeTimer& operator=(const ScopeTimer& other) = default;
+
+            ScopeTimer(ScopeTimer&& other) noexcept = default;
+            ScopeTimer& operator=(ScopeTimer&& other) noexcept = default;
+
             ~ScopeTimer(){
                 std::chrono::high_resolution_clock::time_point end
                     = std::chrono::high_resolution_clock::now();
@@ -30,6 +36,13 @@ namespace mir{
             std::chrono::high_resolution_clock::time_point start;
             std::string_view boundName;
         };
+
+        static inline void ShowFPS(const float deltaTime) {
+            debug::State.IsFpsVisible = true;
+            if(deltaTime > 0.000001f){
+                debug::State.CurrentFPS = 1.0f / deltaTime;
+            }
+        }
     }
 }
 

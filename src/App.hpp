@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Mir.hpp"
+#include <Mir>
 
 #include "menu/Menu.hpp"
 #include "game/Game.hpp"
@@ -24,12 +24,18 @@ namespace app {
         inline void ProcessInput(){
             PROFILE_SCOPE("Input"){
                 mir::input::Process();
+
                 if(mir::input::IsPressed(mir::event::type::Key::Escape))
                     mir::window::Close();
+
+                if(mir::input::IsPressed(mir::event::type::Key::F1))
+                    mir::debug::ToggleOverlay();
             }
         }
 
         inline void Update(const mir::Real deltaTime){
+            mir::time::Update(deltaTime);
+            mir::profile::ShowFPS(deltaTime);
             mir::movement::Update(deltaTime);
             mir::collision::Update();
             mir::animation::Update(deltaTime);
@@ -37,7 +43,7 @@ namespace app {
 
         inline void Render(){
             PROFILE_SCOPE("Render"){
-                mir::window::Clear(0x7F, 0x7F, 0x7F);
+                mir::window::Clear(127, 127, 127);
                 mir::window::Render();
                 mir::window::Display();
             }

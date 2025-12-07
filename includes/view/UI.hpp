@@ -11,11 +11,13 @@ namespace mir{
     namespace ui{
         static inline void BuildText(
             const Tag tag,
+            const sf::Color& color,
             const sf::Vector2f& pos,
             const std::string& content,
             const std::uint8_t size){
             if(!font::Sources[tag]) return;
 
+            font::Texts[tag]->setFillColor(color);
             font::Texts[tag]->setString(content);
             font::Texts[tag]->setPosition(pos);
             font::Texts[tag]->setCharacterSize(size);

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Mir.hpp"
+#include <Mir>
 
 namespace ground{
-    const mir::Real POS_X = -100.0;
-    const mir::Real POS_Y = 700.0;
+    const mir::Real POS_X = -100;
+    const mir::Real POS_Y = 700;
 
     const mir::Int SIZE_X = 2000;
     const mir::Int SIZE_Y = 200;
@@ -15,12 +15,12 @@ namespace ground{
     namespace{
         inline void InitTransform(const mir::ID id){
             mir::transform::Positions[id] = mir::Point2<mir::Real>(POS_X, POS_Y);
-            mir::transform::Scales[id] = mir::Point2<mir::Real>(1.0, 1.0);
+            mir::transform::Scales[id] = mir::Point2<mir::Real>(1, 1);
         }
 
         inline void InitPhysics(const mir::ID id){
             mir::physics::Bounds[id] = mir::Point2<mir::Real>(SIZE_X, SIZE_Y);
-            mir::physics::Masses[id] = 10000.0;
+            mir::physics::Masses[id] = 10000;
             mir::physics::InAirFlags[id] = IN_AIR;
             mir::physics::IsGhosts[id] = IS_GHOST;
         }

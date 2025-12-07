@@ -25,7 +25,9 @@ namespace mir{
                 W,
                 A,
                 S,
-                D
+                D,
+                F1,
+                F2
             };
 
             struct KeyPressed{
@@ -52,13 +54,21 @@ namespace mir{
 
             class Base{
             public:
+                Base() = default;
+                Base(const Base& other) = default;
+                Base& operator=(const Base& other) = default;
+
+                Base(Base&& other) noexcept = default;
+                Base& operator=(Base&& other) noexcept = default;
+
                 virtual ~Base() = default;
             };
 
             template<typename T>
             class Listener : public Base{
             public:
-                explicit Listener(std::function<void(const T&)> cb) : callback(std::move(cb)) {}
+                explicit Listener(std::function<void(const T&)> callBack)
+                    : callback(std::move(callBack)) {}
                 void Exec(const T& event){ callback(event); }
 
             private:
