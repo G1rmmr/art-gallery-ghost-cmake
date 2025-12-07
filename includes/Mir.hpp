@@ -27,6 +27,7 @@
 #include "util/Debugger.hpp"
 #include "util/Profiler.hpp"
 #include "util/Timer.hpp"
+#include "util/Math.hpp"
 
 #include "view/Camera.hpp"
 #include "view/Display.hpp"
