@@ -16,6 +16,8 @@ if(EMSCRIPTEN)
 
     add_compile_definitions(__EMSCRIPTEN__)
 
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -sUSE_SFML=2")
+
     add_executable(art-gallery-ghost ${SOURCES})
 
     target_compile_features(art-gallery-ghost PRIVATE cxx_std_20)
@@ -25,7 +27,6 @@ if(EMSCRIPTEN)
         ${CMAKE_CURRENT_SOURCE_DIR}/includes/engine
     )
 
-    target_compile_options(art-gallery-ghost PRIVATE "-sUSE_SFML=2")
     target_link_options(art-gallery-ghost PRIVATE
         "-sUSE_SFML=2"
         "-sALLOW_MEMORY_GROWTH=1"
