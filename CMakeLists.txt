@@ -52,6 +52,10 @@ if(EMSCRIPTEN OR NOT SFML_FOUND)
         EXCLUDE_FROM_ALL
         SYSTEM)
     FetchContent_MakeAvailable(SFML)
+
+    if(EMSCRIPTEN)
+        target_include_directories(sfml-audio PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/ems_include")
+    endif()
 endif()
 
 if(BUILD_BUNDLE AND APPLE)
