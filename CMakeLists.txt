@@ -84,6 +84,7 @@ if(EMSCRIPTEN)
         "-sMAX_WEBGL_VERSION=2"
         "-sWASM=1"
         "-sASYNCIFY"
+        "-sUSE_FREETYPE=1"
         "--preload-file" "${ASSETS_DIR}@/assets"
         "--shell-file" "${CMAKE_SOURCE_DIR}/emscripten/shell.html"
     )
