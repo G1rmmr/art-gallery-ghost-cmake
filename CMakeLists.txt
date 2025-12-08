@@ -36,10 +36,18 @@ if(EMSCRIPTEN OR NOT SFML_FOUND)
         cmake_policy(SET CMP0153 OLD)
     endif()
 
+    if(EMSCRIPTEN)
+        set(SFML_REPOSITORY https://github.com/Zombieschannel/SFML.git)
+        set(SFML_TAG SFML-2.6.x-EMCC)
+    else()
+        set(SFML_REPOSITORY https://github.com/SFML/SFML.git)
+        set(SFML_TAG ${SFML_VERSION})
+    endif()
+
     include(FetchContent)
     FetchContent_Declare(SFML
-        GIT_REPOSITORY https://github.com/SFML/SFML.git
-        GIT_TAG ${SFML_VERSION}
+        GIT_REPOSITORY ${SFML_REPOSITORY}
+        GIT_TAG ${SFML_TAG}
         GIT_SHALLOW ON
         EXCLUDE_FROM_ALL
         SYSTEM)
