@@ -101,7 +101,7 @@ namespace player{
                 switch(event.Input){
                 case mir::event::type::Key::W:
                     mir::event::Publish(mir::event::type::Jump{});
-                    mir::camera::Shake(0.1, 1);
+                    mir::camera::Shake(0.01, 1);
                     break;
 
                 case mir::event::type::Key::A:

@@ -20,9 +20,9 @@ namespace game{
                 mir::particle::EndSizes[id] = 2;
 
                 mir::particle::TargetLifeTimes[id] = 1;
-                mir::particle::IsEmittings[id] = false;
+                mir::particle::IsEmittings[id] = true;
 
-                mir::particle::BurstParticle(id, 50);
+                // mir::particle::BurstParticle(id, 50);
             }
         }
 
