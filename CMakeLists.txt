@@ -85,6 +85,8 @@ if(EMSCRIPTEN)
         "-sWASM=1"
         "-sASYNCIFY"
         "-sUSE_FREETYPE=1"
+        "-sUSE_OGG=1"
+        "-sUSE_VORBIS=1"
         "--preload-file" "${ASSETS_DIR}@/assets"
         "--shell-file" "${CMAKE_SOURCE_DIR}/emscripten/shell.html"
     )
