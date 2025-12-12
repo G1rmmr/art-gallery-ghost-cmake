@@ -149,19 +149,29 @@ namespace mir{
                 for(ID id = 1; id < MAX_ENTITIES; ++id){
                     if(particle::Positions[id].empty()) continue;
 
-                    sf::CircleShape shape;
                     const size_t count = particle::Positions[id].size();
+                    sf::VertexArray vertexArr(sf::Quads, count * 4);
 
-                    for(size_t i = 0; i < count; ++i){
-                        shape.setRadius(particle::CurrentSizes[id][i]);
-                        shape.setFillColor(particle::CurrentColors[id][i]);
-                        shape.setPosition(particle::Positions[id][i]);
-                        shape.setOrigin({
-                            particle::CurrentSizes[id][i],
-                            particle::CurrentSizes[id][i]}
-                        );
-                        Window->draw(shape);
+                    for (size_t i = 0; i < count; ++i) {
+                        const sf::Vector2f& pos = particle::Positions[id][i];
+                        const float size = particle::CurrentSizes[id][i];
+                        const sf::Color& color = particle::CurrentColors[id][i];
+
+                        const float halfSize = size * 0.5f;
+
+                        vertexArr[i * 4 + 0].position = sf::Vector2f(pos.x - halfSize, pos.y - halfSize);
+                        vertexArr[i * 4 + 0].color = color;
+
+                        vertexArr[i * 4 + 1].position = sf::Vector2f(pos.x + halfSize, pos.y - halfSize);
+                        vertexArr[i * 4 + 1].color = color;
+
+                        vertexArr[i * 4 + 2].position = sf::Vector2f(pos.x + halfSize, pos.y + halfSize);
+                        vertexArr[i * 4 + 2].color = color;
+
+                        vertexArr[i * 4 + 3].position = sf::Vector2f(pos.x - halfSize, pos.y + halfSize);
+                        vertexArr[i * 4 + 3].color = color;
                     }
+                    Window->draw(vertexArr);
                 }
             }
 

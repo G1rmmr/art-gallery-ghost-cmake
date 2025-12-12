@@ -125,12 +125,21 @@ namespace mir{
             }
 
             static inline void KillParticles(const ID id, const std::uint16_t index){
-                particle::Positions[id].erase(particle::Positions[id].begin() + index);
-                particle::Velocities[id].erase(particle::Velocities[id].begin() + index);
-                particle::CurrentColors[id].erase(particle::CurrentColors[id].begin() + index);
-                particle::CurrentSizes[id].erase(particle::CurrentSizes[id].begin() + index);
-                particle::CurrentLifeTimes[id].erase(particle::CurrentLifeTimes[id].begin() + index);
-                particle::MaxLifeTimes[id].erase(particle::MaxLifeTimes[id].begin() + index);
+                const size_t lastIdx = particle::Positions[id].size() - 1;
+
+                particle::Positions[id][index] = particle::Positions[id][lastIdx];
+                particle::Velocities[id][index] = particle::Velocities[id][lastIdx];
+                particle::CurrentColors[id][index] = particle::CurrentColors[id][lastIdx];
+                particle::CurrentSizes[id][index] = particle::CurrentSizes[id][lastIdx];
+                particle::CurrentLifeTimes[id][index] = particle::CurrentLifeTimes[id][lastIdx];
+                particle::MaxLifeTimes[id][index] = particle::MaxLifeTimes[id][lastIdx];
+
+                particle::Positions[id].pop_back();
+                particle::Velocities[id].pop_back();
+                particle::CurrentColors[id].pop_back();
+                particle::CurrentSizes[id].pop_back();
+                particle::CurrentLifeTimes[id].pop_back();
+                particle::MaxLifeTimes[id].pop_back();
             }
 
             static inline void UpdateParticles(const ID id, const float deltaTime){
@@ -167,8 +176,8 @@ namespace mir{
 
         static inline void Update(const float deltaTime){
             for(ID id = 0; id < MAX_ENTITIES; ++id){
-                if(!particle::IsEmittings[id] && 
-                   particle::Positions[id].empty() && 
+                if(!particle::IsEmittings[id] &&
+                   particle::Positions[id].empty() &&
                    particle::EmitAccumulators[id] < 1.0f) continue;
 
                 GenerateParticles(id, deltaTime);
