@@ -5,18 +5,19 @@
 #include "Components.hpp"
 #include "../handle/Event.hpp"
 #include "../util/Math.hpp"
+#include "../util/Types.hpp"
 
 namespace mir{
     namespace movement{
-        static inline void Update(const float deltaTime){
+        static inline void Update(const Real deltaTime){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
-                sf::Vector2f& velocity = transform::Velocities[id];
+                Point2<Real>& velocity = transform::Velocities[id];
 
                 velocity.y = physics::InAirFlags[id] ?
                     velocity.y + physics::GRAV_ACCEL * deltaTime :
-                    velocity.y = 0.f;
+                    velocity.y = 0;
 
                 transform::Positions[id] += velocity * deltaTime;
             }
@@ -24,15 +25,15 @@ namespace mir{
     }
 
     namespace animation{
-        static inline void Update(const float deltaTime){
+        static inline void Update(const Real deltaTime){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
-                const std::vector<sf::IntRect>& frames = animation::FrameSets[animation::States[id]];
+                const List<Rect<Int>>& frames = animation::FrameSets[animation::States[id]];
                 if(!animation::IsPlayings[id] || frames.empty()) continue;
 
-                const std::uint8_t maxFrame = static_cast<std::uint8_t>(frames.size());
-                if(animation::DelayTimes[id] <= 0.f) {
+                const Uint maxFrame = static_cast<Uint>(frames.size());
+                if(animation::DelayTimes[id] <= 0) {
                     animation::CurrFrames[id] = (animation::CurrFrames[id] + 1) % maxFrame;
                     continue;
                 }
@@ -57,24 +58,24 @@ namespace mir{
 
     namespace collision{
         namespace{
-            static inline bool IsCollide(const ID lhs, const ID rhs){
-                sf::IntRect leftBox(
-                    static_cast<sf::Vector2i>(transform::Positions[lhs]),
-                    static_cast<sf::Vector2i>(physics::Bounds[lhs])
+            static inline Bool IsCollide(const ID lhs, const ID rhs){
+                Rect<Int> leftBox(
+                    static_cast<Point2<Int>>(transform::Positions[lhs]),
+                    static_cast<Point2<Int>>(physics::Bounds[lhs])
                 );
 
-                sf::IntRect rightBox(
-                    static_cast<sf::Vector2i>(transform::Positions[rhs]),
-                    static_cast<sf::Vector2i>(physics::Bounds[rhs])
+                Rect<Int> rightBox(
+                    static_cast<Point2<Int>>(transform::Positions[rhs]),
+                    static_cast<Point2<Int>>(physics::Bounds[rhs])
                 );
 
-                sf::IntRect intersection;
+                Rect<Int> intersection;
                 return leftBox.intersects(rightBox, intersection);
             }
         }
 
         static inline void Update(){
-            std::vector<ID> activated;
+            List<ID> activated;
 
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(entity::IsAvailables[id] && !physics::IsGhosts[id]){
@@ -97,19 +98,19 @@ namespace mir{
 
     namespace effect{
         namespace{
-            static inline void GenerateParticles(const ID id, const float deltaTime){
+            static inline void GenerateParticles(const ID id, const Real deltaTime){
                 if(particle::IsEmittings[id])
                     particle::EmitAccumulators[id] += particle::EmitRates[id] * deltaTime;
 
-                const sf::Vector2f& emitterPos = transform::Positions[id];
+                const Point2<Real>& emitterPos = transform::Positions[id];
                 const std::size_t particleCount = particle::Positions[id].size();
 
                 while(particle::EmitAccumulators[id] >= 1.0f){
                     particle::EmitAccumulators[id] -= 1.0f;
 
                     if(particleCount < particle::MaxParticles[id]){
-                        float angle = math::GetRandomReal(0.f, 360.f) * math::PI / 180.0f;
-                        float speed = 50.0f + math::GetRandomReal(0.f, 100.f);
+                        Real angle = math::GetRandomReal(0, 360) * math::PI / 180.0f;
+                        Real speed = 50.0f + math::GetRandomReal(0, 100);
 
                         particle::Positions[id].push_back(emitterPos);
                         particle::Velocities[id].push_back({
@@ -124,7 +125,7 @@ namespace mir{
                 }
             }
 
-            static inline void KillParticles(const ID id, const std::uint16_t index){
+            static inline void KillParticles(const ID id, const Uint index){
                 const size_t lastIdx = particle::Positions[id].size() - 1;
 
                 particle::Positions[id][index] = particle::Positions[id][lastIdx];
@@ -142,17 +143,17 @@ namespace mir{
                 particle::MaxLifeTimes[id].pop_back();
             }
 
-            static inline void UpdateParticles(const ID id, const float deltaTime){
-                const int particleCount
-                    = static_cast<int>(particle::Positions[id].size());
+            static inline void UpdateParticles(const ID id, const Real deltaTime){
+                const Int particleCount
+                    = static_cast<Int>(particle::Positions[id].size());
 
-                for(int i = particleCount - 1; i >= 0; --i){
-                    std::vector<float>::size_type index = static_cast<std::vector<float>::size_type>(i);
+                for(Int i = particleCount - 1; i >= 0; --i){
+                    List<Real>::size_type index = static_cast<List<Real>::size_type>(i);
 
                     particle::CurrentLifeTimes[id][index] -= deltaTime;
 
-                    if(particle::CurrentLifeTimes[id][index] <= 0.f){
-                        KillParticles(id, static_cast<std::uint16_t>(index));
+                    if(particle::CurrentLifeTimes[id][index] <= 0){
+                        KillParticles(id, static_cast<Uint>(index));
                         continue;
                     }
 
@@ -161,11 +162,11 @@ namespace mir{
                     if(!physics::IsGhosts[id])
                         particle::Velocities[id][index].y += physics::GRAV_ACCEL * deltaTime;
 
-                    float t = 1.0f - (particle::CurrentLifeTimes[id][index]
+                    Real t = 1.0f - (particle::CurrentLifeTimes[id][index]
                         / particle::MaxLifeTimes[id][index]);
 
-                    const sf::Color& start = particle::StartColors[id];
-                    const sf::Color& end = particle::EndColors[id];
+                    const Color& start = particle::StartColors[id];
+                    const Color& end = particle::EndColors[id];
 
                     particle::CurrentColors[id][index] = math::Lerp(start, end, t);
                     particle::CurrentSizes[id][index] = particle::StartSizes[id]
@@ -174,7 +175,7 @@ namespace mir{
             }
         }
 
-        static inline void Update(const float deltaTime){
+        static inline void Update(const Real deltaTime){
             for(ID id = 0; id < MAX_ENTITIES; ++id){
                 if(!particle::IsEmittings[id] &&
                    particle::Positions[id].empty() &&

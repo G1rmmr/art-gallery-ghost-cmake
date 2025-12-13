@@ -1,0 +1,75 @@
+#pragma once
+
+#include <cstdint>
+#include <limits>
+#include <functional>
+#include <string>
+#include <vector>
+#include <array>
+#include <unordered_map>
+#include <queue>
+#include <stack>
+#include <memory>
+
+#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
+
+namespace mir {
+    template<typename T>
+    using List = std::vector<T>;
+
+    template<typename T, std::size_t Size>
+    using Array = std::array<T, Size>;
+
+    template<typename K, typename V>
+    using Dictionary = std::unordered_map<K, V>;
+
+    template<typename T>
+    using Queue = std::queue<T>;
+
+    template<typename T>
+    using Stack = std::stack<T>;
+
+    template<typename... TArgs>
+    using Action = std::function<void(TArgs...)>;
+
+    template<typename TReturn, typename... TArgs>
+    using Func = std::function<TReturn(TArgs...)>;
+
+    template<typename T>
+    using Point2 = sf::Vector2<T>;
+
+    template<typename T>
+    using Rect = sf::Rect<T>;
+
+    using Circle = sf::CircleShape;
+    using Rectangle = sf::RectangleShape;
+
+    using Int = std::int32_t;
+    using Uint = std::uint16_t;
+    using Byte = std::uint8_t;
+    using Real = float;
+    using Bool = bool;
+    using String = std::string;
+    using Color = sf::Color;
+
+    using RenderTex = sf::RenderTexture;
+    using Texture = sf::Texture;
+    using Sprite = sf::Sprite;
+    using SoundBuf = sf::SoundBuffer;
+    using SoundSrc = sf::SoundSource;
+    using Sound = sf::Sound;
+    using Music = sf::Music;
+    using Font = sf::Font;
+    using Text = sf::Text;
+
+    static constexpr Int I_MAX = std::numeric_limits<Int>::max();
+    static constexpr Int I_MIN = std::numeric_limits<Int>::min();
+    static constexpr Uint U_MAX = std::numeric_limits<Uint>::max();
+    static constexpr Uint U_MIN = std::numeric_limits<Uint>::min();
+    static constexpr Byte B_MAX = std::numeric_limits<Byte>::max();
+    static constexpr Byte B_MIN = std::numeric_limits<Byte>::min();
+    static constexpr Real R_MAX = std::numeric_limits<Real>::max();
+    static constexpr Real R_MIN = std::numeric_limits<Real>::min();
+}

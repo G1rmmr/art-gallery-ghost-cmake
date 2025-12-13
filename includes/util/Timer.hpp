@@ -4,25 +4,26 @@
 #include <functional>
 
 #include <SFML/System.hpp>
+#include "Types.hpp"
 
 namespace mir{
     namespace time{
         namespace{
             struct TimerTask{
-                std::function<void()> CallBack;
-                float IntervalSec;
-                float RemainSec;
-                bool IsLooping;
+                Action<> CallBack;
+                Real IntervalSec;
+                Real RemainSec;
+                Bool IsLooping;
             };
 
-            inline std::vector<TimerTask> TimerTasks;
+            inline List<TimerTask> TimerTasks;
         }
 
         struct Set{
-            int Hour;
-            int Minute;
-            int Second;
-            int MiliSec;
+            Int Hour;
+            Int Minute;
+            Int Second;
+            Int MiliSec;
         };
 
         static inline Set GetLocalTime(){
@@ -37,29 +38,29 @@ namespace mir{
                 localTime->tm_hour,
                 localTime->tm_min,
                 localTime->tm_sec,
-                static_cast<int>(ms.count())
+                static_cast<Int>(ms.count())
             };
         }
 
-        static inline float GetDelta(){
+        static inline Real GetDelta(){
             static sf::Clock deltaClock;
             return deltaClock.restart().asSeconds();
         }
 
         static inline void Register(
-            const float seconds,
-            std::function<void()> callback,
-            bool isLooping = false){
+            const Real seconds,
+            Action<> callback,
+            Bool isLooping = false){
             TimerTasks.push_back({std::move(callback), seconds, seconds, isLooping});
         }
 
-        static inline void Update(const float deltaTime){
+        static inline void Update(const Real deltaTime){
             if(TimerTasks.empty()) return;
 
             for(TimerTask& task : TimerTasks){
                 task.RemainSec -= deltaTime;
 
-                if(task.RemainSec > 0.f) continue;
+                if(task.RemainSec > 0) continue;
                 if(task.CallBack) task.CallBack();
                 if(task.IsLooping){
                     task.RemainSec += task.IntervalSec;
@@ -68,7 +69,7 @@ namespace mir{
             }
 
             std::erase_if(TimerTasks, [](const TimerTask& task) {
-                return !task.IsLooping && task.RemainSec <= 0.f;
+                return !task.IsLooping && task.RemainSec <= 0;
             });
         }
     }

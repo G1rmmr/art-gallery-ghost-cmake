@@ -5,6 +5,7 @@
 
 #include "../core/Entity.hpp"
 #include "../util/Math.hpp"
+#include "../util/Types.hpp"
 #include "Display.hpp"
 
 namespace mir{
@@ -12,49 +13,52 @@ namespace mir{
         namespace{
             inline sf::View View;
 
-            inline float CurrentZoom = 1.f;
-            inline float ShakeTime = 0.f;
-            inline float ShakePower = 0.f;
+            inline Real CurrentZoom = 1;
+            inline Real ShakeTime = 0;
+            inline Real ShakePower = 0;
 
             inline ID TargetID = 0;
         }
 
-        static inline sf::Vector2f GetCenter(){ return View.getCenter(); }
+        static inline Point2<Real> GetCenter(){ return View.getCenter(); }
         static inline void Follow(ID target){ TargetID = target; }
-        static inline void SetZoom(float zoom){ CurrentZoom = zoom; }
+        static inline void SetZoom(Real zoom){ CurrentZoom = zoom; }
 
-        static inline void SetPosition(const sf::Vector2f& pos){
+        static inline void SetPosition(const Point2<Real>& pos){
             TargetID = 0;
             View.setCenter(pos);
         }
 
-        static inline void SetPosition(float x, float y){
+        static inline void SetPosition(Real x, Real y){
             TargetID = 0;
             View.setCenter(x, y);
         }
 
-        static inline void Shake(float intensity, float duration){
+        static inline void Shake(Real intensity, Real duration){
             ShakePower = intensity;
             ShakeTime = duration;
         }
 
         static inline void Init(){
             if(Window){
-                const sf::Vector2f size = static_cast<sf::Vector2f>(Window->getSize());
+                const Point2<Real> size = static_cast<Point2<Real>>(Window->getSize());
                 View.setSize(size);
-                View.setCenter(size / 2.f);
+                View.setCenter({size.x / 2, size.y / 2});
             }
         }
 
-        static inline void Update(const float deltaTime){
-            sf::Vector2f start = View.getCenter();
-            sf::Vector2f end = start;
+        static inline void Update(const Real deltaTime){
+            Point2<Real> start = View.getCenter();
+            Point2<Real> end = start;
 
             if(TargetID != 0 && entity::IsAvailables[TargetID]){
-                sf::Vector2f size = physics::Bounds[TargetID];
-                sf::Vector2f target = transform::Positions[TargetID] + size / 2.f;
+                Point2<Real> size = physics::Bounds[TargetID];
+                Point2<Real> target = {
+                    transform::Positions[TargetID].x + size.x / 2,
+                    transform::Positions[TargetID].y + size.y / 2,
+                };
 
-                float interval = deltaTime * 5.0f;
+                Real interval = deltaTime * 5.0f;
                 if(interval > 1.0f) interval = 1.0f;
 
                 end = math::Lerp(start, target, interval);
@@ -62,9 +66,9 @@ namespace mir{
 
             if(ShakeTime > 0){
                 ShakeTime -= deltaTime;
-                float offsetX = math::GetRandomReal(-50, 50) * ShakePower;
-                float offsetY = math::GetRandomReal(-50, 50) * ShakePower;
-                end += sf::Vector2f(offsetX, offsetY);
+                Real offsetX = math::GetRandomReal(-50, 50) * ShakePower;
+                Real offsetY = math::GetRandomReal(-50, 50) * ShakePower;
+                end += Point2<Real>(offsetX, offsetY);
             }
 
             View.setCenter(end);

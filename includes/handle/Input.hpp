@@ -7,11 +7,12 @@
 
 #include "Event.hpp"
 #include "../view/Display.hpp"
+#include "../util/Types.hpp"
 
 namespace mir{
     namespace input{
         namespace{
-            static inline const std::unordered_map<sf::Keyboard::Key, event::type::Key> KeyMap = {
+            static inline const Dictionary<sf::Keyboard::Key, event::type::Key> KeyMap = {
                 {sf::Keyboard::Escape, event::type::Key::Escape},
                 {sf::Keyboard::W, event::type::Key::W},
                 {sf::Keyboard::A, event::type::Key::A},
@@ -23,10 +24,10 @@ namespace mir{
                 {sf::Keyboard::Enter, event::type::Key::Enter}
             };
 
-            static inline std::array<bool, sf::Keyboard::KeyCount> IsPressedState;
+            static inline Array<Bool, sf::Keyboard::KeyCount> IsPressedState;
         }
 
-        static inline bool IsPressed(event::type::Key key){
+        static inline Bool IsPressed(event::type::Key key){
             for(const auto& [input, value] : KeyMap){
                 if(value == key) return IsPressedState[input];
             }

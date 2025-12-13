@@ -4,11 +4,12 @@
 #include <string>
 
 #include "Debugger.hpp"
+#include "Types.hpp"
 
 namespace mir{
     namespace profile{
-        static inline bool IsEnable = false;
-        inline float CurrentFPS = 0.f;
+        static inline Bool IsEnable = false;
+        inline Real CurrentFPS = 0;
 
         class ScopeTimer{
         public:
@@ -39,8 +40,8 @@ namespace mir{
         };
 
         static inline void ToggleProfile(){ IsEnable = !IsEnable; }
-        static inline void Update(const float deltaTime){
-            if(IsEnable) CurrentFPS = 1.f / deltaTime;
+        static inline void Update(const Real deltaTime){
+            if(IsEnable) CurrentFPS = 1 / deltaTime;
         }
     }
 }

@@ -6,17 +6,18 @@
 #include <utility>
 
 #include "Timer.hpp"
+#include "Types.hpp"
 
 #ifdef DEBUG_MODE
-    static constexpr bool DEBUG_ENABLED = true;
+    static constexpr mir::Bool DEBUG_ENABLED = true;
 #else
-    static constexpr bool DEBUG_ENABLED = false;
+    static constexpr mir::Bool DEBUG_ENABLED = false;
 #endif
 
 namespace mir {
     namespace debug {
-        inline bool IsEntityCountVisible = false;
-        inline bool IsColliderVisible = false;
+        inline Bool IsEntityCountVisible = false;
+        inline Bool IsColliderVisible = false;
 
         template<typename... Args>
         static inline void Log(const char* format, Args&&... args){

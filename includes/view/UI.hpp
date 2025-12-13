@@ -6,15 +6,16 @@
 #include <SFML/Graphics.hpp>
 
 #include "../core/Manager.hpp"
+#include "../util/Types.hpp"
 
 namespace mir{
     namespace ui{
         static inline void BuildText(
             const Tag tag,
             const sf::Color& color,
-            const sf::Vector2f& pos,
-            const std::string& content,
-            const std::uint8_t size){
+            const Point2<Real>& pos,
+            const String& content,
+            const Uint size){
             if(!font::Sources[tag]) return;
 
             font::Texts[tag]->setFillColor(color);
@@ -24,8 +25,8 @@ namespace mir{
         }
 
         static inline ID BuildButton(
-            const std::string& label,
-            float x, float y, float width, float height){
+            const String& label,
+            Real x, Real y, Real width, Real height){
             return 0;
         }
     }

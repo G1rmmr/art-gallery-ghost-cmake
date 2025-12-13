@@ -1,14 +1,15 @@
 #pragma once
 
 #include "../util/Debugger.hpp"
+#include "../util/Types.hpp"
 
 namespace mir{
-    using ID = std::uint16_t;
+    using ID = Uint;
 
     static constexpr ID MAX_ENTITIES = 0xFFFF;
 
     namespace entity{
-        static inline std::array<bool, MAX_ENTITIES> IsAvailables;
+        static inline Array<Bool, MAX_ENTITIES> IsAvailables;
 
         static inline ID Create(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){

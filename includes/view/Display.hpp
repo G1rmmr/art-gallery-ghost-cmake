@@ -11,9 +11,11 @@
 #include "../core/Manager.hpp"
 #include "../util/Debugger.hpp"
 #include "../util/Profiler.hpp"
+#include "../util/Types.hpp"
 
 namespace mir{
-    inline sf::RenderWindow* Window = nullptr;
+    using HandledWindow = sf::RenderWindow*;
+    inline HandledWindow Window = nullptr;
 
     enum class VideoMode{
         Windowed,
@@ -31,13 +33,13 @@ namespace mir{
     };
 
     namespace window{
-        static inline bool IsOpening() { return Window && Window->isOpen(); }
+        static inline Bool IsOpening() { return Window && Window->isOpen(); }
 
         static inline void Display(){
             if(Window) Window->display();
         }
 
-        static inline void SetFPS(const std::uint8_t fps){
+        static inline void SetFPS(const Uint fps){
             if(Window) {
                 Window->setFramerateLimit(fps);
                 Window->setVerticalSyncEnabled(true);
@@ -48,7 +50,7 @@ namespace mir{
             if(Window) Window->close();
         }
 
-        static inline void Clear(std::uint8_t red, std::uint8_t green, std::uint8_t blue){
+        static inline void Clear(Uint red, Uint green, Uint blue){
             if(Window) Window->clear(sf::Color(red, green, blue));
         }
 
@@ -60,7 +62,7 @@ namespace mir{
         }
 
         static inline void Init(
-            const std::string& title,
+            const String& title,
             VideoMode mode = VideoMode::Desktop,
             Resolution res = Resolution::FHD,
             uint32_t width = 0,
@@ -98,7 +100,7 @@ namespace mir{
             case VideoMode::Borderless:
                 video = sf::VideoMode::getDesktopMode();
                 Window = new sf::RenderWindow(video, title, sf::Style::None);
-                Window->setPosition(sf::Vector2i(0, 0));
+                Window->setPosition(Point2<Int>(0, 0));
                 break;
 
             case VideoMode::Fullscreen:
@@ -122,7 +124,7 @@ namespace mir{
                 sprite.setRotation(transform::Rotations[id]);
                 sprite.setColor(sprite::Colors[id]);
 
-                sf::Vector2f finalScale = transform::Scales[id];
+                Point2<Real> finalScale = transform::Scales[id];
                 if(sprite::ShouldFlipXs[id]) finalScale.x = -finalScale.x;
                 if(sprite::ShouldFlipYs[id]) finalScale.y = -finalScale.y;
 
@@ -133,7 +135,7 @@ namespace mir{
                 for(ID id = 1; id < MAX_ENTITIES; ++id){
                     if(!entity::IsAvailables[id] || !sprite::Textures[id]) continue;
 
-                    const std::vector<sf::IntRect>& frames
+                    const List<sf::Rect<Int>>& frames
                         = animation::FrameSets[animation::States[id]];
 
                     sf::Sprite sprite = frames.empty() ?
@@ -153,22 +155,22 @@ namespace mir{
                     sf::VertexArray vertexArr(sf::Quads, count * 4);
 
                     for (size_t i = 0; i < count; ++i) {
-                        const sf::Vector2f& pos = particle::Positions[id][i];
-                        const float size = particle::CurrentSizes[id][i];
+                        const Point2<Real>& pos = particle::Positions[id][i];
+                        const Real size = particle::CurrentSizes[id][i];
                         const sf::Color& color = particle::CurrentColors[id][i];
 
-                        const float halfSize = size * 0.5f;
+                        const Real halfSize = size * 0.5f;
 
-                        vertexArr[i * 4 + 0].position = sf::Vector2f(pos.x - halfSize, pos.y - halfSize);
+                        vertexArr[i * 4 + 0].position = Point2<Real>(pos.x - halfSize, pos.y - halfSize);
                         vertexArr[i * 4 + 0].color = color;
 
-                        vertexArr[i * 4 + 1].position = sf::Vector2f(pos.x + halfSize, pos.y - halfSize);
+                        vertexArr[i * 4 + 1].position = Point2<Real>(pos.x + halfSize, pos.y - halfSize);
                         vertexArr[i * 4 + 1].color = color;
 
-                        vertexArr[i * 4 + 2].position = sf::Vector2f(pos.x + halfSize, pos.y + halfSize);
+                        vertexArr[i * 4 + 2].position = Point2<Real>(pos.x + halfSize, pos.y + halfSize);
                         vertexArr[i * 4 + 2].color = color;
 
-                        vertexArr[i * 4 + 3].position = sf::Vector2f(pos.x - halfSize, pos.y + halfSize);
+                        vertexArr[i * 4 + 3].position = Point2<Real>(pos.x - halfSize, pos.y + halfSize);
                         vertexArr[i * 4 + 3].color = color;
                     }
                     Window->draw(vertexArr);
@@ -186,7 +188,7 @@ namespace mir{
                 if(!Window) return;
 
                 static sf::Font font;
-                static bool fontLoaded = false;
+                static Bool fontLoaded = false;
                 static sf::Text text;
 
                 if(!fontLoaded){
@@ -204,11 +206,11 @@ namespace mir{
                         Window->setView(Window->getDefaultView());
 
                         mir::ID count = 0;
-                        for(bool available : entity::IsAvailables)
+                        for(Bool available : entity::IsAvailables)
                             if(available) count++;
 
                         text.setString("[Toggle - F1] Entities: " + std::to_string(count));
-                        text.setPosition(10.f, 10.f);
+                        text.setPosition(10, 10);
 
                         Window->draw(text);
                         Window->setView(oldView);
@@ -218,14 +220,14 @@ namespace mir{
                         for(ID id = 1; id < MAX_ENTITIES; ++id){
                             if(!entity::IsAvailables[id]) continue;
 
-                            const sf::Vector2f& size = physics::Bounds[id];
-                            if(size.x == 0.f && size.y == 0.f) continue;
+                            const Point2<Real>& size = physics::Bounds[id];
+                            if(size.x == 0 && size.y == 0) continue;
 
                             sf::RectangleShape rect(size);
                             rect.setPosition(transform::Positions[id]);
                             rect.setFillColor(sf::Color::Transparent);
                             rect.setOutlineColor(sf::Color::Red);
-                            rect.setOutlineThickness(1.f);
+                            rect.setOutlineThickness(1);
 
                             Window->draw(rect);
                         }
@@ -237,7 +239,7 @@ namespace mir{
                 if(!Window) return;
 
                 static sf::Font font;
-                static bool fontLoaded = false;
+                static Bool fontLoaded = false;
                 static sf::Text text;
 
                 if(!fontLoaded){
@@ -253,9 +255,9 @@ namespace mir{
                     sf::View oldView = Window->getView();
                     Window->setView(Window->getDefaultView());
 
-                    const float fps = mir::profile::CurrentFPS;
-                    text.setString("[Toggle - F2] FPS: " + std::to_string(static_cast<int>(fps)));
-                    text.setPosition(10.f, 40.f);
+                    const Real fps = mir::profile::CurrentFPS;
+                    text.setString("[Toggle - F2] FPS: " + std::to_string(static_cast<Int>(fps)));
+                    text.setPosition(10, 40);
 
                     Window->draw(text);
                     Window->setView(oldView);

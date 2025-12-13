@@ -12,6 +12,7 @@
 #include "Components.hpp"
 #include "../handle/Event.hpp"
 #include "../util/Debugger.hpp"
+#include "../util/Types.hpp"
 
 #ifndef ASSET_DIR
     #define ASSET_DIR ""
@@ -21,20 +22,20 @@
     { #type, reinterpret_cast<void*>(array.data()), sizeof(array[0]), array.size() }
 
 namespace mir {
-    static constexpr std::uint8_t MAX_RESOURCES = 0xFF;
+    static constexpr Uint MAX_RESOURCES = 0xFF;
 
-    using Tag = std::uint8_t;
+    using Tag = Uint;
 
     namespace record{
-        struct ComponentInfo{
-            const char* Name;
-            void* Data;
-            std::size_t Size;
-            std::size_t Count;
-        };
-
         namespace{
-            static inline const std::vector<ComponentInfo> GetAllComponents(){
+            struct ComponentInfo{
+                const char* Name;
+                void* Data;
+                std::size_t Size;
+                std::size_t Count;
+            };
+
+            static inline const List<ComponentInfo> GetAllComponents(){
                 return {
                     REGISTER_COMPONENT("Position", transform::Positions),
                     REGISTER_COMPONENT("Velocity", transform::Velocities),
@@ -46,10 +47,10 @@ namespace mir {
             }
         }
 
-        static inline void Save(const std::string& filename){
+        static inline void Save(const String& filename){
             std::ofstream file(filename, std::ios::binary);
 
-            const std::vector<ComponentInfo>& components = GetAllComponents();
+            const List<ComponentInfo>& components = GetAllComponents();
             size_t componentCount = components.size();
 
             file.write(reinterpret_cast<const char*>(&componentCount), sizeof(size_t));
@@ -70,7 +71,7 @@ namespace mir {
             debug::Log("Saved %zu components", componentCount);
         }
 
-        static inline void Load(const std::string& filename){
+        static inline void Load(const String& filename){
             std::ifstream file(filename, std::ios::binary);
 
             if(!file.is_open()){
@@ -81,12 +82,12 @@ namespace mir {
             size_t componentCount = 0;
             file.read(reinterpret_cast<char*>(&componentCount), sizeof(size_t));
 
-            const std::vector<ComponentInfo>& components = GetAllComponents();
+            const List<ComponentInfo>& components = GetAllComponents();
             for(size_t i = 0; i < componentCount; ++i){
                 std::basic_string<char>::size_type nameLen = 0;
                 file.read(reinterpret_cast<char*>(&nameLen), sizeof(size_t));
 
-                std::string name(nameLen, '\0');
+                String name(nameLen, '\0');
                 file.read(name.data(), static_cast<std::streamsize>(nameLen));
 
                 std::streamsize size = 0;
@@ -95,7 +96,7 @@ namespace mir {
                 file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
                 file.read(reinterpret_cast<char*>(&count), sizeof(size_t));
 
-                std::vector<ComponentInfo>::const_iterator iter = std::find_if(
+                List<ComponentInfo>::const_iterator iter = std::find_if(
                     components.begin(), components.end(),[&name](const ComponentInfo& c){
                         return name == c.Name;
                     });
@@ -114,16 +115,16 @@ namespace mir {
     }
 
     namespace resource{
-        static inline std::array<std::string, MAX_RESOURCES> Textures;
-        static inline std::array<std::string, MAX_RESOURCES> Sounds;
-        static inline std::array<std::string, MAX_RESOURCES> Fonts;
+        static inline Array<String, MAX_RESOURCES> Textures;
+        static inline Array<String, MAX_RESOURCES> Sounds;
+        static inline Array<String, MAX_RESOURCES> Fonts;
     }
 
     namespace texture{
-        static inline Tag Create(const std::string& filepath){
+        static inline Tag Create(const String& filepath){
             for(Tag tag = 1; tag < MAX_RESOURCES; ++tag){
                 if(resource::Textures[tag] == ""){
-                    resource::Textures[tag] = std::string(ASSET_DIR) + '/' + filepath;
+                    resource::Textures[tag] = String(ASSET_DIR) + '/' + filepath;
                     return tag;
                 }
             }
@@ -133,28 +134,28 @@ namespace mir {
         }
 
         static inline void AllocFromType(const ID id){
-            sf::Vector2f size = physics::Bounds[id];
+            Point2<Real> size = physics::Bounds[id];
             if(size.x == 0 && size.y == 0){
                 debug::Log("This entity doesn't have size (ID : %d)", id);
                 return;
             }
 
-            sf::RenderTexture shape;
+            RenderTex shape;
             if (!shape.create(static_cast<unsigned int>(size.x), static_cast<unsigned int>(size.y))) {
                 debug::Log("Failed to create render texture for entity (ID: %d)", id);
                 return;
             }
-            shape.clear(sf::Color::Transparent);
+            shape.clear(Color::Transparent);
 
             switch(sprite::Types[id]){
             case sprite::Type::Rectangle: {
-                sf::RectangleShape rect(static_cast<sf::Vector2f>(size));
+                Rectangle rect(static_cast<Point2<Real>>(size));
                 rect.setFillColor(sprite::Colors[id]);
                 shape.draw(rect);
                 break;
             }
             case sprite::Type::Circle:{
-                sf::CircleShape circle(static_cast<float>(size.x) / 2.f);
+                Circle circle(static_cast<Real>(size.x) / 2);
                 circle.setFillColor(sprite::Colors[id]);
                 shape.draw(circle);
                 break;
@@ -166,17 +167,17 @@ namespace mir {
 
             shape.display();
 
-            sprite::Textures[id] = std::make_unique<sf::Texture>(shape.getTexture());
+            sprite::Textures[id] = std::make_unique<Texture>(shape.getTexture());
         }
 
         static inline void AllocFromFile(const ID id, const Tag tag){
-            const std::string path = resource::Textures[tag];
+            const String path = resource::Textures[tag];
             if(path == "") {
                 debug::Log("Texture doesn't initialized : %s", path.c_str());
                 return;
             }
 
-            std::unique_ptr<sf::Texture> texture = std::make_unique<sf::Texture>();
+            std::unique_ptr<Texture> texture = std::make_unique<Texture>();
             if (!texture->loadFromFile(path)) {
                 debug::Log("Texture doesn't exist : %s", path.c_str());
                 return;
@@ -195,14 +196,14 @@ namespace mir {
     }
 
     namespace sound{
-        static inline std::array<std::unique_ptr<sf::SoundBuffer>, MAX_RESOURCES> Buffers;
-        static inline std::array<std::unique_ptr<sf::Sound>, MAX_RESOURCES> Sounds;
-        static inline std::array<sf::Music, MAX_RESOURCES> Musics;
+        static inline Array<std::unique_ptr<SoundBuf>, MAX_RESOURCES> Buffers;
+        static inline Array<std::unique_ptr<Sound>, MAX_RESOURCES> Sounds;
+        static inline Array<Music, MAX_RESOURCES> Musics;
 
-        static inline Tag Create(const std::string& filepath){
+        static inline Tag Create(const String& filepath){
             for(Tag tag = 1; tag < MAX_RESOURCES; ++tag){
                 if(resource::Sounds[tag] == ""){
-                    resource::Sounds[tag] = std::string(ASSET_DIR) + '/' + filepath;
+                    resource::Sounds[tag] = String(ASSET_DIR) + '/' + filepath;
                     return tag;
                 }
             }
@@ -212,16 +213,16 @@ namespace mir {
         }
 
         static inline void AllocSound(const Tag tag){
-            Buffers[tag] = std::make_unique<sf::SoundBuffer>();
+            Buffers[tag] = std::make_unique<SoundBuf>();
             if(!Buffers[tag]->loadFromFile(resource::Sounds[tag])){
                 debug::Log("Sound Source doesn't exist : %s", resource::Sounds[tag].c_str());
                 return;
             }
 
-            Sounds[tag] = std::make_unique<sf::Sound>(*Buffers[tag]);
+            Sounds[tag] = std::make_unique<Sound>(*Buffers[tag]);
         }
 
-        static inline void AllocMusic(const Tag tag, bool shouldLoop = true){
+        static inline void AllocMusic(const Tag tag, Bool shouldLoop = true){
             if(!Musics[tag].openFromFile(resource::Sounds[tag])){
                 debug::Log("Music Source doesn't exist : %s", resource::Sounds[tag].c_str());
                 return;
@@ -231,7 +232,7 @@ namespace mir {
             Musics[tag].play();
         }
 
-        static inline void Play(const Tag tag, bool shouldLoop = false) {
+        static inline void Play(const Tag tag, Bool shouldLoop = false) {
             if(!Sounds[tag]) return;
             Sounds[tag]->setLoop(shouldLoop);
             Sounds[tag]->play();
@@ -243,7 +244,7 @@ namespace mir {
 
         static inline void Stop(const Tag tag) {
             if(Sounds[tag]) Sounds[tag]->stop();
-            if(Musics[tag].getStatus() != sf::SoundSource::Stopped) Musics[tag].stop();
+            if(Musics[tag].getStatus() != SoundSrc::Stopped) Musics[tag].stop();
         }
 
         static inline void Delete(const Tag tag){
@@ -259,13 +260,13 @@ namespace mir {
     }
 
     namespace font{
-        static inline std::array<std::unique_ptr<sf::Font>, MAX_RESOURCES> Sources;
-        static inline std::array<std::unique_ptr<sf::Text>, MAX_RESOURCES> Texts;
+        static inline Array<std::unique_ptr<Font>, MAX_RESOURCES> Sources;
+        static inline Array<std::unique_ptr<Text>, MAX_RESOURCES> Texts;
 
-        static inline Tag Create(const std::string& filepath){
+        static inline Tag Create(const String& filepath){
             for(Tag tag = 1; tag < MAX_RESOURCES; ++tag){
                 if(resource::Fonts[tag] == ""){
-                    resource::Fonts[tag] = std::string(ASSET_DIR) + '/' + filepath;
+                    resource::Fonts[tag] = String(ASSET_DIR) + '/' + filepath;
                     return tag;
                 }
             }
@@ -275,13 +276,13 @@ namespace mir {
         }
 
         static inline void Alloc(const Tag tag){
-            Sources[tag] = std::make_unique<sf::Font>();
+            Sources[tag] = std::make_unique<Font>();
             if(!Sources[tag]->loadFromFile(resource::Fonts[tag])){
                 debug::Log("Font doesn't exist : %s", resource::Fonts[tag].c_str());
                 Sources[tag].reset();
                 return;
             }
-            Texts[tag] = std::make_unique<sf::Text>();
+            Texts[tag] = std::make_unique<Text>();
             Texts[tag]->setFont(*Sources[tag]);
         }
 

@@ -6,20 +6,21 @@
 
 #include "../util/Debugger.hpp"
 #include "../core/Manager.hpp"
+#include "../util/Types.hpp"
 
 namespace mir{
     namespace scene{
-        inline std::unordered_map<std::string, std::function<void()>> Scenes;
-        inline std::string Current = "";
+        inline Dictionary<String, Action<>> Scenes;
+        inline String Current = "";
 
-        inline void Register(const std::string& name, std::function<void()> func){
+        inline void Register(const String& name, std::function<void()> func){
             Scenes[name] = std::move(func);
         }
 
-        inline void Load(const std::string& name) {
+        inline void Load(const String& name) {
             if(Current == name) return;
 
-            std::unordered_map<std::string, std::function<void()>>::iterator iter = Scenes.find(name);
+            Dictionary<String, Action<>>::iterator iter = Scenes.find(name);
             if(iter == Scenes.end()) {
                 debug::Log("Attempted to load an unregistered scene: %s", name.c_str());
                 return;

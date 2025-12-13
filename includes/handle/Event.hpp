@@ -7,6 +7,7 @@
 #include <typeindex>
 
 #include "../core/Entity.hpp"
+#include "../util/Types.hpp"
 
 namespace mir{
     namespace event{
@@ -39,13 +40,13 @@ namespace mir{
             };
 
             struct MousePressed{
-                int X;
-                int Y;
+                Int X;
+                Int Y;
             };
 
             struct MouseReleased{
-                int X;
-                int Y;
+                Int X;
+                Int Y;
             };
         }
 
@@ -67,22 +68,21 @@ namespace mir{
             template<typename T>
             class Listener : public Base{
             public:
-                explicit Listener(std::function<void(const T&)> callBack)
-                    : callback(std::move(callBack)) {}
+                explicit Listener(Action<const T&> callBack) : callback(std::move(callBack)) {}
                 void Exec(const T& event){ callback(event); }
 
             private:
-                std::function<void(const T&)> callback;
+                Action<const T&> callback;
             };
 
-            static inline std::unordered_map<std::type_index,
-                std::unordered_map<SubID, std::unique_ptr<Base>>> Listeners;
+            static inline Dictionary<std::type_index,
+                Dictionary<SubID, std::unique_ptr<Base>>> Listeners;
 
             static inline SubID NextID = 0;
         }
 
         template<typename T>
-        static inline SubID Subscribe(std::function<void(const T&)> callback){
+        static inline SubID Subscribe(Action<const T&> callback){
             std::type_index typeId = std::type_index(typeid(T));
             SubID id = NextID++;
 
@@ -101,7 +101,7 @@ namespace mir{
             std::type_index typeId = std::type_index(typeid(T));
             if(Listeners.find(typeId) == Listeners.end()) return;
 
-            std::vector<Base*> currentListeners;
+            List<Base*> currentListeners;
             currentListeners.reserve(Listeners.at(typeId).size());
 
             for(const auto& [_, pointer] : Listeners.at(typeId)){

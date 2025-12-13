@@ -8,41 +8,42 @@
 
 #include "Entity.hpp"
 #include "../util/Timer.hpp"
+#include "../util/Types.hpp"
 
 namespace mir{
     namespace transform{
-        static inline std::array<sf::Vector2f, MAX_ENTITIES> Positions;
-        static inline std::array<sf::Vector2f, MAX_ENTITIES> Velocities;
-        static inline std::array<sf::Vector2f, MAX_ENTITIES> Scales;
-        static inline std::array<float, MAX_ENTITIES> Rotations;
+        static inline Array<Point2<Real>, MAX_ENTITIES> Positions;
+        static inline Array<Point2<Real>, MAX_ENTITIES> Velocities;
+        static inline Array<Point2<Real>, MAX_ENTITIES> Scales;
+        static inline Array<Real, MAX_ENTITIES> Rotations;
 
         static inline void Clear(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
-                Positions[id] = sf::Vector2f(0.f, 0.f);
-                Velocities[id] = sf::Vector2f(0.f, 0.f);
-                Scales[id] = sf::Vector2f(0.f, 0.f);
-                Rotations[id] = 0.f;
+                Positions[id] = Point2<Real>(0, 0);
+                Velocities[id] = Point2<Real>(0, 0);
+                Scales[id] = Point2<Real>(0, 0);
+                Rotations[id] = 0;
             }
         }
     }
 
     namespace physics{
-        static constexpr float GRAV_ACCEL = 980.f;
+        static constexpr Real GRAV_ACCEL = 980;
 
-        static inline std::array<sf::Vector2f, MAX_ENTITIES> Bounds;
-        static inline std::array<float, MAX_ENTITIES> Masses;
+        static inline Array<Point2<Real>, MAX_ENTITIES> Bounds;
+        static inline Array<Real, MAX_ENTITIES> Masses;
 
-        static inline std::array<bool, MAX_ENTITIES> IsGhosts;
-        static inline std::array<bool, MAX_ENTITIES> InAirFlags;
+        static inline Array<Bool, MAX_ENTITIES> IsGhosts;
+        static inline Array<Bool, MAX_ENTITIES> InAirFlags;
 
         static inline void Clear(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
-                Bounds[id] = sf::Vector2f(0.f, 0.f);
-                Masses[id] = 0.f;
+                Bounds[id] = Point2<Real>(0, 0);
+                Masses[id] = 0;
                 IsGhosts[id] = false;
                 InAirFlags[id] = false;
             }
@@ -56,23 +57,23 @@ namespace mir{
             Circle,
         };
 
-        static inline std::array<sf::Color, MAX_ENTITIES> Colors;
-        static inline std::array<sf::Vector2f, MAX_ENTITIES> Sizes;
+        static inline Array<Color, MAX_ENTITIES> Colors;
+        static inline Array<Point2<Real>, MAX_ENTITIES> Sizes;
 
-        static inline std::array<std::unique_ptr<sf::Texture>, MAX_ENTITIES> Textures;
+        static inline Array<std::unique_ptr<Texture>, MAX_ENTITIES> Textures;
 
-        static inline std::array<Type, MAX_ENTITIES> Types;
-        static inline std::array<std::uint8_t, MAX_ENTITIES> Layers;
+        static inline Array<Type, MAX_ENTITIES> Types;
+        static inline Array<Uint, MAX_ENTITIES> Layers;
 
-        static inline std::array<bool, MAX_ENTITIES> ShouldFlipXs;
-        static inline std::array<bool, MAX_ENTITIES> ShouldFlipYs;
+        static inline Array<Bool, MAX_ENTITIES> ShouldFlipXs;
+        static inline Array<Bool, MAX_ENTITIES> ShouldFlipYs;
 
         static inline void Clear(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
-                Colors[id] = sf::Color(0, 0, 0);
-                Sizes[id] = sf::Vector2f(0.f, 0.f);
+                Colors[id] = Color(0, 0, 0);
+                Sizes[id] = Point2<Real>(0, 0);
                 Textures[id].reset();
                 Types[id] = Type::None;
                 Layers[id] = 0;
@@ -83,26 +84,26 @@ namespace mir{
     }
 
     namespace animation{
-        static constexpr std::uint8_t MAX_STATE = 0x08;
-        static constexpr std::uint8_t MAX_FRAME = 0xFF;
+        static constexpr Uint MAX_STATE = 0x08;
+        static constexpr Uint MAX_FRAME = 0xFF;
 
-        using Set = std::vector<sf::IntRect>;
+        using Set = List<Rect<Int>>;
 
-        static inline std::array<Set, MAX_ENTITIES> FrameSets;
-        static inline std::array<float, MAX_ENTITIES> ElapsedTimes;
-        static inline std::array<float, MAX_ENTITIES> DelayTimes;
-        static inline std::array<std::uint8_t, MAX_STATE> States;
-        static inline std::array<std::uint8_t, MAX_FRAME> CurrFrames;
-        static inline std::array<bool, MAX_ENTITIES> IsPlayings;
-        static inline std::array<bool, MAX_ENTITIES> IsLoopings;
+        static inline Array<Set, MAX_ENTITIES> FrameSets;
+        static inline Array<Real, MAX_ENTITIES> ElapsedTimes;
+        static inline Array<Real, MAX_ENTITIES> DelayTimes;
+        static inline Array<Uint, MAX_STATE> States;
+        static inline Array<Uint, MAX_FRAME> CurrFrames;
+        static inline Array<Bool, MAX_ENTITIES> IsPlayings;
+        static inline Array<Bool, MAX_ENTITIES> IsLoopings;
 
         static inline void Clear(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
 
                 FrameSets[id] = Set();
-                ElapsedTimes[id] = 0.f;
-                DelayTimes[id] = 0.f;
+                ElapsedTimes[id] = 0;
+                DelayTimes[id] = 0;
                 States[id] = 0;
                 CurrFrames[id] = 0;
                 IsPlayings[id] = false;
@@ -112,21 +113,21 @@ namespace mir{
     }
 
     namespace particle{
-        static inline std::array<std::vector<sf::Vector2f>, MAX_ENTITIES> Positions;
-        static inline std::array<std::vector<sf::Vector2f>, MAX_ENTITIES> Velocities;
-        static inline std::array<std::vector<sf::Color>, MAX_ENTITIES> CurrentColors;
-        static inline std::array<std::vector<float>, MAX_ENTITIES> CurrentSizes;
-        static inline std::array<std::vector<float>, MAX_ENTITIES> CurrentLifeTimes;
-        static inline std::array<std::vector<float>, MAX_ENTITIES> MaxLifeTimes;
-        static inline std::array<sf::Color, MAX_ENTITIES> StartColors;
-        static inline std::array<sf::Color, MAX_ENTITIES> EndColors;
-        static inline std::array<float, MAX_ENTITIES> EmitRates;
-        static inline std::array<float, MAX_ENTITIES> EmitAccumulators;
-        static inline std::array<float, MAX_ENTITIES> StartSizes;
-        static inline std::array<float, MAX_ENTITIES> EndSizes;
-        static inline std::array<float, MAX_ENTITIES> TargetLifeTimes;
-        static inline std::array<std::uint16_t, MAX_ENTITIES> MaxParticles;
-        static inline std::array<bool, MAX_ENTITIES> IsEmittings;
+        static inline Array<List<Point2<Real>>, MAX_ENTITIES> Positions;
+        static inline Array<List<Point2<Real>>, MAX_ENTITIES> Velocities;
+        static inline Array<List<Color>, MAX_ENTITIES> CurrentColors;
+        static inline Array<List<Real>, MAX_ENTITIES> CurrentSizes;
+        static inline Array<List<Real>, MAX_ENTITIES> CurrentLifeTimes;
+        static inline Array<List<Real>, MAX_ENTITIES> MaxLifeTimes;
+        static inline Array<Color, MAX_ENTITIES> StartColors;
+        static inline Array<Color, MAX_ENTITIES> EndColors;
+        static inline Array<Real, MAX_ENTITIES> EmitRates;
+        static inline Array<Real, MAX_ENTITIES> EmitAccumulators;
+        static inline Array<Real, MAX_ENTITIES> StartSizes;
+        static inline Array<Real, MAX_ENTITIES> EndSizes;
+        static inline Array<Real, MAX_ENTITIES> TargetLifeTimes;
+        static inline Array<Uint, MAX_ENTITIES> MaxParticles;
+        static inline Array<Bool, MAX_ENTITIES> IsEmittings;
 
         static inline void Delete(const ID id){
             Positions[id].clear();
@@ -138,8 +139,8 @@ namespace mir{
             EmitAccumulators[id] = 0.0f;
         }
 
-        static inline void BurstParticle(const ID id, const std::uint16_t count){
-            EmitAccumulators[id] += static_cast<float>(count);
+        static inline void BurstParticle(const ID id, const Uint count){
+            EmitAccumulators[id] += static_cast<Real>(count);
             IsEmittings[id] = true;
 
             time::Register(0.01f, [id](){ particle::IsEmittings[id] = false; });
@@ -147,17 +148,17 @@ namespace mir{
     }
 
     namespace stats{
-        static constexpr std::uint16_t MAX_HEALTH = 0xFFFF;
-        static constexpr std::uint8_t MAX_DAMAGE = 0xFF;
+        static constexpr Uint MAX_HEALTH = 0xFFFF;
+        static constexpr Uint MAX_DAMAGE = 0xFF;
 
-        static inline std::array<float, MAX_ENTITIES> Healths;
-        static inline std::array<float, MAX_ENTITIES> Damages;
+        static inline Array<Real, MAX_ENTITIES> Healths;
+        static inline Array<Real, MAX_ENTITIES> Damages;
 
         static inline void Clear(){
             for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!entity::IsAvailables[id]) continue;
-                Healths[id] = 0.f;
-                Damages[id] = 0.f;
+                Healths[id] = 0;
+                Damages[id] = 0;
             }
         }
     }
