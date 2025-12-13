@@ -32,7 +32,8 @@ namespace player{
 
         inline void InitSprite(const mir::ID id){
             mir::sprite::Colors[id] = mir::Color(255, 255, 255);
-            mir::sprite::Types[id] = mir::sprite::Type::Rectangle;
+            mir::sprite::Types[id] = mir::sprite::Type::ConvexHull;
+            mir::sprite::NumSide[id] = 5;
             mir::texture::AllocFromType(id);
         }
 

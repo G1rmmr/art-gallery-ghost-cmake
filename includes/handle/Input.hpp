@@ -38,7 +38,7 @@ namespace mir{
             sf::Event event;
 
             while(Window->pollEvent(event)){
-                std::size_t code = static_cast<std::size_t>(event.key.code);
+                std::size_t code = TypeCast<std::size_t>(event.key.code);
 
                 switch(event.type){
                     case sf::Event::Closed:

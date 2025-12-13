@@ -41,7 +41,7 @@ namespace mir{
 
         static inline void Init(){
             if(Window){
-                const Point2<Real> size = static_cast<Point2<Real>>(Window->getSize());
+                const Point2<Real> size = TypeCast<Point2<Real>>(Window->getSize());
                 View.setSize(size);
                 View.setCenter({size.x / 2, size.y / 2});
             }

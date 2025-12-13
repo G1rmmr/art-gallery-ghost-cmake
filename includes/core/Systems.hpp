@@ -32,7 +32,7 @@ namespace mir{
                 const List<Rect<Int>>& frames = animation::FrameSets[animation::States[id]];
                 if(!animation::IsPlayings[id] || frames.empty()) continue;
 
-                const Uint maxFrame = static_cast<Uint>(frames.size());
+                const Uint maxFrame = TypeCast<Uint>(frames.size());
                 if(animation::DelayTimes[id] <= 0) {
                     animation::CurrFrames[id] = (animation::CurrFrames[id] + 1) % maxFrame;
                     continue;
@@ -60,13 +60,13 @@ namespace mir{
         namespace{
             static inline Bool IsCollide(const ID lhs, const ID rhs){
                 Rect<Int> leftBox(
-                    static_cast<Point2<Int>>(transform::Positions[lhs]),
-                    static_cast<Point2<Int>>(physics::Bounds[lhs])
+                    TypeCast<Point2<Int>>(transform::Positions[lhs]),
+                    TypeCast<Point2<Int>>(physics::Bounds[lhs])
                 );
 
                 Rect<Int> rightBox(
-                    static_cast<Point2<Int>>(transform::Positions[rhs]),
-                    static_cast<Point2<Int>>(physics::Bounds[rhs])
+                    TypeCast<Point2<Int>>(transform::Positions[rhs]),
+                    TypeCast<Point2<Int>>(physics::Bounds[rhs])
                 );
 
                 Rect<Int> intersection;
@@ -83,7 +83,7 @@ namespace mir{
                 }
             }
 
-            const std::size_t lastID = static_cast<ID>(activated.size());
+            const std::size_t lastID = TypeCast<ID>(activated.size());
 
             for(std::size_t i = 0; i < lastID - 1; i++){
                 for(std::size_t j = i + 1; j < lastID; j++){
@@ -103,19 +103,18 @@ namespace mir{
                     particle::EmitAccumulators[id] += particle::EmitRates[id] * deltaTime;
 
                 const Point2<Real>& emitterPos = transform::Positions[id];
-                const std::size_t particleCount = particle::Positions[id].size();
 
                 while(particle::EmitAccumulators[id] >= 1.0f){
                     particle::EmitAccumulators[id] -= 1.0f;
 
-                    if(particleCount < particle::MaxParticles[id]){
-                        Real angle = math::GetRandomReal(0, 360) * math::PI / 180.0f;
+                    if(particle::Positions[id].size() < particle::MaxParticles[id]){
+                        Real angle = math::GetRandomReal(0, 360);
                         Real speed = 50.0f + math::GetRandomReal(0, 100);
 
                         particle::Positions[id].push_back(emitterPos);
                         particle::Velocities[id].push_back({
-                            std::cos(angle) * speed,
-                            std::sin(angle) * speed
+                            math::Cos(angle) * speed,
+                            math::Sin(angle) * speed
                         });
                         particle::CurrentColors[id].push_back(particle::StartColors[id]);
                         particle::CurrentSizes[id].push_back(particle::StartSizes[id]);
@@ -145,15 +144,15 @@ namespace mir{
 
             static inline void UpdateParticles(const ID id, const Real deltaTime){
                 const Int particleCount
-                    = static_cast<Int>(particle::Positions[id].size());
+                    = TypeCast<Int>(particle::Positions[id].size());
 
                 for(Int i = particleCount - 1; i >= 0; --i){
-                    List<Real>::size_type index = static_cast<List<Real>::size_type>(i);
+                    List<Real>::size_type index = TypeCast<List<Real>::size_type>(i);
 
                     particle::CurrentLifeTimes[id][index] -= deltaTime;
 
                     if(particle::CurrentLifeTimes[id][index] <= 0){
-                        KillParticles(id, static_cast<Uint>(index));
+                        KillParticles(id, TypeCast<Uint>(index));
                         continue;
                     }
 

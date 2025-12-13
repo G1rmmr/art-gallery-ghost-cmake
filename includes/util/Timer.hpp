@@ -38,7 +38,7 @@ namespace mir{
                 localTime->tm_hour,
                 localTime->tm_min,
                 localTime->tm_sec,
-                static_cast<Int>(ms.count())
+                TypeCast<Int>(ms.count())
             };
         }
 

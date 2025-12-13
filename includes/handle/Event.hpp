@@ -109,7 +109,7 @@ namespace mir{
             }
 
             for(Base* listener : currentListeners){
-                if(listener) static_cast<Listener<T>*>(listener)->Exec(event);
+                if(listener) TypeCast<Listener<T>*>(listener)->Exec(event);
             }
         }
 

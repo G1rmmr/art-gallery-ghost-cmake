@@ -55,6 +55,9 @@ namespace mir{
             None,
             Rectangle,
             Circle,
+            Arch,
+            ConvexHull,
+            Triangle
         };
 
         static inline Array<Color, MAX_ENTITIES> Colors;
@@ -62,8 +65,10 @@ namespace mir{
 
         static inline Array<std::unique_ptr<Texture>, MAX_ENTITIES> Textures;
 
+        static inline Array<Real, MAX_ENTITIES> Archs;
         static inline Array<Type, MAX_ENTITIES> Types;
         static inline Array<Uint, MAX_ENTITIES> Layers;
+        static inline Array<Uint, MAX_ENTITIES> NumSide;
 
         static inline Array<Bool, MAX_ENTITIES> ShouldFlipXs;
         static inline Array<Bool, MAX_ENTITIES> ShouldFlipYs;
@@ -140,7 +145,7 @@ namespace mir{
         }
 
         static inline void BurstParticle(const ID id, const Uint count){
-            EmitAccumulators[id] += static_cast<Real>(count);
+            EmitAccumulators[id] += TypeCast<Real>(count);
             IsEmittings[id] = true;
 
             time::Register(0.01f, [id](){ particle::IsEmittings[id] = false; });

@@ -13,6 +13,7 @@
 #include "../handle/Event.hpp"
 #include "../util/Debugger.hpp"
 #include "../util/Types.hpp"
+#include "../util/Math.hpp"
 
 #ifndef ASSET_DIR
     #define ASSET_DIR ""
@@ -56,14 +57,14 @@ namespace mir {
             file.write(reinterpret_cast<const char*>(&componentCount), sizeof(size_t));
 
             for(const ComponentInfo& comp : components){
-                std::streamsize nameLen = static_cast<std::streamsize>(std::strlen(comp.Name));
+                std::streamsize nameLen = TypeCast<std::streamsize>(std::strlen(comp.Name));
                 file.write(reinterpret_cast<const char*>(&nameLen), sizeof(size_t));
                 file.write(comp.Name, nameLen);
 
                 file.write(reinterpret_cast<const char*>(&comp.Size), sizeof(size_t));
                 file.write(reinterpret_cast<const char*>(&comp.Count), sizeof(size_t));
 
-                std::streamsize dataSize = static_cast<std::streamsize>(comp.Size * comp.Count);
+                std::streamsize dataSize = TypeCast<std::streamsize>(comp.Size * comp.Count);
                 file.write(reinterpret_cast<const char*>(comp.Data), dataSize);
             }
 
@@ -88,7 +89,7 @@ namespace mir {
                 file.read(reinterpret_cast<char*>(&nameLen), sizeof(size_t));
 
                 String name(nameLen, '\0');
-                file.read(name.data(), static_cast<std::streamsize>(nameLen));
+                file.read(name.data(), TypeCast<std::streamsize>(nameLen));
 
                 std::streamsize size = 0;
                 std::streamsize count = 0;
@@ -133,6 +134,85 @@ namespace mir {
             return 0; // Overflow resource
         }
 
+        namespace{
+            inline Rectangle DrawRect(const ID id, const Point2<Real>& size){
+                Rectangle rect(TypeCast<Point2<Real>>(size));
+                rect.setFillColor(sprite::Colors[id]);
+                return rect;
+            }
+
+            inline Circle DrawCircle(const ID id, const Point2<Real>& size){
+                Circle circle(TypeCast<Real>(size.x) / 2);
+                circle.setFillColor(sprite::Colors[id]);
+                return circle;
+            }
+
+            inline PointArr DrawTriangle(const ID id, const Point2<Real>& size){
+                PointArr arr(PrimType::Triangles, 3);
+                arr[0].position = {0, size.y};
+                arr[0].color = sprite::Colors[id];
+
+                arr[1].position = size;
+                arr[1].color = sprite::Colors[id];
+
+                arr[2].position = {size.x / 2, 0};
+                arr[2].color = sprite::Colors[id];
+
+                return arr;
+            }
+
+            inline PointArr DrawArch(const ID id, const Point2<Real>& size){
+                const Byte numPoints = 100;
+                PointArr arr(PrimType::TriangleFan, numPoints + 2);
+
+                Point2<Real> center = {size.x / 2.0f, size.y / 2.0f};
+                Real radius = size.x / 2.0f;
+
+                arr[0].position = center;
+                arr[0].color = sprite::Colors[id];
+
+                const Real viewAngle = sprite::Archs[id];
+                const Real startAngle = -90.0f - (viewAngle / 2.0f);
+                const Real angleInterval = viewAngle / numPoints;
+
+                for(Byte start = 0; start <= numPoints; ++start){
+                    const Real angle = startAngle + (TypeCast<Real>(start) * angleInterval);
+
+                    arr[start + 1].position = {
+                        center.x + radius * math::Cos(angle),
+                        center.y - radius * math::Sin(angle)
+                    };
+
+                    arr[start + 1].color = sprite::Colors[id];
+                }
+                return arr;
+            }
+
+            inline PointArr DrawConvexHull(const ID id, const Point2<Real>& size){
+                const Uint sidePoint = sprite::NumSide[id];
+                PointArr arr(PrimType::TriangleFan, sidePoint + 2);
+
+                const Point2<Real> center = {size.x / 2, size.y / 2};
+                const Real radius = size.x / 2;
+
+                arr[0].position = center;
+                arr[0].color = sprite::Colors[id];
+
+                const Real angleInterval = 360.0f / TypeCast<Real>(sidePoint);
+                for(Byte start = 0; start <= sidePoint; ++start){
+                    const Real angle = TypeCast<Real>(start) * angleInterval;
+
+                    arr[start + 1].position = {
+                        center.x + radius * math::Cos(angle),
+                        center.y - radius * math::Sin(angle)
+                    };
+
+                    arr[start + 1].color = sprite::Colors[id];
+                }
+                return arr;
+            }
+        }
+
         static inline void AllocFromType(const ID id){
             Point2<Real> size = physics::Bounds[id];
             if(size.x == 0 && size.y == 0){
@@ -141,23 +221,31 @@ namespace mir {
             }
 
             RenderTex shape;
-            if (!shape.create(static_cast<unsigned int>(size.x), static_cast<unsigned int>(size.y))) {
+            if (!shape.create(TypeCast<Uint>(size.x), TypeCast<Uint>(size.y))) {
                 debug::Log("Failed to create render texture for entity (ID: %d)", id);
                 return;
             }
             shape.clear(Color::Transparent);
 
             switch(sprite::Types[id]){
-            case sprite::Type::Rectangle: {
-                Rectangle rect(static_cast<Point2<Real>>(size));
-                rect.setFillColor(sprite::Colors[id]);
-                shape.draw(rect);
+            case sprite::Type::Rectangle:{
+                shape.draw(DrawRect(id, size));
                 break;
             }
             case sprite::Type::Circle:{
-                Circle circle(static_cast<Real>(size.x) / 2);
-                circle.setFillColor(sprite::Colors[id]);
-                shape.draw(circle);
+                shape.draw(DrawCircle(id, size));
+                break;
+            }
+            case sprite::Type::Triangle:{
+                shape.draw(DrawTriangle(id, size));
+                break;
+            }
+            case sprite::Type::Arch:{
+                shape.draw(DrawArch(id, size));
+                break;
+            }
+            case sprite::Type::ConvexHull:{
+                shape.draw(DrawConvexHull(id, size));
                 break;
             }
             default:

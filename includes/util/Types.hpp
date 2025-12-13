@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Graphics/PrimitiveType.hpp>
 #include <cstdint>
 #include <limits>
 #include <functional>
@@ -43,6 +44,8 @@ namespace mir {
     template<typename T>
     using Rect = sf::Rect<T>;
 
+    using PrimType = sf::PrimitiveType;
+    using PointArr = sf::VertexArray;
     using Circle = sf::CircleShape;
     using Rectangle = sf::RectangleShape;
 
@@ -57,10 +60,12 @@ namespace mir {
     using RenderTex = sf::RenderTexture;
     using Texture = sf::Texture;
     using Sprite = sf::Sprite;
+
     using SoundBuf = sf::SoundBuffer;
     using SoundSrc = sf::SoundSource;
     using Sound = sf::Sound;
     using Music = sf::Music;
+
     using Font = sf::Font;
     using Text = sf::Text;
 
@@ -72,4 +77,9 @@ namespace mir {
     static constexpr Byte B_MIN = std::numeric_limits<Byte>::min();
     static constexpr Real R_MAX = std::numeric_limits<Real>::max();
     static constexpr Real R_MIN = std::numeric_limits<Real>::min();
+
+    template <typename T, typename U>
+    static inline T TypeCast(U&& value){
+        return static_cast<T>(std::forward<U>(value));
+    }
 }

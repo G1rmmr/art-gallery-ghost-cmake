@@ -1,6 +1,7 @@
 #pragma once
 
 #include <random>
+#include <cmath>
 
 #include <SFML/Graphics.hpp>
 
@@ -9,6 +10,30 @@
 namespace mir{
     namespace math{
         static constexpr Real PI = 3.14159f;
+
+        static inline Real Cos(const Real angle){
+            return std::cosf(angle * (PI / 180));
+        }
+
+        static inline Real Sin(const Real angle){
+            return std::sinf(angle * (PI / 180));
+        }
+
+        static inline Real Tan(const Real angle){
+            return std::tanf(angle * (PI / 180));
+        }
+
+        static inline Real CosH(const Real angle){
+            return std::coshf(angle * (PI / 180));
+        }
+
+        static inline Real SinH(const Real angle){
+            return std::sinhf(angle * (PI / 180));
+        }
+
+        static inline Real TanH(const Real angle){
+            return std::tanhf(angle * (PI / 180));
+        }
 
         static inline Real Lerp(
             const Real start, const Real end, const Real interval){
@@ -23,9 +48,9 @@ namespace mir{
         static inline Color Lerp(
             const Color& start, const Color& end, const Real interval){
             return {
-                static_cast<Byte>(Lerp(start.r, end.r, interval)),
-                static_cast<Byte>(Lerp(start.g, end.g, interval)),
-                static_cast<Byte>(Lerp(start.b, end.b, interval))
+                TypeCast<Byte>(Lerp(start.r, end.r, interval)),
+                TypeCast<Byte>(Lerp(start.g, end.g, interval)),
+                TypeCast<Byte>(Lerp(start.b, end.b, interval))
             };
         }
 
@@ -53,9 +78,9 @@ namespace mir{
         static inline Color GetRandomColor(
             const Color& start, const Color& end){
             return {
-                static_cast<Byte>(GetRandomInt(start.r, end.r)),
-                static_cast<Byte>(GetRandomInt(start.g, end.g)),
-                static_cast<Byte>(GetRandomInt(start.b, end.b))
+                TypeCast<Byte>(GetRandomInt(start.r, end.r)),
+                TypeCast<Byte>(GetRandomInt(start.g, end.g)),
+                TypeCast<Byte>(GetRandomInt(start.b, end.b))
             };
         }
     }

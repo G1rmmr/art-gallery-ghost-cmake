@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Graphics/PrimitiveType.hpp>
 #include <cstdint>
 #include <string>
 
@@ -152,7 +153,7 @@ namespace mir{
                     if(particle::Positions[id].empty()) continue;
 
                     const size_t count = particle::Positions[id].size();
-                    sf::VertexArray vertexArr(sf::Quads, count * 4);
+                    PointArr vertexArr(PrimType::Quads, count * 4);
 
                     for (size_t i = 0; i < count; ++i) {
                         const Point2<Real>& pos = particle::Positions[id][i];
@@ -256,7 +257,7 @@ namespace mir{
                     Window->setView(Window->getDefaultView());
 
                     const Real fps = mir::profile::CurrentFPS;
-                    text.setString("[Toggle - F2] FPS: " + std::to_string(static_cast<Int>(fps)));
+                    text.setString("[Toggle - F2] FPS: " + std::to_string(TypeCast<Int>(fps)));
                     text.setPosition(10, 40);
 
                     Window->draw(text);
