@@ -32,8 +32,3 @@
 #include "view/Display.hpp"
 #include "view/Scene.hpp"
 #include "view/UI.hpp"
-
-#ifdef __EMSCRIPTEN__
-    #include <emscripten.h>
-    #include <emscripten/html5.h>
-#endif

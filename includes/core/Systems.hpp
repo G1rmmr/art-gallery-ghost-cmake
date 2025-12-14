@@ -185,4 +185,17 @@ namespace mir{
             }
         }
     }
+
+    namespace combat{
+        static inline void Update(const Real deltaTime){
+            for(ID id = 1; id < MAX_ENTITIES; ++id){
+                if(!entity::IsAvailables[id]) continue;
+
+                if(stats::Healths[id] <= 0){
+                    event::type::Death event{};
+                    event::Publish(event);
+                }
+            }
+        }
+    }
 }

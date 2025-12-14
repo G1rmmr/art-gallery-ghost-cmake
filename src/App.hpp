@@ -2,6 +2,7 @@
 
 #include <Mir>
 
+#include "game/Player.hpp"
 #include "menu/Menu.hpp"
 #include "game/Game.hpp"
 
@@ -49,6 +50,13 @@ namespace app {
         mir::collision::Update();
         mir::animation::Update(deltaTime);
         mir::camera::Update(deltaTime);
+        mir::combat::Update(deltaTime);
+
+        if(mir::stats::Healths[game::PlayerID] < 0){
+            mir::stats::Healths[game::PlayerID]--;
+            player::Score++;
+        }
+
     }
 
     inline void Render(){

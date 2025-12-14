@@ -1,57 +1,95 @@
 <!doctype html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Art Gallery Ghost</title>
-    <style>
-      body { margin: 0; background-color: black; color: white; }
-      canvas.emscripten { border: 0px none; background-color: black; display: block; margin: auto; }
-    </style>
-  </head>
-  <body>
-    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-    <script type='text/javascript'>
-      var Module = {
-        preRun: [],
-        postRun: [],
-        print: (function() {
-          return function(text) {
-            if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-            console.log(text);
-          };
-        })(),
-        canvas: (function() {
-          var canvas = document.getElementById('canvas');
-          return canvas;
-        })(),
-        setStatus: function(text) {
-          if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
-          if (text === Module.setStatus.last.text) return;
-          var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-          var now = Date.now();
-          if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
-          Module.setStatus.last.time = now;
-          Module.setStatus.last.text = text;
-          if (m) {
-            text = m[1];
-          }
-          console.log("Status: " + text);
-        },
-        totalDependencies: 0,
-        monitorRunDependencies: function(left) {
-          this.totalDependencies = Math.max(this.totalDependencies, left);
-          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
-        }
-      };
-      Module.setStatus('Downloading...');
-      window.onerror = function(event) {
-        Module.setStatus('Exception thrown, see JavaScript console');
-        Module.setStatus = function(text) {
-          if (text) Module.printErr('[post-exception status] ' + text);
-        };
-      };
-    </script>
-    {{{ SCRIPT }}}
-  </body>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Art Gallery Ghost</title>
+        <style>
+            body {
+                margin: 0;
+                background-color: black;
+                color: white;
+            }
+            canvas.emscripten {
+                border: 0px none;
+                background-color: black;
+                display: block;
+                margin: auto;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas
+            class="emscripten"
+            id="canvas"
+            oncontextmenu="event.preventDefault()"
+        ></canvas>
+        <script type="text/javascript">
+            window.saveScore = function (score) {
+                console.log("Game Over! Score received from C++:", score);
+                alert("Score " + score + " saved! (Simulated)");
+            };
+
+            window.getHighScores = function () {
+                console.log("Requesting High Scores...");
+            };
+            var Module = {
+                preRun: [],
+                postRun: [],
+                print: (function () {
+                    return function (text) {
+                        if (arguments.length > 1)
+                            text = Array.prototype.slice
+                                .call(arguments)
+                                .join(" ");
+                        console.log(text);
+                    };
+                })(),
+                canvas: (function () {
+                    var canvas = document.getElementById("canvas");
+                    return canvas;
+                })(),
+                setStatus: function (text) {
+                    if (!Module.setStatus.last)
+                        Module.setStatus.last = { time: Date.now(), text: "" };
+                    if (text === Module.setStatus.last.text) return;
+                    var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+                    var now = Date.now();
+                    if (m && now - Module.setStatus.last.time < 30) return;
+
+                    Module.setStatus.last.time = now;
+                    Module.setStatus.last.text = text;
+                    if (m) {
+                        text = m[1];
+                    }
+                    console.log("Status: " + text);
+                },
+                totalDependencies: 0,
+                monitorRunDependencies: function (left) {
+                    this.totalDependencies = Math.max(
+                        this.totalDependencies,
+                        left,
+                    );
+                    Module.setStatus(
+                        left
+                            ? "Preparing... (" +
+                                  (this.totalDependencies - left) +
+                                  "/" +
+                                  this.totalDependencies +
+                                  ")"
+                            : "All downloads complete.",
+                    );
+                },
+            };
+            Module.setStatus("Downloading...");
+            window.onerror = function (event) {
+                Module.setStatus("Exception thrown, see JavaScript console");
+                Module.setStatus = function (text) {
+                    if (text)
+                        Module.printErr("[post-exception status] " + text);
+                };
+            };
+        </script>
+        {{{ SCRIPT }}}
+    </body>
 </html>
