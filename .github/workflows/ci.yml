@@ -34,10 +34,10 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libfreetype6-dev
 
-      - name: Install SFML 2.6.1
+      - name: Install SFML 3.0.2
         uses: oprypin/install-sfml@v1
         with:
-          sfml: "2.6.1"
+          sfml: "3.0.2"
 
       - name: Build
         run: ./build.sh ${{ matrix.build_type }}

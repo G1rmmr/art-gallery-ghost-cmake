@@ -2,7 +2,11 @@
 
 #include <Mir>
 
+#include "Network.hpp"
+
 namespace player{
+    const mir::String NAME = "JIWON";
+
     const mir::Real POS_X = 200;
     const mir::Real POS_Y = 200;
     const mir::Real SPEED = 200;
@@ -147,7 +151,8 @@ namespace player{
         inline void SubscribeDeath(const mir::ID id){
             mir::Action<const mir::event::type::Death&> action
                 = [id](const mir::event::type::Death&){
-
+                network::PostScores(NAME, Score);
+                network::GetTopPlayers();
             };
             mir::event::Subscribe(action);
         }

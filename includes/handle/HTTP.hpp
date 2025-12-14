@@ -38,21 +38,29 @@ namespace mir{
                     stream << key << "=" << val;
                     isFirst = false;
                 }
+
+                Params.clear();
                 return stream.str();
             }
 
             static inline void Request(Type type, HTTP http, const String &endPoint){
                 HTTP::Request request;
 
-                String query = BuildQuery();
+                const String query = BuildQuery();
 
                 switch(type){
                 case Type::Get:
-                    request.setUri(endPoint + (query == "" ? "" : "?" + query));
+                    request = {
+                        endPoint + (query.empty() ? "" : "?" + query),
+                        HTTP::Request::Method::Get
+                    };
                     break;
                 case Type::Post:
-                    request.setUri(endPoint);
-                    request.setBody(query);
+                    request = {
+                        endPoint,
+                        HTTP::Request::Method::Post,
+                        query
+                    };
                     request.setField("Content-Type", "application/x-www-form-urlencoded");
                     break;
 

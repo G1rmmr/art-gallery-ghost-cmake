@@ -21,6 +21,7 @@
 
 #include "handle/Event.hpp"
 #include "handle/Input.hpp"
+#include "handle/HTTP.hpp"
 
 #include "util/Debugger.hpp"
 #include "util/Profiler.hpp"

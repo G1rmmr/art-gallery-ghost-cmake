@@ -87,6 +87,11 @@ namespace mir {
         return static_cast<T>(std::forward<U>(value));
     }
 
+    template <typename T>
+    static inline String ToString(T&& value){
+        return std::to_string(std::forward<T>(value));
+    }
+
     template <typename T, typename... Args>
     static inline void FireAndForget(T&& func, Args&&... args){
         std::thread(std::forward<T>(func), std::forward<Args>(args)...).detach();
