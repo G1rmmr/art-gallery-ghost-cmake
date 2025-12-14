@@ -1,0 +1,2 @@
+/Users/g1/sources/art-gallery-ghost-cmake/__cmake_systeminformation/CMakeFiles/edit_cache.dir
+/Users/g1/sources/art-gallery-ghost-cmake/__cmake_systeminformation/CMakeFiles/rebuild_cache.dir

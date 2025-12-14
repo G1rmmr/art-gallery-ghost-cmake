@@ -69,8 +69,7 @@ namespace mir{
                     TypeCast<Point2<Int>>(physics::Bounds[rhs])
                 );
 
-                Rect<Int> intersection;
-                return leftBox.intersects(rightBox, intersection);
+                return leftBox.findIntersection(rightBox).has_value();
             }
         }
 

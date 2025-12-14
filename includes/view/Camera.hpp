@@ -31,7 +31,7 @@ namespace mir{
 
         static inline void SetPosition(Real x, Real y){
             TargetID = 0;
-            View.setCenter(x, y);
+            View.setCenter({x, y});
         }
 
         static inline void Shake(Real intensity, Real duration){

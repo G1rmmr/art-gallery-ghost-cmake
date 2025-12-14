@@ -28,10 +28,6 @@ namespace app {
             mir::input::Process();
 
             if(mir::input::IsPressed(mir::event::type::Key::Escape)){
-
-#ifdef __EMSCRIPTEN__
-                emscripten_cancel_main_loop();
-#endif
                 mir::window::Close();
             }
             if(mir::input::IsPressed(mir::event::type::Key::F1))

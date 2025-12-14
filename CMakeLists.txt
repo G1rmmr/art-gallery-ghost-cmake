@@ -11,38 +11,21 @@ option(BUILD_BUNDLE "Build as macOS app bundle" OFF)
 set(SOURCES main.cpp)
 set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 
-if(EMSCRIPTEN)
-    set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    add_compile_definitions(__EMSCRIPTEN__)
-endif()
+set(SFML_VERSION "3.0.2")
 
-set(SFML_VERSION "2.6.1")
+find_package(SFML 3 COMPONENTS system window graphics audio network QUIET)
 
-if(NOT EMSCRIPTEN)
-    find_package(SFML 2.6 COMPONENTS system window graphics audio QUIET)
-endif()
-
-if(EMSCRIPTEN OR NOT SFML_FOUND)
-    message(STATUS "SFML not found or Emscripten build. Using FetchContent.")
+if(NOT SFML_FOUND)
+    message(STATUS "SFML not found. Using FetchContent.")
     set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS ON CACHE BOOL "Suppress dev warnings" FORCE)
     set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "Suppress deprecation warnings" FORCE)
-
-    if(EMSCRIPTEN)
-        set(SFML_OS_EMSCRIPTEN 1 CACHE INTERNAL "Force Emscripten OS detection")
-        add_compile_definitions(SFML_OS_EMSCRIPTEN)
-    endif()
 
     if(POLICY CMP0153)
         cmake_policy(SET CMP0153 OLD)
     endif()
 
-    if(EMSCRIPTEN)
-        set(SFML_REPOSITORY https://github.com/Zombieschannel/SFML.git)
-        set(SFML_TAG SFML-2.6.x-EMCC)
-    else()
-        set(SFML_REPOSITORY https://github.com/SFML/SFML.git)
-        set(SFML_TAG ${SFML_VERSION})
-    endif()
+    set(SFML_REPOSITORY https://github.com/SFML/SFML.git)
+    set(SFML_TAG ${SFML_VERSION})
 
     include(FetchContent)
     FetchContent_Declare(SFML
@@ -52,10 +35,6 @@ if(EMSCRIPTEN OR NOT SFML_FOUND)
         EXCLUDE_FROM_ALL
         SYSTEM)
     FetchContent_MakeAvailable(SFML)
-
-    if(EMSCRIPTEN)
-        target_include_directories(sfml-audio PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/ems_include")
-    endif()
 endif()
 
 if(BUILD_BUNDLE AND APPLE)
@@ -76,55 +55,37 @@ target_link_libraries(art-gallery-ghost PRIVATE
     sfml-system
     sfml-window
     sfml-audio
+    sfml-network
 )
 
-if(EMSCRIPTEN)
-    target_link_options(art-gallery-ghost PRIVATE
-        "-sALLOW_MEMORY_GROWTH=1"
-        "-sMAX_WEBGL_VERSION=2"
-        "-sWASM=1"
-        "-sASYNCIFY"
-        "-sUSE_FREETYPE=1"
-        "-sUSE_OGG=1"
-        "-sUSE_VORBIS=1"
-        "--preload-file" "${ASSETS_DIR}@/assets"
-        "--shell-file" "${CMAKE_SOURCE_DIR}/emscripten/shell.html"
-    )
-
-    target_compile_definitions(
-        art-gallery-ghost
-        PRIVATE
-        "ASSET_DIR=\"/assets\""
-    )
-else()
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-        target_compile_definitions(art-gallery-ghost PRIVATE DEBUG_MODE)
-        message(STATUS "Debug mode enabled")
-    endif()
-
-    if(APPLE)
-        target_compile_definitions(art-gallery-ghost PRIVATE GL_SILENCE_DEPRECATION)
-    endif()
-
-    target_compile_definitions(
-        art-gallery-ghost
-        PRIVATE
-        "ASSET_DIR=\"${ASSETS_DIR}\""
-    )
-
-    if(BUILD_BUNDLE AND APPLE)
-        set_target_properties(art-gallery-ghost PROPERTIES
-            MACOSX_BUNDLE TRUE
-            MACOSX_BUNDLE_BUNDLE_NAME "Art Gallery Ghost"
-            MACOSX_BUNDLE_GUI_IDENTIFIER "com.example.art-gallery-ghost"
-            MACOSX_BUNDLE_BUNDLE_VERSION "1.0"
-            MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0"
-            MACOSX_BUNDLE_COPYRIGHT "© 2025 John Nam"
-            MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
-        )
-        add_custom_command(TARGET art-gallery-ghost POST_BUILD
-            COMMAND codesign --force --deep --sign - $<TARGET_BUNDLE_DIR:art-gallery-ghost>
-            COMMENT "Code signing the app bundle"
-        )
-    endif()
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(art-gallery-ghost PRIVATE DEBUG_MODE)
+    message(STATUS "Debug mode enabled")
 endif()
+
+if(APPLE)
+    target_compile_definitions(art-gallery-ghost PRIVATE GL_SILENCE_DEPRECATION)
+endif()
+
+target_compile_definitions(
+    art-gallery-ghost
+    PRIVATE
+    "ASSET_DIR=\"${ASSETS_DIR}\""
+)
+
+if(BUILD_BUNDLE AND APPLE)
+    set_target_properties(art-gallery-ghost PROPERTIES
+        MACOSX_BUNDLE TRUE
+        MACOSX_BUNDLE_BUNDLE_NAME "Art Gallery Ghost"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.example.art-gallery-ghost"
+        MACOSX_BUNDLE_BUNDLE_VERSION "1.0"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0"
+        MACOSX_BUNDLE_COPYRIGHT "© 2025 John Nam"
+        MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
+    )
+    add_custom_command(TARGET art-gallery-ghost POST_BUILD
+        COMMAND codesign --force --deep --sign - $<TARGET_BUNDLE_DIR:art-gallery-ghost>
+        COMMENT "Code signing the app bundle"
+    )
+endif()
+

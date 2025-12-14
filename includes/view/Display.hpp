@@ -73,23 +73,23 @@ namespace mir{
 
             switch(res){
             case Resolution::HD:
-                video = sf::VideoMode(1280, 720);
+                video = sf::VideoMode({1280, 720});
                 break;
 
             case Resolution::FHD:
-                video = sf::VideoMode(1920, 1080);
+                video = sf::VideoMode({1920, 1080});
                 break;
 
             case Resolution::QHD:
-                video = sf::VideoMode(2560, 1440);
+                video = sf::VideoMode({2560, 1440});
                 break;
 
             case Resolution::UHD:
-                video = sf::VideoMode(3840, 2160);
+                video = sf::VideoMode({3840, 2160});
                 break;
 
             case Resolution::Custom:
-                video = sf::VideoMode(width, height);
+                video = sf::VideoMode({width, height});
                 break;
 
             default:
@@ -101,11 +101,11 @@ namespace mir{
             case VideoMode::Borderless:
                 video = sf::VideoMode::getDesktopMode();
                 Window = new sf::RenderWindow(video, title, sf::Style::None);
-                Window->setPosition(Point2<Int>(0, 0));
+                Window->setPosition({0, 0});
                 break;
 
             case VideoMode::Fullscreen:
-                Window = new sf::RenderWindow(video, title, sf::Style::Fullscreen);
+                Window = new sf::RenderWindow(video, title, sf::State::Fullscreen);
                 break;
 
             case VideoMode::Desktop:
@@ -122,7 +122,7 @@ namespace mir{
         namespace{
             static inline void BuildSprite(const ID id, sf::Sprite& sprite){
                 sprite.setPosition(transform::Positions[id]);
-                sprite.setRotation(transform::Rotations[id]);
+                sprite.setRotation(sf::degrees(transform::Rotations[id]));
                 sprite.setColor(sprite::Colors[id]);
 
                 Point2<Real> finalScale = transform::Scales[id];
@@ -153,7 +153,7 @@ namespace mir{
                     if(particle::Positions[id].empty()) continue;
 
                     const size_t count = particle::Positions[id].size();
-                    PointArr vertexArr(PrimType::Quads, count * 4);
+                    PointArr vertexArr(sf::PrimitiveType::Triangles, count * 6);
 
                     for (size_t i = 0; i < count; ++i) {
                         const Point2<Real>& pos = particle::Positions[id][i];
@@ -162,17 +162,18 @@ namespace mir{
 
                         const Real halfSize = size * 0.5f;
 
-                        vertexArr[i * 4 + 0].position = Point2<Real>(pos.x - halfSize, pos.y - halfSize);
-                        vertexArr[i * 4 + 0].color = color;
+                        sf::Vector2f tl(pos.x - halfSize, pos.y - halfSize);
+                        sf::Vector2f tr(pos.x + halfSize, pos.y - halfSize);
+                        sf::Vector2f br(pos.x + halfSize, pos.y + halfSize);
+                        sf::Vector2f bl(pos.x - halfSize, pos.y + halfSize);
 
-                        vertexArr[i * 4 + 1].position = Point2<Real>(pos.x + halfSize, pos.y - halfSize);
-                        vertexArr[i * 4 + 1].color = color;
+                        vertexArr[i * 6 + 0].position = tl; vertexArr[i * 6 + 0].color = color;
+                        vertexArr[i * 6 + 1].position = tr; vertexArr[i * 6 + 1].color = color;
+                        vertexArr[i * 6 + 2].position = br; vertexArr[i * 6 + 2].color = color;
 
-                        vertexArr[i * 4 + 2].position = Point2<Real>(pos.x + halfSize, pos.y + halfSize);
-                        vertexArr[i * 4 + 2].color = color;
-
-                        vertexArr[i * 4 + 3].position = Point2<Real>(pos.x - halfSize, pos.y + halfSize);
-                        vertexArr[i * 4 + 3].color = color;
+                        vertexArr[i * 6 + 3].position = br; vertexArr[i * 6 + 3].color = color;
+                        vertexArr[i * 6 + 4].position = bl; vertexArr[i * 6 + 4].color = color;
+                        vertexArr[i * 6 + 5].position = tl; vertexArr[i * 6 + 5].color = color;
                     }
                     Window->draw(vertexArr);
                 }
@@ -190,19 +191,19 @@ namespace mir{
 
                 static sf::Font font;
                 static Bool fontLoaded = false;
-                static sf::Text text;
+                static std::unique_ptr<sf::Text> text;
 
                 if(!fontLoaded){
-                    if(font.loadFromFile("assets/fonts/dieproud.ttf")){
+                    if(font.openFromFile("assets/fonts/dieproud.ttf")){
                         fontLoaded = true;
-                        text.setFont(font);
-                        text.setCharacterSize(24);
-                        text.setFillColor(sf::Color::Green);
+                        text = std::make_unique<sf::Text>(font);
+                        text->setCharacterSize(24);
+                        text->setFillColor(sf::Color::Green);
                     }
                 }
 
                 if constexpr(DEBUG_ENABLED) {
-                    if(mir::debug::IsEntityCountVisible && fontLoaded){
+                    if(mir::debug::IsEntityCountVisible && fontLoaded && text){
                         sf::View oldView = Window->getView();
                         Window->setView(Window->getDefaultView());
 
@@ -210,10 +211,10 @@ namespace mir{
                         for(Bool available : entity::IsAvailables)
                             if(available) count++;
 
-                        text.setString("[Toggle - F1] Entities: " + std::to_string(count));
-                        text.setPosition(10, 10);
+                        text->setString("[Toggle - F1] Entities: " + std::to_string(count));
+                        text->setPosition({10.f, 10.f});
 
-                        Window->draw(text);
+                        Window->draw(*text);
                         Window->setView(oldView);
                     }
 
@@ -241,26 +242,26 @@ namespace mir{
 
                 static sf::Font font;
                 static Bool fontLoaded = false;
-                static sf::Text text;
+                static std::unique_ptr<sf::Text> text;
 
                 if(!fontLoaded){
-                    if(font.loadFromFile("assets/fonts/dieproud.ttf")){
+                    if(font.openFromFile("assets/fonts/dieproud.ttf")){
                         fontLoaded = true;
-                        text.setFont(font);
-                        text.setCharacterSize(24);
-                        text.setFillColor(sf::Color::Green);
+                        text = std::make_unique<sf::Text>(font);
+                        text->setCharacterSize(24);
+                        text->setFillColor(sf::Color::Green);
                     }
                 }
 
-                if(mir::profile::IsEnable && fontLoaded){
+                if(mir::profile::IsEnable && fontLoaded && text){
                     sf::View oldView = Window->getView();
                     Window->setView(Window->getDefaultView());
 
                     const Real fps = mir::profile::CurrentFPS;
-                    text.setString("[Toggle - F2] FPS: " + std::to_string(TypeCast<Int>(fps)));
-                    text.setPosition(10, 40);
+                    text->setString("[Toggle - F2] FPS: " + std::to_string(TypeCast<Int>(fps)));
+                    text->setPosition({10.f, 40.f});
 
-                    Window->draw(text);
+                    Window->draw(*text);
                     Window->setView(oldView);
                 }
             }

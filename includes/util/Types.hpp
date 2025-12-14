@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SFML/Graphics/PrimitiveType.hpp>
 #include <cstdint>
 #include <limits>
 #include <functional>
@@ -11,10 +10,13 @@
 #include <queue>
 #include <stack>
 #include <memory>
+#include <thread>
+#include <utility>
 
 #include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <SFML/Network.hpp>
 
 namespace mir {
     template<typename T>
@@ -69,6 +71,8 @@ namespace mir {
     using Font = sf::Font;
     using Text = sf::Text;
 
+    using HTTP = sf::Http;
+
     static constexpr Int I_MAX = std::numeric_limits<Int>::max();
     static constexpr Int I_MIN = std::numeric_limits<Int>::min();
     static constexpr Uint U_MAX = std::numeric_limits<Uint>::max();
@@ -81,5 +85,10 @@ namespace mir {
     template <typename T, typename U>
     static inline T TypeCast(U&& value){
         return static_cast<T>(std::forward<U>(value));
+    }
+
+    template <typename T, typename... Args>
+    static inline void FireAndForget(T&& func, Args&&... args){
+        std::thread(std::forward<T>(func), std::forward<Args>(args)...).detach();
     }
 }

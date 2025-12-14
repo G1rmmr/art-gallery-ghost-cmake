@@ -221,7 +221,7 @@ namespace mir {
             }
 
             RenderTex shape;
-            if (!shape.create(TypeCast<Uint>(size.x), TypeCast<Uint>(size.y))) {
+            if (!shape.resize({TypeCast<Uint>(size.x), TypeCast<Uint>(size.y)})) {
                 debug::Log("Failed to create render texture for entity (ID: %d)", id);
                 return;
             }
@@ -316,13 +316,13 @@ namespace mir {
                 return;
             }
 
-            Musics[tag].setLoop(shouldLoop);
+            Musics[tag].setLooping(shouldLoop);
             Musics[tag].play();
         }
 
         static inline void Play(const Tag tag, Bool shouldLoop = false) {
             if(!Sounds[tag]) return;
-            Sounds[tag]->setLoop(shouldLoop);
+            Sounds[tag]->setLooping(shouldLoop);
             Sounds[tag]->play();
         }
 
@@ -332,7 +332,7 @@ namespace mir {
 
         static inline void Stop(const Tag tag) {
             if(Sounds[tag]) Sounds[tag]->stop();
-            if(Musics[tag].getStatus() != SoundSrc::Stopped) Musics[tag].stop();
+            if(Musics[tag].getStatus() != SoundSrc::Status::Stopped) Musics[tag].stop();
         }
 
         static inline void Delete(const Tag tag){
@@ -365,13 +365,12 @@ namespace mir {
 
         static inline void Alloc(const Tag tag){
             Sources[tag] = std::make_unique<Font>();
-            if(!Sources[tag]->loadFromFile(resource::Fonts[tag])){
+            if(!Sources[tag]->openFromFile(resource::Fonts[tag])){
                 debug::Log("Font doesn't exist : %s", resource::Fonts[tag].c_str());
                 Sources[tag].reset();
                 return;
             }
-            Texts[tag] = std::make_unique<Text>();
-            Texts[tag]->setFont(*Sources[tag]);
+            Texts[tag] = std::make_unique<Text>(*Sources[tag]);
         }
 
         static inline void Delete(const Tag tag){

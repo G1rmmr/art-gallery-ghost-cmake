@@ -2,8 +2,6 @@
 
 #include <Mir>
 
-#include "../Emscript.hpp"
-
 namespace player{
     const mir::Real POS_X = 200;
     const mir::Real POS_Y = 200;
@@ -19,7 +17,7 @@ namespace player{
     const mir::Bool IN_AIR = true;
     const mir::Bool IS_GHOST = false;
 
-    Uint Score = 0;
+    mir::Uint Score = 0;
 
     namespace{
         inline void InitTransform(const mir::ID id){
@@ -149,9 +147,7 @@ namespace player{
         inline void SubscribeDeath(const mir::ID id){
             mir::Action<const mir::event::type::Death&> action
                 = [id](const mir::event::type::Death&){
-#ifdef __EMSCRIPTEN__
-                SaveScoreToWeb(Score);
-#endif
+
             };
             mir::event::Subscribe(action);
         }
