@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <string>
-#include <sys/types.h>
 #include <thread>
 #include <sstream>
 
@@ -13,19 +12,20 @@
 
 namespace mir{
     namespace http{
-        static inline const String HOST = "localhost";
-        static inline const Uint PORT = 8080;
+        enum class Type{
+            Get,
+            Post
+        };
 
-        static inline Dictionary<String, String> Params = {};
+        struct Set{
+            String Host;
+            String EndPoint;
+            Uint Port;
+        };
 
         namespace{
-            enum class Type{
-                Get,
-                Post
-            };
-
-            static inline String BuildQuery(){
-                if(Params.empty()) {
+            static inline String BuildQuery(Dictionary<String, String> params){
+                if(params.empty()) {
                     debug::Log("HTTP Parameters are empty!");
                     return "";
                 }
@@ -33,31 +33,34 @@ namespace mir{
                 std::stringstream stream;
                 bool isFirst = true;
 
-                for(const auto& [key, val] : Params){
+                for(const auto& [key, val] : params){
                     if(!isFirst) stream << "&";
                     stream << key << "=" << val;
                     isFirst = false;
                 }
 
-                Params.clear();
+                params.clear();
                 return stream.str();
             }
+        }
 
-            static inline void Request(Type type, HTTP http, const String &endPoint){
+        static inline void Request(Type type, const Set& set, Dictionary<String, String> params){
+            FireAndForget([type, params, set](){
+                HTTP http(set.Host, set.Port);
                 HTTP::Request request;
 
-                const String query = BuildQuery();
+                const String query = BuildQuery(params);
 
                 switch(type){
                 case Type::Get:
                     request = {
-                        endPoint + (query.empty() ? "" : "?" + query),
+                        set.EndPoint + (query.empty() ? "" : "?" + query),
                         HTTP::Request::Method::Get
                     };
                     break;
                 case Type::Post:
                     request = {
-                        endPoint,
+                        set.EndPoint,
                         HTTP::Request::Method::Post,
                         query
                     };
@@ -72,23 +75,13 @@ namespace mir{
                 if(response.getStatus() == HTTP::Response::Status::Ok ||
                     response.getStatus() == HTTP::Response::Status::Created){
                     debug::Log("[Network] Success: %s (Status: %d)",
-                        endPoint.c_str(), TypeCast<Int>(response.getStatus()));
+                        set.EndPoint.c_str(), TypeCast<Int>(response.getStatus()));
                 }
                 else{
                     debug::Log("[Network] Failed: %s (Status: %d)",
-                        endPoint.c_str(), TypeCast<Int>(response.getStatus()));
+                        set.EndPoint.c_str(), TypeCast<Int>(response.getStatus()));
                 }
-            }
-        }
-
-        static inline void Get(const String& host, const Uint port, const String& endPoint){
-            HTTP http(host, port);
-            FireAndForget(Request, Type::Get, http, endPoint);
-        }
-
-        static inline void Post(const String& host, const Uint port, const String& endPoint){
-            HTTP http(host, port);
-            FireAndForget(Request, Type::Post, http, endPoint);
+            });
         }
     }
 }

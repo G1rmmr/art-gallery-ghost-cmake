@@ -109,6 +109,7 @@ namespace player{
                 case mir::event::type::Key::W:
                     mir::event::Publish(mir::event::type::Jump{});
                     mir::camera::Shake(0.01, 1);
+                    mir::camera::Follow(id);
                     break;
 
                 case mir::event::type::Key::A:
@@ -138,10 +139,6 @@ namespace player{
                     mir::transform::Velocities[id].x = 0;
                     break;
 
-                case mir::event::type::Key::Space:
-                    mir::camera::SetPosition(mir::camera::GetCenter());
-                    break;
-
                 default: break;
                 }
             };
@@ -151,7 +148,7 @@ namespace player{
         inline void SubscribeDeath(const mir::ID id){
             mir::Action<const mir::event::type::Death&> action
                 = [id](const mir::event::type::Death&){
-                network::PostScores(NAME, Score);
+                network::PostScore(NAME, Score);
                 network::GetTopPlayers();
             };
             mir::event::Subscribe(action);

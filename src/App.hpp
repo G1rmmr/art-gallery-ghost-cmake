@@ -21,6 +21,7 @@ namespace app {
         mir::scene::Register("Game", game::Initialize);
 
         mir::scene::Load("Menu");
+        mir::scene::ProcessPendingLoad();
     }
 
     inline void ProcessInput(){
@@ -38,23 +39,18 @@ namespace app {
         }
     }
 
-    inline void Update(const mir::Real deltaTime){
-        mir::time::Update(deltaTime);
-        mir::profile::Update(deltaTime);
-        mir::effect::Update(deltaTime);
-        mir::movement::Update(deltaTime);
-        mir::collision::Update();
-        mir::animation::Update(deltaTime);
-        mir::camera::Update(deltaTime);
-        mir::combat::Update(deltaTime);
-
-        if(mir::stats::Healths[game::PlayerID] < 0){
-            mir::stats::Healths[game::PlayerID]--;
-            player::Score++;
+        inline void Update(const mir::Real deltaTime){
+            mir::scene::ProcessPendingLoad();
+    
+            mir::time::Update(deltaTime);
+            mir::profile::Update(deltaTime);
+            mir::effect::Update(deltaTime);
+            mir::movement::Update(deltaTime);
+            mir::collision::Update();
+            mir::animation::Update(deltaTime);
+            mir::camera::Update(deltaTime);
+            mir::combat::Update(deltaTime);
         }
-
-    }
-
     inline void Render(){
         PROFILE_SCOPE("Render"){
             mir::window::Clear(127, 127, 127);

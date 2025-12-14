@@ -12,13 +12,21 @@ namespace mir{
     namespace scene{
         inline Dictionary<String, Action<>> Scenes;
         inline String Current = "";
+        inline String NextScene = "";
 
         inline void Register(const String& name, std::function<void()> func){
             Scenes[name] = std::move(func);
         }
 
-        inline void Load(const String& name) {
-            if(Current == name) return;
+        inline void ProcessPendingLoad() {
+            if (NextScene.empty()) return;
+            if (Current == NextScene) {
+                NextScene.clear();
+                return;
+            }
+
+            String name = NextScene;
+            NextScene.clear();
 
             Dictionary<String, Action<>>::iterator iter = Scenes.find(name);
             if(iter == Scenes.end()) {
@@ -26,9 +34,14 @@ namespace mir{
                 return;
             }
 
+            debug::Log("Scene Transition: %s -> %s", Current.c_str(), name.c_str());
             Current = name;
             mir::Clear();
             iter->second();
+        }
+
+        inline void Load(const String& name) {
+            NextScene = name;
         }
     }
 }

@@ -23,6 +23,7 @@ namespace ground{
             mir::physics::Masses[id] = 10000;
             mir::physics::InAirFlags[id] = IN_AIR;
             mir::physics::IsGhosts[id] = IS_GHOST;
+            mir::stats::Healths[id] = 9999; // Make ground immortal
         }
 
         inline void InitSprite(const mir::ID id){

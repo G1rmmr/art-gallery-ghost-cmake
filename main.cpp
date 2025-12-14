@@ -1,17 +1,14 @@
 #include "src/App.hpp"
 
-static inline void Run(){
-    const mir::Real deltaTime = mir::time::GetDelta();
-    app::ProcessInput();
-    app::Update(deltaTime);
-    app::Render();
-}
-
 int main() {
     try{
         app::Initialize();
-
-        while(mir::window::IsOpening()) Run();
+        while(mir::window::IsOpening()){
+            const mir::Real deltaTime = mir::time::GetDelta();
+            app::ProcessInput();
+            app::Update(deltaTime);
+            app::Render();
+        }
         app::Shutdown();
     }
     catch(const std::exception& e){

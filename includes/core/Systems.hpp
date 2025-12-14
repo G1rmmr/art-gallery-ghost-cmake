@@ -82,10 +82,10 @@ namespace mir{
                 }
             }
 
-            const std::size_t lastID = TypeCast<ID>(activated.size());
+            const Uint lastID = TypeCast<ID>(activated.size());
 
-            for(std::size_t i = 0; i < lastID - 1; i++){
-                for(std::size_t j = i + 1; j < lastID; j++){
+            for(Uint i = 0; i + 1 < lastID; i++){
+                for(Uint j = i + 1; j < lastID; j++){
                     if(IsCollide(activated[i], activated[j])){
                         event::type::Collision event{activated[j]};
                         event::Publish(event);
@@ -193,6 +193,7 @@ namespace mir{
                 if(stats::Healths[id] <= 0){
                     event::type::Death event{};
                     event::Publish(event);
+                    entity::IsAvailables[id] = false;
                 }
             }
         }

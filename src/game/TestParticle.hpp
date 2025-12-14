@@ -21,6 +21,8 @@ namespace game{
 
                 mir::particle::TargetLifeTimes[id] = 1;
                 mir::particle::IsEmittings[id] = true;
+                
+                mir::stats::Healths[id] = 9999; // Make particle emitter immortal
 
                 // mir::particle::BurstParticle(id, 50);
             }

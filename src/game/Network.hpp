@@ -3,19 +3,22 @@
 #include <Mir>
 
 namespace network{
-    const mir::String HOST = "localhost";
+    const mir::String HOST = "127.0.0.1";
     const mir::Uint PORT = 8080;
 
     static inline void PostScore(const mir::String& name, const mir::Uint score){
-        mir::http::Params = {
-            {"Name", name},
-            {"Score", mir::ToString(score)}
+        mir::Dictionary<mir::String, mir::String> params = {
+            {"name", name},
+            {"score", mir::ToString(score)}
         };
 
-        mir::http::Post(HOST, PORT, "/submit");
+        mir::http::Request(mir::http::Type::Post,
+            {HOST, "/submit", PORT}, params
+        );
     }
 
     static inline void GetTopPlayers(){
-        mir::http::Get(HOST, PORT, "/top5");
+        mir::Dictionary<mir::String, mir::String> params = {};
+        mir::http::Request(mir::http::Type::Get, {HOST, "/top5", PORT}, params);
     }
 }

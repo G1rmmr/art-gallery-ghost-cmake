@@ -14,6 +14,19 @@ namespace game{
             PlayerID = player::Create();
             GroundID = ground::Create();
             TestParticleID = particle::Create();
+
+            mir::time::Register(2, [](){
+                mir::stats::Healths[PlayerID]--;
+                player::Score += 10;
+            }, true);
+
+            mir::Action<const mir::event::type::Death&> action
+                = [](const mir::event::type::Death&){
+                mir::Clear();
+                mir::window::Shutdown();
+            };
+
+            mir::event::Subscribe(action);
         }
         mir::debug::Log("Game Initialized!");
     }

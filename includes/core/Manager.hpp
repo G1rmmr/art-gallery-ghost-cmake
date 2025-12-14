@@ -32,8 +32,8 @@ namespace mir {
             struct ComponentInfo{
                 const char* Name;
                 void* Data;
-                std::size_t Size;
-                std::size_t Count;
+                Uint Size;
+                Uint Count;
             };
 
             static inline const List<ComponentInfo> GetAllComponents(){

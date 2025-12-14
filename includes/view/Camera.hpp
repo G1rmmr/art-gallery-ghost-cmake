@@ -64,6 +64,14 @@ namespace mir{
                 end = math::Lerp(start, target, interval);
             }
 
+            const Point2<Real> center = View.getCenter();
+            if(center.x < end.x + 5 &&
+                center.y > end.y - 5 &&
+                center.x > end.x - 5 &&
+                center.y < end.y + 5 &&
+                !physics::InAirFlags[TargetID])
+                TargetID = 0;
+
             if(ShakeTime > 0){
                 ShakeTime -= deltaTime;
                 Real offsetX = math::GetRandomReal(-50, 50) * ShakePower;

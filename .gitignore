@@ -12,5 +12,9 @@ out
 .clangd
 .zed
 
+*.py
+*.dat
+*.log
+
 cmake-guide.md
 GEMINI.md

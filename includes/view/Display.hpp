@@ -59,6 +59,7 @@ namespace mir{
             if(Window){
                 Window->close();
                 delete Window;
+                Window = nullptr;
             }
         }
 
@@ -134,7 +135,7 @@ namespace mir{
 
             static inline void DrawSprites(){
                 for(ID id = 1; id < MAX_ENTITIES; ++id){
-                    if(!entity::IsAvailables[id] || !sprite::Textures[id]) continue;
+                    if(!sprite::Textures[id]) continue;
 
                     const List<sf::Rect<Int>>& frames
                         = animation::FrameSets[animation::States[id]];

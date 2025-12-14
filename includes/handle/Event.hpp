@@ -51,7 +51,7 @@ namespace mir{
         }
 
         namespace{
-            using SubID = std::size_t;
+            using SubID = Uint;
 
             class Base{
             public:
