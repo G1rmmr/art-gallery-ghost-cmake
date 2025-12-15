@@ -30,19 +30,38 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install SFML (macOS)
+        if: runner.os == 'macOS'
+        run: brew install sfml
+
       - name: Install SFML Dependencies (Linux/FreeType Fix)
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y libsfml-dev libxi-dev libfreetype6-dev cmake
-
-      - name: Install SFML (macOS)
-        if: runner.os == 'macOS'
-        run: brew install sfml
-
+          
       - name: Install SFML (Windows)
         if: runner.os == 'Windows'
-        run: choco install sfml
+        shell: powershell
+        run: |
+          $sfml_url = "https://www.sfml-dev.org/files/SFML-3.0.2-windows-vs2022-64-bit.zip"
+          $sfml_zip = "sfml.zip"
+          $install_dir = "C:\sfml-install"
+         
+          Write-Host "Downloading SFML from $sfml_url"
+          Invoke-WebRequest -Uri $sfml_url -OutFile $sfml_zip
+         
+          New-Item -ItemType Directory -Force -Path $install_dir
+          Expand-Archive -Path $sfml_zip -DestinationPath $install_dir
+          Write-Host "SFML installed to $install_dir"
 
       - name: Build
-        run: ./build.sh ${{ matrix.build_type }}
+        run: |
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            cmake -B build -S . `
+              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
+              -DSFML_DIR=C:/sfml-install/SFML-3.0.2-windows-vs2022-64-bit/lib/cmake/SFML
+          else
+            cmake -B build -S . -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          fi
+          cmake --build build --config ${{ matrix.build_type }}
