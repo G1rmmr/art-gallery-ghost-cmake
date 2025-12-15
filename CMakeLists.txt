@@ -13,29 +13,13 @@ set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 
 set(SFML_VERSION "3.0.2")
 
-find_package(SFML ${SFML_VERSION} REQUIRED QUIET)
-
-if(NOT SFML_FOUND)
-    message(STATUS "SFML not found. Using FetchContent.")
-    set(CMAKE_SUPPRESS_DEVELOPER_WARNINGS ON CACHE BOOL "Suppress dev warnings" FORCE)
-    set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "Suppress deprecation warnings" FORCE)
-
-    if(POLICY CMP0153)
-        cmake_policy(SET CMP0153 OLD)
-    endif()
-
-    set(SFML_REPOSITORY https://github.com/SFML/SFML.git)
-    set(SFML_TAG ${SFML_VERSION})
-
-    include(FetchContent)
-    FetchContent_Declare(SFML
-        GIT_REPOSITORY ${SFML_REPOSITORY}
-        GIT_TAG ${SFML_TAG}
-        GIT_SHALLOW ON
-        EXCLUDE_FROM_ALL
-        SYSTEM)
-    FetchContent_MakeAvailable(SFML)
-endif()
+include(FetchContent)
+FetchContent_Declare(SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 3.0.2
+    GIT_SHALLOW ON
+)
+FetchContent_MakeAvailable(SFML)
 
 if(BUILD_BUNDLE AND APPLE)
     add_executable(art-gallery-ghost MACOSX_BUNDLE ${SOURCES})
@@ -51,11 +35,11 @@ target_include_directories(
 )
 
 target_link_libraries(art-gallery-ghost PRIVATE
-    sfml-graphics
-    sfml-system
-    sfml-window
-    sfml-audio
-    sfml-network
+    SFML::Graphics
+    SFML::System
+    SFML::Window
+    SFML::Audio
+    SFML::Network
 )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
