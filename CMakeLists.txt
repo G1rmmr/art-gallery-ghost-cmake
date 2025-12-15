@@ -13,7 +13,7 @@ set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 
 set(SFML_VERSION "3.0.2")
 
-find_package(SFML 3 COMPONENTS system window graphics audio network QUIET)
+find_package(SFML {SFML_VERSION} REQUIRED QUIET)
 
 if(NOT SFML_FOUND)
     message(STATUS "SFML not found. Using FetchContent.")
