@@ -3,7 +3,6 @@ name: CI
 on:
   push:
     branches: ["master"]
-
   pull_request:
 
 defaults:
@@ -35,9 +34,8 @@ jobs:
         run: brew install sfml
 
       - name: Install SFML Dependencies (Linux/FreeType Fix)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update; sudo apt-get install -y libsfml-dev libxi-dev libfreetype6-dev cmake libxrandr-dev libxcursor-dev
+        if: runner.os == 'Linux'
+        run: sudo apt-get update; sudo apt-get install -y libsfml-dev libxi-dev libfreetype6-dev cmake libxrandr-dev libxcursor-dev
 
       - name: Install SFML (Windows)
         if: runner.os == 'Windows'
@@ -46,10 +44,9 @@ jobs:
           $sfml_url = "https://www.sfml-dev.org/files/SFML-3.0.2-windows-vc17-64-bit.zip"
           $sfml_zip = "sfml.zip"
           $install_dir = "C:\sfml-install"
-         
-          Write-Host "Downloading SFML from $sfml_url"
-          Invoke-WebRequest -Uri $sfml_url -OutFile $sfml_zip
-         
+          
+          (New-Object System.Net.WebClient).DownloadFile($sfml_url, $sfml_zip)
+          
           New-Item -ItemType Directory -Force -Path $install_dir
           Expand-Archive -Path $sfml_zip -DestinationPath $install_dir
           Write-Host "SFML installed to $install_dir"
@@ -57,8 +54,8 @@ jobs:
       - name: Build
         run: |
           if [ "${{ runner.os }}" == "Windows" ]; then
-            cmake -B build -S . `
-              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
+            cmake -B build -S . \
+              -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
               -DSFML_DIR=C:/sfml-install/SFML-3.0.2-windows-vc17-64-bit/lib/cmake/SFML
           else
             cmake -B build -S . -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
