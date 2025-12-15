@@ -29,19 +29,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        
+      - name: Setup vcpkg
+        uses: vcpkg-tool/setup-vcpkg@v1
+        id: vcpkg_setup
 
-      - name: Install FreeType (Linux workaround)
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libfreetype6-dev
-
-      - name: Install missing X11 deps (Linux)
-        if: runner.os == 'Linux'
-        run: sudo apt-get install -y libxi-dev
-
-      - name: Install SFML 3.0.2
-        uses: oprypin/install-sfml@v1
-        with:
-          sfml: "3.0.2"
+      - name: Install SFML via vcpkg
+        run: |
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            vcpkg install sfml:x64-windows
+          elif [ "${{ runner.os }}" == "Linux" ]; then
+            vcpkg install sfml:x64-linux
+          elif [ "${{ runner.os }}" == "macOS" ]; then
+            vcpkg install sfml:x64-osx
+          fi
 
       - name: Build
-        run: ./build.sh ${{ matrix.build_type }}
+        run: |
+          cmake -B build -S . `
+            -DCMAKE_TOOLCHAIN_FILE=${{ steps.vcpkg_setup.outputs.vcpkg-root }}/scripts/buildsystems/vcpkg.cmake `
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+          cmake --build build --config ${{ matrix.build_type }}
