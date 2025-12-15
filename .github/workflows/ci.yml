@@ -35,12 +35,10 @@ jobs:
         run: brew install sfml
 
       - name: Install SFML Dependencies (Linux/FreeType Fix)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libsfml-dev libxi-dev libfreetype6-dev cmake \
-            libxrandr-dev libxcursor-dev
-          
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update; sudo apt-get install -y libsfml-dev libxi-dev libfreetype6-dev cmake libxrandr-dev libxcursor-dev
+
       - name: Install SFML (Windows)
         if: runner.os == 'Windows'
         shell: powershell
@@ -61,7 +59,7 @@ jobs:
           if [ "${{ runner.os }}" == "Windows" ]; then
             cmake -B build -S . `
               -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} `
-              -DSFML_DIR=C:/sfml-install/SFML-3.0.2-windows-vs2022-64-bit/lib/cmake/SFML
+              -DSFML_DIR=C:/sfml-install/SFML-3.0.2-windows-vc17-64-bit/lib/cmake/SFML
           else
             cmake -B build -S . -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
           fi
