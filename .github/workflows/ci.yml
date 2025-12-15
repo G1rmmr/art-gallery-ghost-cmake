@@ -44,7 +44,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: powershell
         run: |
-          $sfml_url = "https://www.sfml-dev.org/files/SFML-3.0.2-windows-vs2022-64-bit.zip"
+          $sfml_url = "https://www.sfml-dev.org/files/SFML-3.0.2-windows-vc17-64-bit.zip"
           $sfml_zip = "sfml.zip"
           $install_dir = "C:\sfml-install"
          
