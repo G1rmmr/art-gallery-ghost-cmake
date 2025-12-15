@@ -12,27 +12,27 @@ namespace mir{
         static constexpr Real PI = 3.14159f;
 
         static inline Real Cos(const Real angle){
-            return std::cosf(angle * (PI / 180));
+            return std::cos(angle * (PI / 180));
         }
 
         static inline Real Sin(const Real angle){
-            return std::sinf(angle * (PI / 180));
+            return std::sin(angle * (PI / 180));
         }
 
         static inline Real Tan(const Real angle){
-            return std::tanf(angle * (PI / 180));
+            return std::tan(angle * (PI / 180));
         }
 
         static inline Real CosH(const Real angle){
-            return std::coshf(angle * (PI / 180));
+            return std::cosh(angle * (PI / 180));
         }
 
         static inline Real SinH(const Real angle){
-            return std::sinhf(angle * (PI / 180));
+            return std::sinh(angle * (PI / 180));
         }
 
         static inline Real TanH(const Real angle){
-            return std::tanhf(angle * (PI / 180));
+            return std::tanh(angle * (PI / 180));
         }
 
         static inline Real Lerp(
