@@ -2,6 +2,7 @@
 
 #include <Mir>
 
+#include "game/Network.hpp"
 #include "game/Player.hpp"
 #include "menu/Menu.hpp"
 #include "game/Game.hpp"
@@ -29,6 +30,9 @@ namespace app {
             mir::input::Process();
 
             if(mir::input::IsPressed(mir::event::type::Key::Escape)){
+                network::PostScore(player::NAME, player::Score);
+                network::GetTopPlayers();
+
                 mir::window::Close();
             }
             if(mir::input::IsPressed(mir::event::type::Key::F1))
@@ -41,7 +45,6 @@ namespace app {
 
         inline void Update(const mir::Real deltaTime){
             mir::scene::ProcessPendingLoad();
-    
             mir::time::Update(deltaTime);
             mir::profile::Update(deltaTime);
             mir::effect::Update(deltaTime);

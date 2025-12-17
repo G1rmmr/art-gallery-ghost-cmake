@@ -1,9 +1,11 @@
 #pragma once
 
+#include <chrono>
 #include <iostream>
 #include <string>
 #include <thread>
 #include <sstream>
+#include <atomic>
 
 #include <SFML/Network.hpp>
 
@@ -18,12 +20,15 @@ namespace mir{
         };
 
         struct Set{
+            Action<const HTTP::Response&> Callback;
             String Host;
             String EndPoint;
             Uint Port;
         };
 
         namespace{
+            inline std::atomic<Int> ActivatedRequsts = 0;
+
             static inline String BuildQuery(Dictionary<String, String> params){
                 if(params.empty()) {
                     debug::Log("HTTP Parameters are empty!");
@@ -44,7 +49,9 @@ namespace mir{
             }
         }
 
-        static inline void Request(Type type, const Set& set, Dictionary<String, String> params){
+        static inline void Request(Type type, Dictionary<String, String> params, const Set& set){
+            ActivatedRequsts++;
+
             FireAndForget([type, params, set](){
                 HTTP http(set.Host, set.Port);
                 HTTP::Request request;
@@ -78,10 +85,20 @@ namespace mir{
                         set.EndPoint.c_str(), TypeCast<Int>(response.getStatus()));
                 }
                 else{
-                    debug::Log("[Network] Failed: %s (Status: %d)",
-                        set.EndPoint.c_str(), TypeCast<Int>(response.getStatus()));
+                    debug::Log("[Network] Failed: %s (Status: %d, Body: %s)",
+                        set.EndPoint.c_str(), TypeCast<Int>(response.getStatus()), response.getBody().c_str());
                 }
+
+                if(set.Callback) set.Callback(response);
+
+                ActivatedRequsts--;
             });
+        }
+
+        static inline void Wait(const Uint miliSec){
+            const std::chrono::milliseconds mili = TypeCast<std::chrono::milliseconds>(miliSec);
+            while(ActivatedRequsts != 0)
+                std::this_thread::sleep_for(mili);
         }
     }
 }

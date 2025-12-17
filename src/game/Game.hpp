@@ -15,15 +15,14 @@ namespace game{
             GroundID = ground::Create();
             TestParticleID = particle::Create();
 
-            mir::time::Register(2, [](){
+            mir::time::Register(1, [](){
                 mir::stats::Healths[PlayerID]--;
                 player::Score += 10;
             }, true);
 
             mir::Action<const mir::event::type::Death&> action
                 = [](const mir::event::type::Death&){
-                mir::Clear();
-                mir::window::Shutdown();
+                mir::window::Close();
             };
 
             mir::event::Subscribe(action);

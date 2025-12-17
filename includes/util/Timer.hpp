@@ -57,13 +57,13 @@ namespace mir{
         static inline void Update(const Real deltaTime){
             if(TimerTasks.empty()) return;
 
-            for(TimerTask& task : TimerTasks){
-                task.RemainSec -= deltaTime;
+            for(Uint i = 0; i < TimerTasks.size(); ++i){
+                TimerTasks[i].RemainSec -= deltaTime;
 
-                if(task.RemainSec > 0) continue;
-                if(task.CallBack) task.CallBack();
-                if(task.IsLooping){
-                    task.RemainSec += task.IntervalSec;
+                if(TimerTasks[i].RemainSec > 0) continue;
+                if(TimerTasks[i].CallBack) TimerTasks[i].CallBack();
+                if(TimerTasks[i].IsLooping){
+                    TimerTasks[i].RemainSec += TimerTasks[i].IntervalSec;
                     continue;
                 }
             }
