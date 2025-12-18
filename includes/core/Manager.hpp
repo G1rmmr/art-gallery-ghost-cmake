@@ -53,17 +53,17 @@ namespace mir {
             std::ofstream file(filename, std::ios::binary);
 
             const List<ComponentInfo>& components = GetAllComponents();
-            size_t componentCount = components.size();
+            Size componentCount = components.size();
 
-            file.write(reinterpret_cast<const char*>(&componentCount), sizeof(size_t));
+            file.write(reinterpret_cast<const char*>(&componentCount), sizeof(Size));
 
             for(const ComponentInfo& comp : components){
                 std::streamsize nameLen = TypeCast<std::streamsize>(std::strlen(comp.Name));
-                file.write(reinterpret_cast<const char*>(&nameLen), sizeof(size_t));
+                file.write(reinterpret_cast<const char*>(&nameLen), sizeof(Size));
                 file.write(comp.Name, nameLen);
 
-                file.write(reinterpret_cast<const char*>(&comp.Size), sizeof(size_t));
-                file.write(reinterpret_cast<const char*>(&comp.Count), sizeof(size_t));
+                file.write(reinterpret_cast<const char*>(&comp.Size), sizeof(Size));
+                file.write(reinterpret_cast<const char*>(&comp.Count), sizeof(Size));
 
                 std::streamsize dataSize = TypeCast<std::streamsize>(comp.Size * comp.Count);
                 file.write(reinterpret_cast<const char*>(comp.Data), dataSize);
@@ -81,13 +81,13 @@ namespace mir {
                 return;
             }
 
-            size_t componentCount = 0;
-            file.read(reinterpret_cast<char*>(&componentCount), sizeof(size_t));
+            Size componentCount = 0;
+            file.read(reinterpret_cast<char*>(&componentCount), sizeof(Size));
 
             const List<ComponentInfo>& components = GetAllComponents();
-            for(size_t i = 0; i < componentCount; ++i){
-                std::basic_string<char>::size_type nameLen = 0;
-                file.read(reinterpret_cast<char*>(&nameLen), sizeof(size_t));
+            for(Size i = 0; i < componentCount; ++i){
+                Size nameLen = 0;
+                file.read(reinterpret_cast<char*>(&nameLen), sizeof(Size));
 
                 String name(nameLen, '\0');
                 file.read(name.data(), TypeCast<std::streamsize>(nameLen));
@@ -95,8 +95,8 @@ namespace mir {
                 std::streamsize size = 0;
                 std::streamsize count = 0;
 
-                file.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-                file.read(reinterpret_cast<char*>(&count), sizeof(size_t));
+                file.read(reinterpret_cast<char*>(&size), sizeof(Size));
+                file.read(reinterpret_cast<char*>(&count), sizeof(Size));
 
                 List<ComponentInfo>::const_iterator iter = std::find_if(
                     components.begin(), components.end(),[&name](const ComponentInfo& c){

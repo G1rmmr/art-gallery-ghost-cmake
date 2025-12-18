@@ -49,7 +49,7 @@ namespace mir{
             }
         }
 
-        static inline void Request(Type type, Dictionary<String, String> params, const Set& set){
+        static inline void Request(Type type, const Dictionary<String, String>& params, const Set& set){
             ActivatedRequsts++;
 
             FireAndForget([type, params, set](){

@@ -19,11 +19,39 @@
 #include <SFML/Network.hpp>
 
 namespace mir {
+    using PrimType = sf::PrimitiveType;
+    using PointArr = sf::VertexArray;
+    using Circle = sf::CircleShape;
+    using Rectangle = sf::RectangleShape;
+
+    using Int = std::int32_t;
+    using Uint = std::uint16_t;
+    using Byte = std::uint8_t;
+    using Size = std::size_t;
+    using Real = float;
+    using Bool = bool;
+    using String = std::string;
+    using Color = sf::Color;
+
+    using RenderTex = sf::RenderTexture;
+    using Texture = sf::Texture;
+    using Sprite = sf::Sprite;
+
+    using SoundBuf = sf::SoundBuffer;
+    using SoundSrc = sf::SoundSource;
+    using Sound = sf::Sound;
+    using Music = sf::Music;
+
+    using Font = sf::Font;
+    using Text = sf::Text;
+
+    using HTTP = sf::Http;
+
     template<typename T>
     using List = std::vector<T>;
 
-    template<typename T, std::size_t Size>
-    using Array = std::array<T, Size>;
+    template<typename T, Size S>
+    using Array = std::array<T, S>;
 
     template<typename K, typename V>
     using Dictionary = std::unordered_map<K, V>;
@@ -46,33 +74,6 @@ namespace mir {
     template<typename T>
     using Rect = sf::Rect<T>;
 
-    using PrimType = sf::PrimitiveType;
-    using PointArr = sf::VertexArray;
-    using Circle = sf::CircleShape;
-    using Rectangle = sf::RectangleShape;
-
-    using Int = std::int32_t;
-    using Uint = std::uint16_t;
-    using Byte = std::uint8_t;
-    using Real = float;
-    using Bool = bool;
-    using String = std::string;
-    using Color = sf::Color;
-
-    using RenderTex = sf::RenderTexture;
-    using Texture = sf::Texture;
-    using Sprite = sf::Sprite;
-
-    using SoundBuf = sf::SoundBuffer;
-    using SoundSrc = sf::SoundSource;
-    using Sound = sf::Sound;
-    using Music = sf::Music;
-
-    using Font = sf::Font;
-    using Text = sf::Text;
-
-    using HTTP = sf::Http;
-
     static constexpr Int I_MAX = std::numeric_limits<Int>::max();
     static constexpr Int I_MIN = std::numeric_limits<Int>::min();
     static constexpr Uint U_MAX = std::numeric_limits<Uint>::max();
@@ -83,8 +84,13 @@ namespace mir {
     static constexpr Real R_MIN = std::numeric_limits<Real>::min();
 
     template <typename T, typename U>
-    static inline T TypeCast(U&& value){
+    constexpr static inline T TypeCast(U&& value){
         return static_cast<T>(std::forward<U>(value));
+    }
+
+    template <typename T, typename U>
+    constexpr static inline T ConstCast(U&& value){
+        return const_cast<T>(std::forward<U>(value));
     }
 
     template <typename T>

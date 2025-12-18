@@ -12,7 +12,7 @@
 namespace mir{
     namespace input{
         namespace{
-            static inline const Dictionary<sf::Keyboard::Key, event::type::Key> KeyMap = {
+            static inline const Dictionary<sf::Keyboard::Key, event::type::Key> KEY_MAP = {
                 {sf::Keyboard::Key::Escape, event::type::Key::Escape},
                 {sf::Keyboard::Key::W, event::type::Key::W},
                 {sf::Keyboard::Key::A, event::type::Key::A},
@@ -24,12 +24,12 @@ namespace mir{
                 {sf::Keyboard::Key::Enter, event::type::Key::Enter}
             };
 
-            static inline Array<Bool, static_cast<size_t>(sf::Keyboard::KeyCount)> IsPressedState;
+            static inline Array<Bool, TypeCast<Size>(sf::Keyboard::KeyCount)> IsPressedState;
         }
 
         static inline Bool IsPressed(event::type::Key key){
-            for(const auto& [input, value] : KeyMap){
-                if(value == key) return IsPressedState[static_cast<size_t>(input)];
+            for(const auto& [input, value] : KEY_MAP){
+                if(value == key) return IsPressedState[TypeCast<Size>(input)];
             }
             return false;
         }
@@ -40,17 +40,17 @@ namespace mir{
                     event::Publish(event::type::Death{});
                 }
                 else if(const auto* key = event->getIf<sf::Event::KeyPressed>()){
-                    size_t code = static_cast<size_t>(key->code);
-                    if(KeyMap.count(key->code) && !IsPressedState[code]){
+                    Size code = TypeCast<Size>(key->code);
+                    if(KEY_MAP.count(key->code) && !IsPressedState[code]){
                         IsPressedState[code] = true;
-                        event::Publish(event::type::KeyPressed{KeyMap.at(key->code)});
+                        event::Publish(event::type::KeyPressed{KEY_MAP.at(key->code)});
                     }
                 }
                 else if(const auto* key = event->getIf<sf::Event::KeyReleased>()){
-                     size_t code = static_cast<size_t>(key->code);
-                     if(KeyMap.count(key->code)){
+                     Size code = TypeCast<Size>(key->code);
+                     if(KEY_MAP.count(key->code)){
                         IsPressedState[code] = false;
-                        event::Publish(event::type::KeyReleased{KeyMap.at(key->code)});
+                        event::Publish(event::type::KeyReleased{KEY_MAP.at(key->code)});
                     }
                 }
                 else if(const auto* mouse = event->getIf<sf::Event::MouseButtonPressed>()){

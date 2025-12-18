@@ -124,7 +124,7 @@ namespace mir{
             }
 
             static inline void KillParticles(const ID id, const Uint index){
-                const size_t lastIdx = particle::Positions[id].size() - 1;
+                const Size lastIdx = particle::Positions[id].size() - 1;
 
                 particle::Positions[id][index] = particle::Positions[id][lastIdx];
                 particle::Velocities[id][index] = particle::Velocities[id][lastIdx];
@@ -146,7 +146,7 @@ namespace mir{
                     = TypeCast<Int>(particle::Positions[id].size());
 
                 for(Int i = particleCount - 1; i >= 0; --i){
-                    List<Real>::size_type index = TypeCast<List<Real>::size_type>(i);
+                    Size index = TypeCast<Size>(i);
 
                     particle::CurrentLifeTimes[id][index] -= deltaTime;
 

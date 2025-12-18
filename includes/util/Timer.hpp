@@ -57,7 +57,7 @@ namespace mir{
         static inline void Update(const Real deltaTime){
             if(TimerTasks.empty()) return;
 
-            for(Uint i = 0; i < TimerTasks.size(); ++i){
+            for(Size i = 0; i < TimerTasks.size(); ++i){
                 TimerTasks[i].RemainSec -= deltaTime;
 
                 if(TimerTasks[i].RemainSec > 0) continue;
