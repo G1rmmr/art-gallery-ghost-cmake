@@ -393,11 +393,13 @@ namespace mir {
         sprite::Clear();
         animation::Clear();
         stats::Clear();
-        entity::Clear();
         event::Clear();
+        particle::Clear();
 
         texture::Clear();
         sound::Clear();
         font::Clear();
+
+        entity::Clear();
     }
 }

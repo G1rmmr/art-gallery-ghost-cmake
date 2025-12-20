@@ -22,7 +22,7 @@ namespace app {
         mir::scene::Register("Game", game::Initialize);
 
         mir::scene::Load("Menu");
-        mir::scene::ProcessPendingLoad();
+        mir::scene::Update();
     }
 
     inline void ProcessInput(){
@@ -33,7 +33,7 @@ namespace app {
                 network::PostScore(player::NAME, player::Score);
                 network::GetTopPlayers();
 
-                mir::window::Close();
+                mir::scene::Load("Menu");
             }
             if(mir::input::IsPressed(mir::event::type::Key::F1))
                 mir::debug::ToggleDebug();
@@ -43,17 +43,18 @@ namespace app {
         }
     }
 
-        inline void Update(const mir::Real deltaTime){
-            mir::scene::ProcessPendingLoad();
-            mir::time::Update(deltaTime);
-            mir::profile::Update(deltaTime);
-            mir::effect::Update(deltaTime);
-            mir::movement::Update(deltaTime);
-            mir::collision::Update();
-            mir::animation::Update(deltaTime);
-            mir::camera::Update(deltaTime);
-            mir::combat::Update(deltaTime);
-        }
+    inline void Update(const mir::Real deltaTime){
+        mir::scene::Update();
+        mir::time::Update(deltaTime);
+        mir::profile::Update(deltaTime);
+        mir::effect::Update(deltaTime);
+        mir::movement::Update(deltaTime);
+        mir::collision::Update();
+        mir::animation::Update(deltaTime);
+        mir::camera::Update(deltaTime);
+        mir::combat::Update(deltaTime);
+    }
+
     inline void Render(){
         PROFILE_SCOPE("Render"){
             mir::window::Clear(0, 0, 0);

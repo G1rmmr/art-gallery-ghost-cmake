@@ -4,6 +4,7 @@
 
 #include <SFML/Graphics/Color.hpp>
 
+#include "Display.hpp"
 #include "../core/Manager.hpp"
 #include "../util/Types.hpp"
 #include "../handle/Event.hpp"
@@ -44,9 +45,10 @@ namespace mir{
             const ID id = entity::Create();
             if(id == 0) return 0;
 
-            transform::Positions[id] = pos;
-            transform::Scales[id] = {1, 1};
             physics::Bounds[id] = size;
+
+            transform::Positions[id] = {pos.x - size.x / 2.f, pos.y - size.y / 2.f};
+            transform::Scales[id] = {1, 1};
 
             if(background.a != 0){
                 sprite::Colors[id] = background;
@@ -55,19 +57,22 @@ namespace mir{
             }
 
             if(tag != 0 && label != "" && foreground.a != 0){
-                const Point2<Real> center = {pos.x + size.x / 2, pos.y + size.y / 2};
+                const Point2<Real> center = pos;
                 BuildText(tag, foreground, center, label, 30);
             }
 
             Action<const mir::event::type::MousePressed&> action
                 = [id, pos, size, onClick](const event::type::MousePressed& e){
-                const Real cursorX = TypeCast<Real>(e.X);
-                const Real cursorY = TypeCast<Real>(e.Y);
+                if(!mir::Window) return;
+                
+                const Point2<Real> worldPos = mir::Window->mapPixelToCoords(Point2<Int>(e.X, e.Y));
+                const Real cursorX = TypeCast<Real>(worldPos.x);
+                const Real cursorY = TypeCast<Real>(worldPos.y);
 
-                if(cursorX < pos.x) return;
-                if(cursorX > pos.x + size.x) return;
-                if(cursorY < pos.y) return;
-                if(cursorY > pos.y + size.y) return;
+                if(cursorX < pos.x - size.x / 2.f) return;
+                if(cursorX > pos.x + size.x / 2.f) return;
+                if(cursorY < pos.y - size.y / 2.f) return;
+                if(cursorY > pos.y + size.y / 2.f) return;
 
                 onClick(e);
             };

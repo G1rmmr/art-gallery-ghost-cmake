@@ -35,7 +35,7 @@ namespace mir{
         static inline void Process(){
             while(const auto event = Window->pollEvent()){
                 if(event->is<sf::Event::Closed>()){
-                    event::Publish(event::type::Death{});
+                    mir::window::Close();
                 }
                 else if(const auto* key = event->getIf<sf::Event::KeyPressed>()){
                     Size code = TypeCast<Size>(key->code);

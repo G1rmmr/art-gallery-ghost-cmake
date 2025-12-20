@@ -11,6 +11,8 @@ namespace game{
 
     inline void Initialize(){
         PROFILE_SCOPE("Initialization"){
+            mir::camera::Init();
+
             PlayerID = player::Create();
             GroundID = ground::Create();
             TestParticleID = particle::Create();

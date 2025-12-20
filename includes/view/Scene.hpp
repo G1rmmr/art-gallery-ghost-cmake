@@ -18,10 +18,10 @@ namespace mir{
             Scenes[name] = std::move(func);
         }
 
-        inline void ProcessPendingLoad() {
+        inline void Update() {
             if (NextScene.empty()) return;
             if (Current == NextScene) {
-                NextScene.clear();
+                NextScene = "";
                 return;
             }
 

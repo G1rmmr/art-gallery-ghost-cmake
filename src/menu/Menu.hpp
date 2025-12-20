@@ -7,6 +7,7 @@ namespace menu{
 
     inline void Initialize(){
         PROFILE_SCOPE("Initialization"){
+            mir::camera::Init();
             TitleID = title::Create();
         }
         mir::debug::Log("Menu Initialized!");

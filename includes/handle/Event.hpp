@@ -91,10 +91,9 @@ namespace mir{
             return id;
         }
 
-        static inline void Unsubscribe(SubID id){
-            for(auto& [typeId, listenerMap] : Listeners){
-                if(listenerMap.erase(id) > 0) return;
-            }
+        template<typename T> static inline void Unsubscribe() {
+            std::type_index typeId = std::type_index(typeid(T));
+            Listeners.erase(typeId);
         }
 
         template<typename T>
