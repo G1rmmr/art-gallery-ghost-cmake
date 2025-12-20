@@ -17,7 +17,7 @@ include(FetchContent)
 FetchContent_Declare(
   SFML
   GIT_REPOSITORY https://github.com/SFML/SFML.git
-  GIT_TAG master
+  GIT_TAG 3.0.2
   GIT_SHALLOW ON)
 
 set(SFML_BUILD_STATIC_LIBS ON CACHE BOOL "Build SFML as static libs")
