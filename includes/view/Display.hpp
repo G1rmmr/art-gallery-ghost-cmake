@@ -1,11 +1,21 @@
 #pragma once
 
-#include <SFML/Graphics/PrimitiveType.hpp>
 #include <cstdint>
 #include <string>
+#include <memory>
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/View.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/WindowEnums.hpp>
 
 #include "../core/Components.hpp"
 #include "../core/Entity.hpp"
@@ -15,7 +25,7 @@
 #include "../util/Types.hpp"
 
 namespace mir{
-    using HandledWindow = sf::RenderWindow*;
+    
     inline HandledWindow Window = nullptr;
 
     enum class VideoMode{
@@ -38,6 +48,14 @@ namespace mir{
 
         static inline void Display(){
             if(Window) Window->display();
+        }
+
+        static inline Point2<Uint> GetDisplayResolution() {
+            const Point2<Uint> resolution = {
+                TypeCast<Uint>(DisplayMode::getDesktopMode().size.x),
+                TypeCast<Uint>(DisplayMode::getDesktopMode().size.y)
+            };
+            return resolution;
         }
 
         static inline void SetFPS(const Uint fps){

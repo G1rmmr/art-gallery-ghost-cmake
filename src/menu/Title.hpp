@@ -5,23 +5,19 @@
 namespace title{
     const mir::String CONTENT = "Art Gallery Ghost";
 
-    const mir::Real POS_X = 0.0;
-    const mir::Real POS_Y = 0.0;
-
-    const mir::Real SIZE_X = 1920.0;
-    const mir::Real SIZE_Y = 1080.0;
-
     namespace{
         mir::ID TitleTag = 0;
         mir::ID AnounceTag = 0;
 
         inline void InitText(){
+            const mir::Point2<mir::Uint> displayRes = mir::window::GetDisplayResolution();
+
             TitleTag = mir::font::Create("fonts/dieproud.ttf");
             mir::font::Alloc(TitleTag);
             mir::ui::BuildText(
                 TitleTag,
                 mir::Color(255, 255, 255),
-                mir::Point2<mir::Real>(POS_X / 2, POS_Y / 2),
+                mir::Point2<mir::Real>(displayRes.x / 2, displayRes.y / 2),
                 CONTENT,
                 100);
 
@@ -30,9 +26,9 @@ namespace title{
             mir::ui::BuildText(
                 AnounceTag,
                 mir::Color(255, 255, 255),
-                mir::Point2<mir::Real>(POS_X / 2, POS_Y / 2 + 300),
-                CONTENT,
-                100);
+                mir::Point2<mir::Real>(displayRes.x / 2, displayRes.y / 2 + 300),
+                "Press Any Key",
+                50);
         }
 
         inline void InitSound(){

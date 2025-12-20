@@ -1,7 +1,5 @@
 #pragma once
 
-#include <SFML/Window.hpp>
-
 #include <unordered_map>
 #include <array>
 

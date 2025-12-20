@@ -7,7 +7,7 @@
 #include <sstream>
 #include <atomic>
 
-#include <SFML/Network.hpp>
+#include <SFML/Network/Http.hpp>
 
 #include "../util/Types.hpp"
 #include "../util/Debugger.hpp"

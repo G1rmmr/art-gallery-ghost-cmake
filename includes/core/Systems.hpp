@@ -1,11 +1,10 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-
 #include "Components.hpp"
 #include "../handle/Event.hpp"
 #include "../util/Math.hpp"
 #include "../util/Types.hpp"
+#include "Entity.hpp"
 
 namespace mir{
     namespace movement{

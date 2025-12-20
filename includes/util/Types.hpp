@@ -9,14 +9,25 @@
 #include <unordered_map>
 #include <queue>
 #include <stack>
-#include <memory>
 #include <thread>
 #include <utility>
 
-#include <SFML/System.hpp>
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <SFML/Network.hpp>
+#include <SFML/Audio/Music.hpp>
+#include <SFML/Audio/Sound.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
+#include <SFML/Audio/SoundSource.hpp>
+#include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/PrimitiveType.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
+#include <SFML/Network/Http.hpp>
 
 namespace mir {
     using PrimType = sf::PrimitiveType;
@@ -36,6 +47,9 @@ namespace mir {
     using RenderTex = sf::RenderTexture;
     using Texture = sf::Texture;
     using Sprite = sf::Sprite;
+
+    using HandledWindow = sf::RenderWindow*;
+    using DisplayMode = sf::VideoMode;
 
     using SoundBuf = sf::SoundBuffer;
     using SoundSrc = sf::SoundSource;

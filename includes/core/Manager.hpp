@@ -5,12 +5,12 @@
 #include <memory>
 #include <vector>
 #include <fstream>
-
-#include <SFML/Audio.hpp>
-#include <SFML/Graphics.hpp>
+#include <algorithm>
+#include <utility>
 
 #include "Entity.hpp"
 #include "Components.hpp"
+
 #include "../handle/Event.hpp"
 #include "../util/Debugger.hpp"
 #include "../util/Types.hpp"
@@ -19,6 +19,9 @@
 #ifndef ASSET_DIR
     #define ASSET_DIR ""
 #endif
+
+#include <SFML/Audio/SoundSource.hpp>
+#include <SFML/Graphics/PrimitiveType.hpp>
 
 #define REGISTER_COMPONENT(type, array) \
     { #type, reinterpret_cast<void*>(array.data()), sizeof(array[0]), array.size() }

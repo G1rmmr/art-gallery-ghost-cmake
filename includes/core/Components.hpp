@@ -2,13 +2,12 @@
 
 #include <array>
 #include <vector>
-#include <cstdint>
-
-#include <SFML/Graphics.hpp>
+#include <memory>
 
 #include "Entity.hpp"
 #include "../util/Timer.hpp"
 #include "../util/Types.hpp"
+
 
 namespace mir{
     namespace transform{

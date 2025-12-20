@@ -1,10 +1,11 @@
 #pragma once
 
-#include <functional>
 #include <vector>
 #include <unordered_map>
 #include <memory>
 #include <typeindex>
+#include <algorithm>
+#include <utility>
 
 #include "../core/Entity.hpp"
 #include "../util/Types.hpp"

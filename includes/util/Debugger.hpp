@@ -1,8 +1,6 @@
 #pragma once
 
-#include <chrono>
 #include <cstdio>
-#include <ctime>
 #include <utility>
 
 #include "Timer.hpp"

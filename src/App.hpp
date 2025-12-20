@@ -56,7 +56,7 @@ namespace app {
         }
     inline void Render(){
         PROFILE_SCOPE("Render"){
-            mir::window::Clear(127, 127, 127);
+            mir::window::Clear(0, 0, 0);
             mir::window::Render();
             mir::window::Display();
         }

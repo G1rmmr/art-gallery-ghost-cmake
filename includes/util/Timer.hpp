@@ -1,9 +1,15 @@
 #pragma once
 
+#include <corecrt.h>
+
 #include <vector>
 #include <functional>
+#include <chrono>
+#include <ctime>
+#include <utility>
 
-#include <SFML/System.hpp>
+#include <SFML/System/Clock.hpp>
+
 #include "Types.hpp"
 
 namespace mir{

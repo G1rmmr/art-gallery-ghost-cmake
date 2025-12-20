@@ -14,11 +14,14 @@ set(ASSETS_DIR "${CMAKE_SOURCE_DIR}/assets")
 set(SFML_VERSION "3.0.2")
 
 include(FetchContent)
-FetchContent_Declare(SFML
-    GIT_REPOSITORY https://github.com/SFML/SFML.git
-    GIT_TAG 3.0.2
-    GIT_SHALLOW ON
-)
+FetchContent_Declare(
+  SFML
+  GIT_REPOSITORY https://github.com/SFML/SFML.git
+  GIT_TAG master
+  GIT_SHALLOW ON)
+
+set(SFML_BUILD_STATIC_LIBS ON CACHE BOOL "Build SFML as static libs")
+
 FetchContent_MakeAvailable(SFML)
 
 if(BUILD_BUNDLE AND APPLE)
@@ -33,6 +36,8 @@ target_include_directories(
     PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/includes/engine
 )
+
+target_compile_definitions(art-gallery-ghost PRIVATE SFML_STATIC)
 
 target_link_libraries(art-gallery-ghost PRIVATE
     SFML::Graphics

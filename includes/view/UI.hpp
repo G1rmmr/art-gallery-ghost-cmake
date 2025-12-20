@@ -1,13 +1,14 @@
 #pragma once
 
 #include <string>
-#include <cstdint>
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics/Color.hpp>
 
 #include "../core/Manager.hpp"
 #include "../util/Types.hpp"
 #include "../handle/Event.hpp"
+#include "../core/Components.hpp"
+#include "../core/Entity.hpp"
 
 namespace mir{
     namespace ui{
@@ -21,8 +22,14 @@ namespace mir{
 
             font::Texts[tag]->setFillColor(color);
             font::Texts[tag]->setString(content);
-            font::Texts[tag]->setOrigin(origin);
             font::Texts[tag]->setCharacterSize(size);
+
+            const Rect<Real> bounds = font::Texts[tag]->getLocalBounds();
+            font::Texts[tag]->setOrigin({
+                bounds.position.x + bounds.size.x / 2.f, bounds.position.y + bounds.size.y / 2.f   
+            });
+
+            font::Texts[tag]->setPosition(origin);
         }
 
         static inline ID BuildButton(

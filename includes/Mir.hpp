@@ -11,7 +11,6 @@
 #include <queue>
 #include <stack>
 
-#include <SFML/System.hpp>
 #include <SFML/Graphics.hpp>
 
 #include "core/Components.hpp"

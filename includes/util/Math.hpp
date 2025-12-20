@@ -2,14 +2,13 @@
 
 #include <random>
 #include <cmath>
-
-#include <SFML/Graphics.hpp>
+#include <numbers>
 
 #include "Types.hpp"
 
 namespace mir{
     namespace math{
-        static constexpr Real PI = 3.14159f;
+        static constexpr Real PI = std::numbers::pi;
 
         static inline Real Cos(const Real angle){
             return std::cos(angle * (PI / 180));

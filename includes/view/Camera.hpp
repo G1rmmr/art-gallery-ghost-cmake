@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SFML/System/Vector2.hpp>
-#include <SFML/Window.hpp>
 
 #include "../core/Entity.hpp"
 #include "../util/Math.hpp"
