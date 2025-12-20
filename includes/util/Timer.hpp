@@ -1,7 +1,5 @@
 #pragma once
 
-#include <corecrt.h>
-
 #include <vector>
 #include <functional>
 #include <chrono>
