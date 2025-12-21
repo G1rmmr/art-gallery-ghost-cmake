@@ -70,7 +70,11 @@ namespace mir{
         }
 
         static inline void Clear(Uint red, Uint green, Uint blue){
-            if(Window) Window->clear(sf::Color(red, green, blue));
+            if(Window) Window->clear(Color(red, green, blue));
+        }
+
+        static inline void Clear(const Color& color) {
+            if(Window) Window->clear(color);
         }
 
         static inline void Shutdown(){

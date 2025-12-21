@@ -25,26 +25,52 @@ namespace ground{
         }
 
         inline void GenerateRandomTerrain() {
-            mir::Int randomCount = mir::math::GetRandomInt(8, 12);
-            for(mir::Size i = 0; i < randomCount; ++i) {
-                const mir::ID id = mir::entity::Create();
+            mir::Int randomCount = mir::math::GetRandomInt(20, 25);
 
-                mir::transform::Positions[id] = mir::math::GetRandomPoint({POS_X, POS_Y}, {SIZE_X, SIZE_Y});
+            mir::List<mir::Rect<mir::Int>> existingRects;
+            for(mir::Size i = 0; i < randomCount; ++i){
+                mir::Point2<mir::Real> pos;
+                mir::Point2<mir::Real> size;
+                mir::Rect<mir::Int> newRect;
+                bool overlapped = false;
+                int retries = 0;
 
-                mir::transform::Scales[id] = mir::Point2<mir::Real>(1, 1);
+                do{
+                    pos = mir::math::GetRandomPoint({POS_X, POS_Y}, {SIZE_X, SIZE_Y});
+                    mir::Real preSize = mir::math::GetRandomReal(100.0, 300.0);
+                    size = {preSize, preSize};
 
-                const mir::Real size = mir::math::GetRandomReal(100.0, 300.0);
-                mir::physics::Bounds[id] = {size, size};
-                mir::physics::IsGhosts[id] = true;
+                    newRect = mir::Rect<mir::Int>(
+                        {mir::TypeCast<mir::Int>(pos.x), mir::TypeCast<mir::Int>(pos.y)},
+                        {mir::TypeCast<mir::Int>(size.x), mir::TypeCast<mir::Int>(size.y)}
+                    );
 
-                mir::sprite::Colors[id] = mir::Color::Black;
-                mir::sprite::Types[id] = mir::sprite::Type::ConvexHull;
-                mir::sprite::Layers[id] = 1;
+                    for(const mir::Rect<mir::Int>& rect : existingRects){
+                        if (newRect.findIntersection(rect).has_value()){
+                            overlapped = true;
+                            break;
+                        }
+                    }
+                    retries++;
+                }while(overlapped && retries < 10);
 
-                mir::sprite::NumSide[id] = mir::math::GetRandomInt(5, 9);
-                mir::texture::AllocFromType(id);
+                if(!overlapped){
+                    const mir::ID id = mir::entity::Create();
+                    mir::transform::Positions[id] = pos;
+                    mir::transform::Scales[id] = mir::Point2<mir::Real>(1, 1);
+                    mir::physics::Bounds[id] = size;
+                    mir::physics::IsGhosts[id] = false;
 
-                InitStats(id);
+                    mir::sprite::Colors[id] = mir::Color::Black;
+                    mir::sprite::Types[id] = mir::sprite::Type::ConvexHull;
+                    mir::sprite::Layers[id] = 1;
+                    mir::sprite::NumSide[id] = mir::math::GetRandomInt(5, 9);
+                    
+                    mir::texture::AllocFromType(id);
+                    InitStats(id);
+
+                    existingRects.push_back(newRect);
+                }
             }
         }
 
