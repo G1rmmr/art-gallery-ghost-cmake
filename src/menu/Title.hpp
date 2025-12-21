@@ -14,7 +14,10 @@ namespace title{
         mir::ID ExitTag = 0;
 
         inline void InitText(){
-            const mir::Point2<mir::Uint> displayRes = mir::window::GetDisplayResolution();
+            const mir::Point2<mir::Uint> displayRes = {
+                mir::TypeCast<mir::Uint>(mir::Window->getSize().x),
+                mir::TypeCast<mir::Uint>(mir::Window->getSize().y)
+            };
 
             TitleTag = mir::font::Create("fonts/dieproud.ttf");
             mir::font::Alloc(TitleTag);
@@ -36,7 +39,10 @@ namespace title{
         }
 
         inline void UpdateToMenus(){
-            const mir::Point2<mir::Uint> displayRes = mir::window::GetDisplayResolution();
+            const mir::Point2<mir::Uint> displayRes = {
+                mir::TypeCast<mir::Uint>(mir::Window->getSize().x),
+                mir::TypeCast<mir::Uint>(mir::Window->getSize().y)
+            };
 
             // Start
             StartTag = mir::font::Create("fonts/dieproud.ttf");
@@ -44,16 +50,16 @@ namespace title{
 
             mir::Action<const mir::event::type::MousePressed&> onStartClicked =
                 [](const mir::event::type::MousePressed& _){
-                    mir::scene::Load("Game");
+                    mir::scene::Load("Game", "Loading");
                 };
 
             mir::ui::BuildButton(
-                onStartClicked, 
+                onStartClicked,
                 mir::Color(255, 255, 255, 0),
-                mir::Point2<mir::Real>(displayRes.x / 2, displayRes.y / 2 - 100), 
-                {300, 20}, 
+                mir::Point2<mir::Real>(displayRes.x / 2, displayRes.y / 2 - 100),
+                {300, 20},
                 StartTag,
-                "START", 
+                "START",
                 mir::Color(255, 255, 255)
             );
 
@@ -65,7 +71,7 @@ namespace title{
                 [](const mir::event::type::MousePressed& _) {};
 
             mir::ui::BuildButton(
-                onSettingsClicked, 
+                onSettingsClicked,
                 mir::Color(255, 255, 255, 0),
                 mir::Point2<mir::Real>(displayRes.x / 2, displayRes.y / 2),
                 {300, 20},
@@ -86,9 +92,9 @@ namespace title{
                 onExitClicked,
                 mir::Color(255, 255, 255, 0),
                 mir::Point2<mir::Real>(displayRes.x / 2, displayRes.y / 2 + 100),
-                {300, 20}, 
+                {300, 20},
                 ExitTag,
-                "EXIT", 
+                "EXIT",
                 mir::Color(255, 255, 255));
         }
 

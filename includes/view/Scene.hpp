@@ -13,6 +13,7 @@ namespace mir{
         inline Dictionary<String, Action<>> Scenes;
         inline String Current = "";
         inline String NextScene = "";
+        inline String TargetScene = "";
 
         inline void Register(const String& name, std::function<void()> func){
             Scenes[name] = std::move(func);
@@ -40,8 +41,15 @@ namespace mir{
             iter->second();
         }
 
-        inline void Load(const String& name) {
-            NextScene = name;
+        inline void Load(const String& name, const String& loadingScene = "") {
+            if(loadingScene.empty()){
+                NextScene = name;
+                TargetScene = "";
+            }
+            else{
+                NextScene = loadingScene;
+                TargetScene = name;
+            }
         }
     }
 }

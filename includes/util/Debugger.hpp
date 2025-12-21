@@ -14,6 +14,9 @@
 
 namespace mir {
     namespace debug {
+        static inline std::unique_ptr<Font> Font;
+        static inline std::unique_ptr<Text> Text;
+
         inline Bool IsEntityCountVisible = false;
         inline Bool IsColliderVisible = false;
 

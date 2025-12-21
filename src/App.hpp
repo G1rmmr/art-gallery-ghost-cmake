@@ -16,10 +16,36 @@ namespace app {
         mir::window::Init(WINDOW_TITLE);
         mir::window::SetFPS(FPS);
 
-        mir::camera::Init();
-
         mir::scene::Register("Menu", menu::Initialize);
         mir::scene::Register("Game", game::Initialize);
+
+        // Inline Loading Scene
+        mir::scene::Register("Loading", [](){
+            mir::camera::Init();
+
+            // Display Loading Text
+            const mir::ID textID = mir::font::Create("fonts/dieproud.ttf");
+            mir::font::Alloc(textID);
+
+            const mir::Point2<mir::Uint> displayRes = {
+                mir::TypeCast<mir::Uint>(mir::Window->getSize().x),
+                mir::TypeCast<mir::Uint>(mir::Window->getSize().y)
+            };
+
+            mir::ui::BuildText(
+                textID,
+                mir::Color(255, 255, 255),
+                mir::Point2<mir::Real>(displayRes.x / 2, displayRes.y / 2),
+                "LOADING...",
+                80
+            );
+
+            mir::time::Register(0.1f, [](){
+                if(!mir::scene::TargetScene.empty()){
+                    mir::scene::Load(mir::scene::TargetScene);
+                }
+            });
+        });
 
         mir::scene::Load("Menu");
         mir::scene::Update();

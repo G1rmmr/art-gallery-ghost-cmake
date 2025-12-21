@@ -7,7 +7,10 @@
 
 namespace mir{
     namespace profile{
+        static inline std::unique_ptr<Font> Font;
+        static inline std::unique_ptr<Text> Text;
         static inline Bool IsEnable = false;
+
         inline Real CurrentFPS = 0;
 
         class ScopeTimer{

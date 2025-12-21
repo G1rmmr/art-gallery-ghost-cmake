@@ -39,6 +39,8 @@ namespace mir{
         }
 
         static inline void Init(){
+            TargetID = 0;
+
             if(Window){
                 const Point2<Real> size = TypeCast<Point2<Real>>(Window->getSize());
                 View.setSize(size);

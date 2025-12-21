@@ -25,8 +25,7 @@
 #include "../util/Types.hpp"
 
 namespace mir{
-    
-    inline HandledWindow Window = nullptr;
+    inline HandledWindow* Window = nullptr;
 
     enum class VideoMode{
         Windowed,
@@ -50,14 +49,6 @@ namespace mir{
             if(Window) Window->display();
         }
 
-        static inline Point2<Uint> GetDisplayResolution() {
-            const Point2<Uint> resolution = {
-                TypeCast<Uint>(DisplayMode::getDesktopMode().size.x),
-                TypeCast<Uint>(DisplayMode::getDesktopMode().size.y)
-            };
-            return resolution;
-        }
-
         static inline void SetFPS(const Uint fps){
             if(Window) {
                 Window->setFramerateLimit(fps);
@@ -74,6 +65,11 @@ namespace mir{
         }
 
         static inline void Shutdown(){
+            debug::Text.reset();
+            debug::Font.reset();
+            profile::Text.reset();
+            profile::Font.reset();
+
             if(Window){
                 Window->close();
                 delete Window;
@@ -208,21 +204,17 @@ namespace mir{
             static inline void DrawDebug(){
                 if(!Window) return;
 
-                static sf::Font font;
-                static Bool fontLoaded = false;
-                static std::unique_ptr<sf::Text> text;
-
-                if(!fontLoaded){
-                    if(font.openFromFile("assets/fonts/dieproud.ttf")){
-                        fontLoaded = true;
-                        text = std::make_unique<sf::Text>(font);
-                        text->setCharacterSize(24);
-                        text->setFillColor(sf::Color::Green);
+                if(!debug::Font){
+                    debug::Font = std::make_unique<Font>();
+                    if(debug::Font->openFromFile("assets/fonts/dieproud.ttf")){
+                        debug::Text = std::make_unique<Text>(*debug::Font);
+                        debug::Text->setCharacterSize(24);
+                        debug::Text->setFillColor(sf::Color::Yellow);
                     }
                 }
 
                 if constexpr(DEBUG_ENABLED) {
-                    if(mir::debug::IsEntityCountVisible && fontLoaded && text){
+                    if(mir::debug::IsEntityCountVisible && debug::Text){
                         sf::View oldView = Window->getView();
                         Window->setView(Window->getDefaultView());
 
@@ -230,10 +222,10 @@ namespace mir{
                         for(Bool available : entity::IsAvailables)
                             if(available) count++;
 
-                        text->setString("[Toggle - F1] Entities: " + std::to_string(count));
-                        text->setPosition({10.f, 10.f});
+                        debug::Text->setString("[Toggle - F1] Entities: " + ToString(count));
+                        debug::Text->setPosition({10.f, 10.f});
 
-                        Window->draw(*text);
+                        Window->draw(*debug::Text);
                         Window->setView(oldView);
                     }
 
@@ -259,28 +251,24 @@ namespace mir{
             static inline void DrawProfile(){
                 if(!Window) return;
 
-                static sf::Font font;
-                static Bool fontLoaded = false;
-                static std::unique_ptr<sf::Text> text;
-
-                if(!fontLoaded){
-                    if(font.openFromFile("assets/fonts/dieproud.ttf")){
-                        fontLoaded = true;
-                        text = std::make_unique<sf::Text>(font);
-                        text->setCharacterSize(24);
-                        text->setFillColor(sf::Color::Green);
+                if(!profile::Font){
+                    profile::Font = std::make_unique<Font>();
+                    if(profile::Font->openFromFile("assets/fonts/dieproud.ttf")){
+                        profile::Text = std::make_unique<Text>(*profile::Font);
+                        profile::Text->setCharacterSize(24);
+                        profile::Text->setFillColor(sf::Color::Yellow);
                     }
                 }
 
-                if(mir::profile::IsEnable && fontLoaded && text){
+                if(mir::profile::IsEnable && profile::Text){
                     sf::View oldView = Window->getView();
                     Window->setView(Window->getDefaultView());
 
                     const Real fps = mir::profile::CurrentFPS;
-                    text->setString("[Toggle - F2] FPS: " + std::to_string(TypeCast<Int>(fps)));
-                    text->setPosition({10.f, 40.f});
+                    profile::Text->setString("[Toggle - F2] FPS: " + ToString(TypeCast<Int>(fps)));
+                    profile::Text->setPosition({10.f, 40.f});
 
-                    Window->draw(*text);
+                    Window->draw(*profile::Text);
                     Window->setView(oldView);
                 }
             }

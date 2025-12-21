@@ -48,8 +48,7 @@ namespace mir {
     using Texture = sf::Texture;
     using Sprite = sf::Sprite;
 
-    using HandledWindow = sf::RenderWindow*;
-    using DisplayMode = sf::VideoMode;
+    using HandledWindow = sf::RenderWindow;
 
     using SoundBuf = sf::SoundBuffer;
     using SoundSrc = sf::SoundSource;
