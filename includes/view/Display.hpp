@@ -152,9 +152,21 @@ namespace mir{
             }
 
             static inline void DrawSprites(){
-                for(ID id = 1; id < MAX_ENTITIES; ++id){
-                    if(!sprite::Textures[id]) continue;
+                static List<ID> renderQueue;
+                renderQueue.clear();
 
+                for(ID id = 1; id < MAX_ENTITIES; ++id){
+                    if(sprite::Textures[id] && entity::IsAvailables[id])
+                        renderQueue.push_back(id);
+                }
+
+                std::sort(renderQueue.begin(), renderQueue.end(), [](ID a, ID b){
+                    if(sprite::Layers[a] != sprite::Layers[b])
+                        return sprite::Layers[a] < sprite::Layers[b];
+                    return transform::Positions[a].y < transform::Positions[b].y;
+                });
+
+                for(const ID id : renderQueue){
                     const List<sf::Rect<Int>>& frames
                         = animation::FrameSets[animation::States[id]];
 
@@ -171,20 +183,20 @@ namespace mir{
                 for(ID id = 1; id < MAX_ENTITIES; ++id){
                     if(particle::Positions[id].empty()) continue;
 
-                    const size_t count = particle::Positions[id].size();
-                    PointArr vertexArr(sf::PrimitiveType::Triangles, count * 6);
+                    const Size count = particle::Positions[id].size();
+                    PointArr vertexArr(PrimType::Triangles, count * 6);
 
                     for (size_t i = 0; i < count; ++i) {
                         const Point2<Real>& pos = particle::Positions[id][i];
                         const Real size = particle::CurrentSizes[id][i];
-                        const sf::Color& color = particle::CurrentColors[id][i];
+                        const Color& color = particle::CurrentColors[id][i];
 
                         const Real halfSize = size * 0.5f;
 
-                        sf::Vector2f tl(pos.x - halfSize, pos.y - halfSize);
-                        sf::Vector2f tr(pos.x + halfSize, pos.y - halfSize);
-                        sf::Vector2f br(pos.x + halfSize, pos.y + halfSize);
-                        sf::Vector2f bl(pos.x - halfSize, pos.y + halfSize);
+                        Point2<Real> tl(pos.x - halfSize, pos.y - halfSize);
+                        Point2<Real> tr(pos.x + halfSize, pos.y - halfSize);
+                        Point2<Real> br(pos.x + halfSize, pos.y + halfSize);
+                        Point2<Real> bl(pos.x - halfSize, pos.y + halfSize);
 
                         vertexArr[i * 6 + 0].position = tl; vertexArr[i * 6 + 0].color = color;
                         vertexArr[i * 6 + 1].position = tr; vertexArr[i * 6 + 1].color = color;
@@ -200,7 +212,7 @@ namespace mir{
 
             static inline void DrawTexts(){
                 for(Tag tag = 1; tag < MAX_RESOURCES; ++tag){
-                    if(font::Sources[tag])
+                    if(font::Sources[tag] && font::Texts[tag])
                         Window->draw(*font::Texts[tag]);
                 }
             }

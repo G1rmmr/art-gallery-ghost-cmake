@@ -107,8 +107,8 @@ namespace mir{
         static inline Array<Set, MAX_ENTITIES> FrameSets;
         static inline Array<Real, MAX_ENTITIES> ElapsedTimes;
         static inline Array<Real, MAX_ENTITIES> DelayTimes;
-        static inline Array<Uint, MAX_STATE> States;
-        static inline Array<Uint, MAX_FRAME> CurrFrames;
+        static inline Array<Uint, MAX_ENTITIES> States;
+        static inline Array<Uint, MAX_ENTITIES> CurrFrames;
         static inline Array<Bool, MAX_ENTITIES> IsPlayings;
         static inline Array<Bool, MAX_ENTITIES> IsLoopings;
 

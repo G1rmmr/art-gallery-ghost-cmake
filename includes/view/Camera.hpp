@@ -67,8 +67,7 @@ namespace mir{
             if(center.x < end.x + 5 &&
                 center.y > end.y - 5 &&
                 center.x > end.x - 5 &&
-                center.y < end.y + 5 &&
-                !physics::InAirFlags[TargetID])
+                center.y < end.y + 5)
                 TargetID = 0;
 
             if(ShakeTime > 0){

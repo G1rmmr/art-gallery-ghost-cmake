@@ -30,7 +30,6 @@ namespace app {
             mir::input::Process();
 
             if(mir::input::IsPressed(mir::event::type::Key::Escape)){
-                network::PostScore(player::NAME, player::Score);
                 network::GetTopPlayers();
 
                 mir::scene::Load("Menu");
@@ -57,7 +56,7 @@ namespace app {
 
     inline void Render(){
         PROFILE_SCOPE("Render"){
-            mir::window::Clear(0, 0, 0);
+            mir::window::Clear(20, 20, 50);
             mir::window::Render();
             mir::window::Display();
         }

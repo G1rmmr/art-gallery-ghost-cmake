@@ -263,6 +263,11 @@ namespace mir {
         }
 
         static inline void AllocFromFile(const ID id, const Tag tag){
+            if(id >= MAX_ENTITIES || tag >= MAX_RESOURCES) {
+                debug::Log("Invalid ID or Tag: id=%d, tag=%d", id, tag);
+                return;
+            }
+
             const String path = resource::Textures[tag];
             if(path == "") {
                 debug::Log("Texture doesn't initialized : %s", path.c_str());
@@ -305,6 +310,8 @@ namespace mir {
         }
 
         static inline void AllocSound(const Tag tag){
+            if(tag >= MAX_RESOURCES) return;
+
             Buffers[tag] = std::make_unique<SoundBuf>();
             if(!Buffers[tag]->loadFromFile(resource::Sounds[tag])){
                 debug::Log("Sound Source doesn't exist : %s", resource::Sounds[tag].c_str());
@@ -315,6 +322,8 @@ namespace mir {
         }
 
         static inline void AllocMusic(const Tag tag, Bool shouldLoop = true){
+            if(tag >= MAX_RESOURCES) return;
+
             if(!Musics[tag].openFromFile(resource::Sounds[tag])){
                 debug::Log("Music Source doesn't exist : %s", resource::Sounds[tag].c_str());
                 return;
@@ -325,16 +334,17 @@ namespace mir {
         }
 
         static inline void Play(const Tag tag, Bool shouldLoop = false) {
-            if(!Sounds[tag]) return;
+            if(tag >= MAX_RESOURCES || !Sounds[tag]) return;
             Sounds[tag]->setLooping(shouldLoop);
             Sounds[tag]->play();
         }
 
         static inline void Pause(const Tag tag) {
-            if(Sounds[tag]) Sounds[tag]->pause();
+            if(tag < MAX_RESOURCES && Sounds[tag]) Sounds[tag]->pause();
         }
 
         static inline void Stop(const Tag tag) {
+            if(tag >= MAX_RESOURCES) return;
             if(Sounds[tag]) Sounds[tag]->stop();
             if(Musics[tag].getStatus() != SoundSrc::Status::Stopped) Musics[tag].stop();
         }
@@ -368,6 +378,8 @@ namespace mir {
         }
 
         static inline void Alloc(const Tag tag){
+            if(tag >= MAX_RESOURCES) return;
+
             Sources[tag] = std::make_unique<Font>();
             if(!Sources[tag]->openFromFile(resource::Fonts[tag])){
                 debug::Log("Font doesn't exist : %s", resource::Fonts[tag].c_str());

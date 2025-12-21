@@ -13,11 +13,6 @@ namespace mir{
                 if(!entity::IsAvailables[id]) continue;
 
                 Point2<Real>& velocity = transform::Velocities[id];
-
-                velocity.y = physics::InAirFlags[id] ?
-                    velocity.y + physics::GRAV_ACCEL * deltaTime :
-                    velocity.y = 0;
-
                 transform::Positions[id] += velocity * deltaTime;
             }
         }
@@ -173,7 +168,7 @@ namespace mir{
         }
 
         static inline void Update(const Real deltaTime){
-            for(ID id = 0; id < MAX_ENTITIES; ++id){
+            for(ID id = 1; id < MAX_ENTITIES; ++id){
                 if(!particle::IsEmittings[id] &&
                    particle::Positions[id].empty() &&
                    particle::EmitAccumulators[id] < 1.0f) continue;
